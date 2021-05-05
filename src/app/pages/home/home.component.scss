@@ -448,7 +448,9 @@ section.partners {
         margin-top: 0;
       }
       img {
-        height: 100px;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
         cursor: pointer;
         opacity: 0.7;
         &:hover {
