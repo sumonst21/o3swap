@@ -11,6 +11,7 @@ import { Store } from '@ngrx/store';
 import { RiskWarningComponent } from '@shared';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { interval, Observable, Unsubscribable } from 'rxjs';
+import { UPDATE_LANGUAGE } from './_lib/actions';
 
 interface State {
   language: any;
@@ -65,6 +66,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initLanguage();
     this.apiService.getRates();
     const sessionShowRisk = sessionStorage.getItem('showRisk');
     if (sessionShowRisk !== undefined) {
@@ -75,6 +77,14 @@ export class AppComponent implements OnInit {
       this.metaMaskWalletApiService.init();
       this.vaultdMetaMaskWalletApiService.init();
       this.o3NeoWalletApiService.init();
+    }
+  }
+
+  initLanguage(): void {
+    const localLang = localStorage.getItem('language');
+    if (localLang) {
+      this.lang = localLang;
+      this.store.dispatch({ type: UPDATE_LANGUAGE, data: localLang });
     }
   }
 

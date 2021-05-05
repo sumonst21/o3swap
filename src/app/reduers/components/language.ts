@@ -7,6 +7,7 @@ const initialState = {
 export default function language(state = initialState, action): any {
   switch (action.type) {
     case UPDATE_LANGUAGE:
+      localStorage.setItem('language', action.data);
       return { language: action.data };
     default:
       return state;
