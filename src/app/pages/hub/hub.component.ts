@@ -465,7 +465,7 @@ export class HubComponent implements OnInit, OnDestroy {
       decimalPart &&
       decimalPart.length > this.fromToken.decimals
     ) {
-      this.inputAmountError = `You've exceeded the decimal limit.`;
+      this.inputAmountError = MESSAGE.decimalLimit[this.lang];
       return false;
     }
     this.inputAmountError = '';
@@ -488,7 +488,7 @@ export class HubComponent implements OnInit, OnDestroy {
     const inputAmountBig = new BigNumber(this.inputAmount);
     const maxAmountBig = new BigNumber(usdToken.maxAmount);
     if (inputAmountBig.comparedTo(maxAmountBig) === 1) {
-      this.inputAmountError = `You've exceeded the maximum limit`;
+      this.inputAmountError = MESSAGE.maximumLimit[this.lang];
       return false;
     } else {
       return true;

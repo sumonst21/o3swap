@@ -306,7 +306,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       const inputAmountBig = new BigNumber(this.inputAmount);
       const maxAmountBig = new BigNumber(this.fromToken.maxAmount);
       if (inputAmountBig.comparedTo(maxAmountBig) === 1) {
-        this.inputAmountError = `You've exceeded the maximum limit`;
+        this.inputAmountError = MESSAGE.maximumLimit[this.lang];
         return false;
       } else {
         return true;
@@ -323,7 +323,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       decimalPart &&
       decimalPart.length > this.fromToken.decimals
     ) {
-      this.inputAmountError = `You've exceeded the decimal limit.`;
+      this.inputAmountError = MESSAGE.decimalLimit[this.lang];
       return false;
     }
     // neo nneo 互换只能整单位
@@ -337,7 +337,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       decimalPart &&
       decimalPart.length > 0
     ) {
-      this.inputAmountError = `You've exceeded the decimal limit.`;
+      this.inputAmountError = MESSAGE.decimalLimit[this.lang];
       return false;
     }
     this.inputAmountError = '';
