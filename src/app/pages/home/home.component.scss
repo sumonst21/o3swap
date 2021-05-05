@@ -433,20 +433,38 @@ section.partners {
   }
   .partners-group {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    &.investors {
-      margin-top: 20px;
-    }
+    flex-wrap: wrap;
     a {
+      margin-top: 20px;
+      width: 23.2%;
+      height: 100px;
       background: #1d231f;
       border-radius: 20px;
+      margin-right: 2.4%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      &:nth-child(4n),
+      &:last-child {
+        margin-right: 0;
+      }
+      &:nth-child(1),
+      &:nth-child(2),
+      &:nth-child(3),
+      &:nth-child(4) {
+        margin-top: 0;
+      }
       img {
         height: 100px;
         cursor: pointer;
         opacity: 0.7;
         &:hover {
           opacity: 1;
+        }
+        &.low-h {
+          height: 60px;
         }
       }
     }
