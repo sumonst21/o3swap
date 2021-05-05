@@ -4,16 +4,16 @@
       <div class="item-group item-total">
         <div class="group-title">Total</div>
         <div class="group-content">{{ o3Total }} O3</div>
-        <!-- <div class="group-title">Available</div> -->
+        <div class="group-title">Locked {{ o3Locked }} O3</div>
       </div>
       <div class="item-group">
         <div class="group-title">Available</div>
         <div class="group-content">{{ o3Available }} O3</div>
-        <div class="btn-primary receive-btn">Receive</div>
+        <!-- <div class="btn-primary receive-btn">Receive</div> -->
       </div>
       <div class="item-group">
-        <div class="group-title">To be unlocked</div>
-        <div class="group-content">{{ o3Locked }} O3</div>
+        <div class="group-title">Total Profit</div>
+        <div class="group-content">{{ totalProfit }} O3</div>
         <div class="group-icon">
           <img nz-tooltip nzTooltipTitle="Coming soon..." nzTooltipPlacement="right"
             src="/assets/images/dashboard/doubt.png" alt="">
@@ -24,7 +24,7 @@
       <div class="list-container">
         <div class="list-head">
           <div class="list-head-title">Unlock zone</div>
-          <div class="list-head-right">
+          <!-- <div class="list-head-right">
             <p>
               <span class="name">Unlocked amount:</span>
               &nbsp;
@@ -35,7 +35,7 @@
               &nbsp;
               <span class="value">{{ o3UnlockSpeed || '' }}</span>
             </p>
-          </div>
+          </div> -->
         </div>
         <div class="tran-list">
           <nz-table class="unlock-zone" nzAlign="center" nzTemplateMode [nzScroll]="{ x: '1200px', y: '500px' }">
@@ -45,8 +45,8 @@
                 <th>Name</th>
                 <th>Staked</th>
                 <th>Remaining</th>
-                <th>Release value</th>
-                <th>APY%</th>
+                <th>Claimable</th>
+                <th>Speed</th>
                 <th nzRight></th>
               </tr>
             </thead>
@@ -54,16 +54,16 @@
               <tr *ngFor="let item of stakeUnlockTokenList; let i = index">
                 <td><img class="token-img" [src]="item.logo" alt=""></td>
                 <td>{{ stakeUnlockTokenList[i].symbol }}</td>
-                <td>{{ item.staked || '0' }}</td>
-                <td>{{ item.remaining || '0' }}</td>
-                <td>Release value</td>
-                <td>APY%</td>
+                <td>{{ item.staked || '--' }}</td>
+                <td>{{ item.remaining || '--' }}</td>
+                <td>{{ item.claimable || '--' }}</td>
+                <td>{{ item.speed || '--' }}</td>
                 <td nzRight>
-                  <button class="btn-primary" (click)="showStake(stakeUnlockTokenList[i], item.remaining || '0')">
+                  <button class="btn-primary" (click)="showUnlockStake(stakeUnlockTokenList[i], item.remaining || '0')">
                     Stake
                   </button>
                   <button class="btn-primary unstake-btn"
-                    (click)="showStake(stakeUnlockTokenList[i], item.staked || '0', false)">
+                    (click)="showUnlockStake(stakeUnlockTokenList[i], item.staked || '0', false)">
                     Unstake
                   </button>
                 </td>
@@ -119,24 +119,24 @@
           </div>
         </div>
         <div class="group-container">
-          <div class="item-group">
+          <div class="item-group" *ngFor="let item of o3StakingTokenList">
             <div class="name">
-              <img src="" alt="" class="token-img">
-              pnUSDT
+              <img [src]="item.logo" alt="" class="token-img">
+              {{ item.symbol }}
             </div>
             <div class="detail-container">
               <div class="detail-item">
-                <div class="value">9.31673761</div>
+                <div class="value">{{ item.totalStaking || '--' }}</div>
                 <div class="name">Total Staking</div>
               </div>
               <div class="detail-item">
-                <div class="value">9.31673761</div>
+                <div class="value">--</div>
                 <div class="name">APY%</div>
               </div>
             </div>
             <div class="stake">
-              <span>Stake</span>
-              <span>Unstake</span>
+              <span (click)="showStakingStake(item, item.balance, true)">Stake</span>
+              <span (click)="showStakingStake(item, item.staked, false)">Unstake</span>
             </div>
           </div>
         </div>

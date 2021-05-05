@@ -27,7 +27,8 @@ export interface StakeTransaction {
   fromToken: Token;
   amount: string;
   isFailed?: boolean;
-  isStake: boolean;
+  // 0 stake 1 unstake 2 claim
+  transactionType: number;
   walletName: WalletName;
   min: boolean;
 }

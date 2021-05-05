@@ -136,7 +136,7 @@ export class RpcApiService {
           if (
             balance &&
             !new BigNumber(balance).isNaN() &&
-            new BigNumber(balance).comparedTo(0) > 0
+            new BigNumber(balance).comparedTo(0) >= 0
           ) {
             return new BigNumber(balance).shiftedBy(-token.decimals).toFixed();
           }

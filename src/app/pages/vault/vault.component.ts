@@ -9,7 +9,7 @@ import { Unsubscribable, Observable, interval } from 'rxjs';
 import { ApproveComponent, VaultStakeComponent } from '@shared';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
-import { O3_TOKEN, Token } from '@lib';
+import { O3STAKING_CONTRACT, O3TOKEN_CONTRACT, O3_TOKEN, Token } from '@lib';
 interface State {
   language: any;
 }
@@ -32,8 +32,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   o3Locked = '--';
   o3Available = '--';
   o3Total = '--';
-  o3UnlockSpeed = '--';
-  o3ClaimableUnlocked = '--';
+
+  totalProfit = '--';
   stakeUnlockTokenList: any[] = [
     {
       assetID: '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
@@ -44,6 +44,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       logo: '/assets/images/tokens/lp-eth.png',
     },
   ];
+  o3StakingTokenList: any[] = [O3_TOKEN];
   constructor(
     private store: Store<State>,
     private modal: NzModalService,
@@ -78,23 +79,46 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async initO3Data(): Promise<void> {
-    this.o3Locked =
-      (await this.vaultdMetaMaskWalletApiService.getLockedOf()) || '--';
-    this.o3Available =
-      (await this.vaultdMetaMaskWalletApiService.getUnlockedOf()) || '--';
-    this.o3UnlockSpeed =
-      (await this.vaultdMetaMaskWalletApiService.getUnlockSpeed(
-        this.stakeUnlockTokenList[0]
-      )) || '--';
-    this.o3ClaimableUnlocked =
-      (await this.vaultdMetaMaskWalletApiService.claimableUnlocked(
-        this.stakeUnlockTokenList[0]
-      )) || '--';
+    // head data
+    Promise.all([
+      this.vaultdMetaMaskWalletApiService.getLockedOf() || '--',
+      this.vaultdMetaMaskWalletApiService.getUnlockedOf() || '--',
+    ]).then((res) => {
+      [this.o3Locked, this.o3Available] = res;
+    });
+    // unlock zoon
     this.stakeUnlockTokenList.forEach(async (item: any) => {
-      item.staked =
-        (await this.vaultdMetaMaskWalletApiService.getStaked(item)) || '--';
-      item.remaining =
-        (await this.metaMaskWalletApiService.getBalancByHash(item)) || '--';
+      Promise.all([
+        this.vaultdMetaMaskWalletApiService.getStaked(item) || '--',
+        this.metaMaskWalletApiService.getBalancByHash(item) || '--',
+        this.vaultdMetaMaskWalletApiService.claimableUnlocked(item) || '--',
+        this.vaultdMetaMaskWalletApiService.getUnlockSpeed(item) || '--',
+      ]).then((res) => {
+        [item.staked, item.remaining, item.claimable, item.speed] = res;
+      });
+    });
+    // o3 Staking
+    this.o3StakingTokenList.forEach(async (item: any) => {
+      Promise.all([
+        this.metaMaskWalletApiService.getBalancByHash(item) || '--',
+        this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
+          '--',
+        this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',
+      ]).then((res) => {
+        [item.balance, item.totalStaking, item.staked] = res;
+      });
+      this.vaultdMetaMaskWalletApiService
+        .getO3StakingTotalProfit(item)
+        .then((res) => {
+          if (res) {
+            item.profit = res || '--';
+            this.totalProfit = '0';
+            this.totalProfit = new BigNumber(this.totalProfit)
+              .plus(new BigNumber(res))
+              .dp(18)
+              .toFixed();
+          }
+        });
     });
     const totleNum = new BigNumber(this.o3Locked).plus(
       new BigNumber(this.o3Available)
@@ -106,7 +130,11 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
   }
 
-  async showStake(token: Token, balance: string, isStake: boolean = true): Promise<void> {
+  async showUnlockStake(
+    token: Token,
+    balance: string,
+    isStake: boolean = true
+  ): Promise<void> {
     const modal = this.modal.create({
       nzContent: VaultStakeComponent,
       nzFooter: null,
@@ -116,7 +144,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       nzComponentParams: {
         token,
         balance,
-        isStake
+        isStake,
       },
     });
     modal.afterClose.subscribe(async (res) => {
@@ -124,10 +152,11 @@ export class VaultComponent implements OnInit, OnDestroy {
         const showApprove = await this.checkShowApprove(
           token,
           this.vaultdMetaMaskWalletApiService.vaultWallet.address,
-          res
+          res,
+          O3TOKEN_CONTRACT
         );
         if (showApprove === true) {
-          this.showApproveModal(token);
+          this.showApproveModal(token, O3TOKEN_CONTRACT);
           return;
         }
         if (isStake) {
@@ -139,16 +168,64 @@ export class VaultComponent implements OnInit, OnDestroy {
     });
   }
 
+  async showStakingStake(
+    token: Token,
+    balance: string,
+    isStake: boolean = true
+  ): Promise<void> {
+    const contractHash = O3STAKING_CONTRACT[token.assetID];
+    const modal = this.modal.create({
+      nzContent: VaultStakeComponent,
+      nzFooter: null,
+      nzTitle: null,
+      nzClosable: false,
+      nzClassName: 'custom-modal custom-stake-modal',
+      nzComponentParams: {
+        token,
+        balance,
+        isStake,
+      },
+    });
+    modal.afterClose.subscribe(async (res) => {
+      if (res) {
+        const showApprove = await this.checkShowApprove(
+          token,
+          this.vaultdMetaMaskWalletApiService.vaultWallet.address,
+          res,
+          contractHash
+        );
+        if (showApprove === true) {
+          this.showApproveModal(token, contractHash);
+          return;
+        }
+        if (isStake) {
+          this.vaultdMetaMaskWalletApiService.o3StakingStake(token, res);
+        } else {
+          this.vaultdMetaMaskWalletApiService.o3StakingUnStake(token, res);
+        }
+      }
+    });
+  }
+
+  async claimProfit(token: any): Promise<void> {
+    const contractHash = O3STAKING_CONTRACT[token.assetID];
+    this.vaultdMetaMaskWalletApiService.o3StakingClaimProfit(
+      token,
+      token.profit
+    );
+  }
+
   async checkShowApprove(
     token: Token,
     address: string,
-    inputAmount: string
+    inputAmount: string,
+    spender: string
   ): Promise<boolean> {
     const balance = await this.metaMaskWalletApiService.getAllowance(
       token,
       address,
       null,
-      O3_TOKEN.assetID
+      spender
     );
     if (new BigNumber(balance).comparedTo(new BigNumber(inputAmount)) >= 0) {
       return false;
@@ -156,7 +233,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       return true;
     }
   }
-  showApproveModal(token: Token): void {
+  showApproveModal(token: Token, spender: string): void {
     const walletName = this.vaultdMetaMaskWalletApiService.vaultWallet
       .walletName;
     const address = this.vaultdMetaMaskWalletApiService.vaultWallet.address;
@@ -171,7 +248,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         fromToken: token,
         fromAddress: address,
         walletName,
-        isO3Stake: true,
+        spender,
       },
     });
   }

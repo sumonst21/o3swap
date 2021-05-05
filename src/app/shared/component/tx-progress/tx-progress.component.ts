@@ -62,11 +62,13 @@ export class TxProgressComponent implements OnInit, OnDestroy {
   hasTransaction = false;
 
   swap$: Observable<any>;
-  vault$: Observable<any>;
   swapUnScribe: Unsubscribable;
-  vaultUnScribe: Unsubscribable;
   transaction: SwapTransaction;
+
+  vault$: Observable<any>;
+  vaultUnScribe: Unsubscribable;
   vaultTransaction: VaultTransaction;
+
   ethWalletName: EthWalletName;
   bscWalletName: EthWalletName;
   hecoWalletName: EthWalletName;
@@ -108,8 +110,8 @@ export class TxProgressComponent implements OnInit, OnDestroy {
         this.dispatchType = UPDATE_LIQUIDITY_PENDING_TX;
         break;
       case 'vault':
-          this.dispatchType = UPDATE_VAULT_STAKE_PENDING_TX;
-          break;
+        this.dispatchType = UPDATE_VAULT_STAKE_PENDING_TX;
+        break;
     }
     this.swapUnScribe = this.swap$.subscribe((state) => {
       this.ethWalletName = state.ethWalletName;
@@ -205,11 +207,17 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     switch (this.txAtPage) {
       case 'vault':
         this.vaultTransaction.min = true;
-        this.store.dispatch({ type: this.dispatchType, data: this.vaultTransaction });
+        this.store.dispatch({
+          type: this.dispatchType,
+          data: this.vaultTransaction,
+        });
         break;
       default:
         this.transaction.min = true;
-        this.store.dispatch({ type: this.dispatchType, data: this.transaction });
+        this.store.dispatch({
+          type: this.dispatchType,
+          data: this.transaction,
+        });
     }
   }
 
@@ -217,11 +225,17 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     switch (this.txAtPage) {
       case 'vault':
         this.vaultTransaction.min = false;
-        this.store.dispatch({ type: this.dispatchType, data: this.vaultTransaction });
+        this.store.dispatch({
+          type: this.dispatchType,
+          data: this.vaultTransaction,
+        });
         break;
       default:
         this.transaction.min = false;
-        this.store.dispatch({ type: this.dispatchType, data: this.transaction });
+        this.store.dispatch({
+          type: this.dispatchType,
+          data: this.transaction,
+        });
     }
   }
 
@@ -234,13 +248,20 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     let message = 'Swap';
     switch (this.txAtPage) {
       case 'vault':
-        message = this.vaultTransaction.isStake ? 'Stake' : 'Unstake';
+        message =
+          this.vaultTransaction.transactionType === 2
+            ? 'Claim'
+            : this.vaultTransaction.transactionType === 1
+            ? 'Stake'
+            : 'Unstake';
         message += ` ${this.vaultTransaction?.amount} ${this.vaultTransaction?.fromToken?.symbol}`;
         break;
       default:
         if (this.txAtPage === 'liquidity') {
           message =
-            this.transaction?.fromToken.symbol === 'LP' ? 'Withdraw' : 'Deposit';
+            this.transaction?.fromToken.symbol === 'LP'
+              ? 'Withdraw'
+              : 'Deposit';
         }
         message += ` ${this.transaction?.amount} ${this.transaction?.fromToken?.symbol} for ${this.transaction?.receiveAmount} ${this.transaction?.toToken?.symbol}`;
     }

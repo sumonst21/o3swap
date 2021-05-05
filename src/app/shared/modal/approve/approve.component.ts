@@ -15,7 +15,7 @@ interface State {
 })
 export class ApproveComponent implements OnInit, OnDestroy {
   @Input() aggregator?: string;
-  @Input() isO3Stake?: boolean;
+  @Input() spender?: string;
   @Input() fromToken: Token;
   @Input() fromAddress: string;
   @Input() walletName: string;
@@ -54,7 +54,7 @@ export class ApproveComponent implements OnInit, OnDestroy {
     this.isApproveLoading = true;
     const swapApi = this.getEthDapiService();
     swapApi
-      .approve(this.fromToken, this.fromAddress, this.aggregator, this.isO3Stake)
+      .approve(this.fromToken, this.fromAddress, this.aggregator, this.spender)
       .then((hash) => {
         if (hash) {
           this.approveInterval = interval(5000).subscribe(async () => {

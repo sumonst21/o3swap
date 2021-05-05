@@ -27,7 +27,8 @@
     &.row-1 {
       margin-top: 40px;
     }
-    &.row-2, &.row-3 {
+    &.row-2,
+    &.row-3 {
       margin-top: 30px;
     }
     &:nth-child(1) {
@@ -104,6 +105,7 @@
             position: relative;
             flex: 1;
             color: #46b069;
+            cursor: pointer;
             &:nth-child(1)::before {
               position: absolute;
               right: 0;
@@ -143,6 +145,7 @@
         margin: 20px 0;
         font-size: 22px;
         color: #ffffff;
+        word-break: break-all;
       }
       .group-icon {
         width: 20px;
@@ -274,4 +277,3 @@
     width: 1200px;
   }
 }
-

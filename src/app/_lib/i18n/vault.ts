@@ -6,7 +6,11 @@ const vault = {
   Unstake: {
     en: 'Unstake',
     zh: '',
-  }
+  },
+  Claim: {
+    en: 'Claim',
+    zh: '',
+  },
 };
 
 export default vault;

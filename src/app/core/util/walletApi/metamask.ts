@@ -1088,7 +1088,7 @@ export class MetaMaskWalletApiService {
     fromToken: Token,
     fromAddress: string,
     aggregator?: string,
-    isO3Stake?: boolean
+    spender?: string
   ): Promise<any> {
     let tokenhash = fromToken.assetID;
     if (fromToken.assetID === ETH_SOURCE_ASSET_HASH) {
@@ -1098,8 +1098,8 @@ export class MetaMaskWalletApiService {
     if (aggregator) {
       contract = AGGREGATOR_CONTRACT[fromToken.chain][aggregator];
     }
-    if (isO3Stake === true) {
-      contract = O3_TOKEN.assetID;
+    if (spender) {
+      contract = spender;
     }
     const json = await this.getEthErc20Json();
     const ethErc20Contract = new this.web3.eth.Contract(json, tokenhash);

@@ -1,4 +1,5 @@
 import { NETWORK } from './network';
+import { O3_TOKEN } from './token';
 
 export const NEO_NNEO_CONTRACT_HASH =
   NETWORK === 'MainNet'
@@ -57,3 +58,10 @@ export const AGGREGATOR_CONTRACT = {
         : '0x77ddcf68bece64049adf7a261a432b344885381f',
   },
 };
+
+export const O3STAKING_CONTRACT = {
+  [O3_TOKEN.assetID]:
+    NETWORK === 'MainNet' ? '' : '0x3F319F968E51836367846C2AF20CCC8200Aa4103',
+};
+
+export const O3TOKEN_CONTRACT = O3_TOKEN.assetID;
