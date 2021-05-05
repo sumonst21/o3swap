@@ -52,3 +52,51 @@
       alt="">
   </div>
 </section>
+
+<section class="mobile-wrapper">
+  <p class="title">{{ 'Swap' | translate: lang:'app' }}</p>
+  <div class="token-select-content">
+    <div class="from token-select-item">
+      <div class="row1">
+        <span class="left">{{'From' | translate: lang:langPageName}}</span>
+        <p class="right">
+          {{ 'Balance' | translate: lang:langPageName }}:&nbsp;
+          <app-long-balance class="from-amount" [balance]="fromToken?.amount"></app-long-balance>
+          &nbsp;{{ fromToken?.symbol }}
+          <span class="all" (click)="allInputAmount()">{{ 'Max' | translate: lang:langPageName }}</span>
+        </p>
+      </div>
+      <div class="row2">
+        <div class="token-select" [ngClass]="{'no-selected': !fromToken}" (click)="showTokens('from')">
+          <img *ngIf="fromToken" class="logo" [src]="fromToken?.logo" alt="">
+          <span class="name">{{ fromToken?.symbol || 'SELECT' }}</span>
+          <img class="arrow" src="/assets/images/swap/arrow-down.png" alt="">
+        </div>
+        <input class="choose-amount" title="Token Amount" (input)="changeInputAmount($event)" [ngModel]="inputAmount"
+          type="number" placeholder="0.0">
+      </div>
+      <p class="from-fiat">≈＄{{ inputAmountFiat || '0.00' }}</p>
+    </div>
+    <img class="token-exchange" (click)="exchangeToken()" src="/assets/images/swap/exchange-home.png" alt="">
+    <div class="to token-select-item">
+      <div class="row1">
+        <span class="left">{{ 'To' | translate: lang:langPageName }}</span>
+      </div>
+      <div class="row2">
+        <div class="token-select" [ngClass]="{'no-selected': !toToken}" (click)="showTokens('to')">
+          <div class="flex-1">
+            <img *ngIf="toToken" class="logo" [src]="toToken?.logo" alt="">
+            <span class="name">{{ toToken?.symbol || ('SELECT' | translate: lang:langPageName) }}</span>
+          </div>
+          <img class="arrow" src="/assets/images/swap/arrow-down.png" alt="">
+        </div>
+      </div>
+    </div>
+    <div class="setting">
+      <img (click)="showSetting()" src="/assets/mobile-images/swap/setting.png" alt="">
+      <span (click)="showSetting()">Setting</span>
+    </div>
+  </div>
+  <button class="confirm" (click)="inquiry()"
+    [ngClass]="{active: checkCanInquiry()}">{{ 'RFQ' | translate: lang:langPageName }}</button>
+</section>

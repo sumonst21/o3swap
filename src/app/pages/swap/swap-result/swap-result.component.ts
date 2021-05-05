@@ -50,7 +50,7 @@ interface State {
 @Component({
   selector: 'app-swap-result',
   templateUrl: './swap-result.component.html',
-  styleUrls: ['../common.scss', './swap-result.component.scss'],
+  styleUrls: ['../common.scss', './swap-result.component.scss', './mobile.scss'],
 })
 export class SwapResultComponent implements OnInit, OnDestroy {
   SOURCE_TOKEN_SYMBOL = SOURCE_TOKEN_SYMBOL;

@@ -28,7 +28,7 @@ interface State {
 @Component({
   selector: 'app-swap-home',
   templateUrl: './swap-home.component.html',
-  styleUrls: ['../common.scss', './swap-home.component.scss'],
+  styleUrls: ['../common.scss', './swap-home.component.scss', './mobile.scss'],
 })
 export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   @Input() fromToken: Token;
