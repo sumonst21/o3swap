@@ -18,7 +18,7 @@ import { SwapService } from '../swap.service';
 import Web3 from 'web3';
 import { VaultWallet } from 'src/app/_lib/vault';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import BigNumber from 'bignumber.js';
 import { RpcApiService } from '@core/api/rpc.service';
 interface State {
@@ -61,6 +61,7 @@ export class VaultdMetaMaskWalletApiService {
 
   //#region connect
   init(): void {
+    this.handleLocalTx();
     setTimeout(() => {
       if ((window as any).ethereum && (window as any).ethereum.isConnected()) {
         (window as any).ethereum
@@ -364,6 +365,40 @@ export class VaultdMetaMaskWalletApiService {
     });
   }
 
+  private handleLocalTx(): void {
+    const localTxString = localStorage.getItem('vaultStakeTransaction');
+    if (localTxString === null || localTxString === undefined) {
+      return;
+    }
+    const localTx: StakeTransaction = JSON.parse(localTxString);
+    this.transaction = localTx;
+
+    this.store.dispatch({ type: UPDATE_VAULT_STAKE_PENDING_TX, data: localTx });
+    if (localTx.isPending === false) {
+      return;
+    }
+    if (!this.ethereum) {
+      const ethereumiInterval = interval(1000)
+        .pipe(take(5))
+        .subscribe(() => {
+          if (!this.ethereum) {
+            return;
+          } else {
+            ethereumiInterval.unsubscribe();
+            this.listenTxReceipt(
+              localTx.txid,
+              UPDATE_VAULT_STAKE_PENDING_TX
+            );
+          }
+        });
+    } else {
+      this.listenTxReceipt(
+        localTx.txid,
+        UPDATE_VAULT_STAKE_PENDING_TX
+      );
+    }
+  }
+
   private handleTx(
     fromToken: Token,
     inputAmount: string,
@@ -377,6 +412,7 @@ export class VaultdMetaMaskWalletApiService {
       fromToken,
       amount: inputAmount,
       isStake,
+      min: false,
       walletName: 'MetaMask',
     };
 
@@ -384,10 +420,10 @@ export class VaultdMetaMaskWalletApiService {
     dispatchType = UPDATE_VAULT_STAKE_PENDING_TX;
     this.transaction = pendingTx;
     this.store.dispatch({ type: dispatchType, data: pendingTx });
-    this.listerTxReceipt(txHash, dispatchType);
+    this.listenTxReceipt(txHash, dispatchType);
   }
 
-  private listerTxReceipt(
+  private listenTxReceipt(
     txHash: string,
     dispatchType: string,
   ): void {

@@ -29,6 +29,7 @@ export interface StakeTransaction {
   isFailed?: boolean;
   isStake: boolean;
   walletName: WalletName;
+  min: boolean;
 }
 
 export interface SwapStateType {
@@ -51,7 +52,7 @@ export interface SwapStateType {
   liquidityTransaction: SwapTransaction;
 }
 
-export type TxAtPage = 'swap' | 'bridge' | 'liquidity';
+export type TxAtPage = 'swap' | 'bridge' | 'liquidity' | 'vault';
 
 export const INIT_CHAIN_TOKENS = {
   ETH: [],

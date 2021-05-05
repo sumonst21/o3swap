@@ -1,7 +1,7 @@
-<nz-modal *ngIf="hasTransaction" [nzVisible]="transaction?.min===false" (nzOnCancel)="minTxHashModal()"
+<nz-modal *ngIf="hasTransaction" [nzVisible]="transaction?.min===false || vaultTransaction?.min===false" (nzOnCancel)="minTxHashModal()"
   [nzFooter]="null" [nzClosable]="false" [nzTitle]="null" nzClassName="custom-modal tx-modal">
   <ng-template nzModalContent>
-    <div class="modal-content tx-modal-content">
+    <div class="modal-content tx-modal-content" *ngIf="txAtPage!=='vault'">
       <div class="close-group">
         <img *ngIf='transaction?.isPending' (click)="minTxHashModal()" class="close"
           src="/assets/images/swap-result/close-pending.png" alt="">
@@ -167,16 +167,82 @@
         </div>
       </div>
     </div>
+    <div class="modal-content tx-modal-content" *ngIf="txAtPage==='vault'">
+      <div class="close-group">
+        <img *ngIf='vaultTransaction?.isPending' (click)="minTxHashModal()" class="close"
+          src="/assets/images/swap-result/close-pending.png" alt="">
+        <img *ngIf='!vaultTransaction?.isPending' (click)="minTxHashModal()" class="close"
+          src="/assets/images/swap/close.png" alt="">
+      </div>
+      <div class="content">
+        <div class="status-img">
+          <ng-lottie *ngIf='!vaultTransaction?.isFailed && vaultTransaction?.isPending' class="pending-json"
+            [options]="pendingOptions"></ng-lottie>
+          <ng-lottie *ngIf='!vaultTransaction?.isFailed && !vaultTransaction?.isPending' class="success-json"
+            [options]="successOptions"></ng-lottie>
+          <img *ngIf='vaultTransaction?.isFailed' src="/assets/images/swap-result/failed.png" alt="">
+        </div>
+        <p class="status" *ngIf='!vaultTransaction?.isFailed && vaultTransaction?.isPending'>
+          {{ 'Pending' | translate: lang:langPageName }}</p>
+        <p class="status" *ngIf='!vaultTransaction?.isFailed && !vaultTransaction?.isPending'>
+          {{ 'Success' | translate: lang:langPageName }}</p>
+        <p class="status" *ngIf='vaultTransaction?.isFailed'>{{ 'Failed' | translate: lang:langPageName }}</p>
+        <div class="desc">
+          <span>{{ (vaultTransaction.isStake ? 'Stake' : 'Unstake') | translate: lang:'vault' }}</span>
+          {{ vaultTransaction?.amount }} {{ vaultTransaction?.fromToken?.symbol }}
+        </div>
+        <nz-progress [nzPercent]="swapProgress" [nzShowInfo]="false" nzStrokeWidth="6"
+          [nzStrokeColor]="vaultTransaction?.isFailed ? '#CD4242' : '#46B069'">
+        </nz-progress>
+        <div class="show-detail">
+          <img [ngClass]="{show: showTxDetail}" (click)="showTxDetail=!showTxDetail"
+            src="/assets/images/swap-result/more.png" alt="">
+        </div>
+        <div class="tx-group" *ngIf="showTxDetail && !transaction?.progress">
+          <div class="tx-item">
+            <div class="left">
+              <ng-lottie *ngIf="!vaultTransaction?.isFailed && !vaultTransaction?.isPending" class="tx-json"
+                [options]="txCompleteOptions"></ng-lottie>
+              <ng-lottie *ngIf="!vaultTransaction?.isFailed && vaultTransaction?.isPending" class="tx-json"
+                [options]="txPendingOptions"></ng-lottie>
+              <img *ngIf='vaultTransaction?.isFailed' src="/assets/images/swap-result/progress-failed.png" alt="">
+            </div>
+            <div class="right">
+              <!-- <p class="name">{{ transaction?.toToken.symbol }}</p> -->
+              <div class="hash">
+                <span>{{ 'Hash' | translate: lang:langPageName }}</span>
+                {{ vaultTransaction?.txid | shortAddress: 6 }}
+                <img class="copy" (click)="copy(vaultTransaction?.txid)" src="/assets/images/swap/copy.png" alt="">
+              </div>
+              <div class="link" *ngIf="!vaultTransaction?.isPending">
+                <a target="_blank" href="{{TX_PAGES_PREFIX[vaultTransaction?.fromToken.chain]}}{{vaultTransaction?.txid}}">
+                  <span></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </ng-template>
-
 </nz-modal>
 
-<section class="min-tx" *ngIf="hasTransaction && transaction?.min===true" (click)="maxTxHashModal()"
+<section class="min-tx" *ngIf="hasTransaction && transaction?.min===true && txAtPage!=='vault'" (click)="maxTxHashModal()"
   [ngClass]="{pending: transaction?.isPending, failed: transaction?.isFailed}">
   <ng-lottie *ngIf="!transaction?.isFailed && transaction?.isPending" class="pending-min-json"
     [options]="pendingMinOptions"></ng-lottie>
   <img *ngIf="!transaction?.isFailed && !transaction?.isPending" src="/assets/images/swap-result/success-icon.png"
     alt="">
   <img *ngIf="transaction?.isFailed" src="/assets/images/swap-result/failed-icon.png" alt="">
+  {{ minMessage }}
+</section>
+
+<section class="min-tx" *ngIf="hasTransaction && vaultTransaction?.min===true && txAtPage==='vault'" (click)="maxTxHashModal()"
+  [ngClass]="{pending: vaultTransaction?.isPending, failed: vaultTransaction?.isFailed}">
+  <ng-lottie *ngIf="!vaultTransaction?.isFailed && vaultTransaction?.isPending" class="pending-min-json"
+    [options]="pendingMinOptions"></ng-lottie>
+  <img *ngIf="!vaultTransaction?.isFailed && !vaultTransaction?.isPending" src="/assets/images/swap-result/success-icon.png"
+    alt="">
+  <img *ngIf="vaultTransaction?.isFailed" src="/assets/images/swap-result/failed-icon.png" alt="">
   {{ minMessage }}
 </section>

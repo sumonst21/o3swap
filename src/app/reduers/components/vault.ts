@@ -19,7 +19,7 @@ export default function vault(state = initialState, action): any {
       return { ...state, vaultWallet: null };
     case UPDATE_VAULT_STAKE_PENDING_TX:
       setlocalStorage('vaultStakeTransaction', action.data);
-      return { ...state, liquidityTransaction: action.data };
+      return { ...state, vaultTransaction: action.data };
     default:
       return state;
   }
