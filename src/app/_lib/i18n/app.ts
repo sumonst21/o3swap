@@ -78,6 +78,10 @@ const app = {
     en: 'I understand',
     zh: '',
   },
+  Cancel: {
+    en: 'Cancel',
+    zh: '',
+  },
 };
 
 export default app;

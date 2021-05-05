@@ -1,11 +1,50 @@
 .custom-drawer {
-  min-height: 70%;
+  min-height: 360px;
+  max-height: 80%;
+  &.swap-token {
+    height: 540px !important;
+  }
+  &.swap-setting {
+    height: 386px !important;
+  }
+  &.approve {
+    height: 425px !important;
+  }
+  &.swap-exchange {
+    height: 60% !important;
+  }
   .ant-drawer-content {
     background: #2a2a2a;
     border-radius: 22px 22px 0px 0px;
     .ant-drawer-body {
       padding: 0;
       line-height: 1;
+      padding: 18px 0 0;
+      height: 100%;
+      .header, .mobile-header {
+        padding: 0 5%;
+        height: 60px;
+        line-height: 60px;
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        &.border::before {
+          content: "";
+          position: absolute;
+          top: 60px;
+          left: 5%;
+          right: 5%;
+          height: 1px;
+          background: #353535;
+        }
+        .title {
+          font-size: 17px;
+        }
+        .close {
+          font-size: 16px;
+          color: #46b069;
+        }
+      }
     }
   }
 }

@@ -1,5 +1,11 @@
 section.wrapper {
   padding: 30px;
+  .header {
+    display: block;
+  }
+  .mobile-header {
+    display: none;
+  }
   .setting-item-title {
     font-size: 16px;
     margin-top: 40px;
@@ -65,6 +71,21 @@ section.wrapper {
       &::placeholder {
         color: #4a4a4a;
       }
+    }
+  }
+}
+
+@media screen and (max-width: 420px) {
+  section.wrapper {
+    padding: 0;
+    .header {
+      display: none;
+    }
+    .mobile-header {
+      display: flex;
+    }
+    .setting-item {
+      padding: 0 5%;
     }
   }
 }

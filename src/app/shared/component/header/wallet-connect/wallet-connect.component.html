@@ -2,10 +2,10 @@
   nzClassName="custom-modal connect-wallet-modal">
   <ng-template nzModalContent>
     <div class="connect-modal-content modal-content">
-      <div class="close-group">
+      <div class="header">
+        <span class="title">{{ 'ConnectWallet' | translate: lang:langPageName }}</span>
         <img (click)="close()" class="close" src="/assets/images/swap/close.png" alt="">
       </div>
-      <p class="title">{{ 'ConnectWallet' | translate: lang:langPageName }}</p>
       <div class="chains">
         <span class="eth" [ngClass]="{active: connectChainType==='ETH'}" (click)="connectChainType='ETH'"></span>
         <span class="bsc" [ngClass]="{active: connectChainType==='BSC'}" (click)="connectChainType='BSC'"></span>

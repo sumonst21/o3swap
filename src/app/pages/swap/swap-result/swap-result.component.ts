@@ -37,8 +37,14 @@ import BigNumber from 'bignumber.js';
 import { interval, Observable, timer, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { ApproveComponent, SwapExchangeComponent } from '@shared';
+import {
+  ApproveModalComponent,
+  ApproveDrawerComponent,
+  SwapExchangeDrawerComponent,
+  SwapExchangeModalComponent,
+} from '@shared';
 import { take, timeout } from 'rxjs/operators';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
   swap: SwapStateType;
@@ -50,7 +56,11 @@ interface State {
 @Component({
   selector: 'app-swap-result',
   templateUrl: './swap-result.component.html',
-  styleUrls: ['../common.scss', './swap-result.component.scss', './mobile.scss'],
+  styleUrls: [
+    '../common.scss',
+    './swap-result.component.scss',
+    './mobile.scss',
+  ],
 })
 export class SwapResultComponent implements OnInit, OnDestroy {
   SOURCE_TOKEN_SYMBOL = SOURCE_TOKEN_SYMBOL;
@@ -124,7 +134,8 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     private o3NeoWalletApiService: O3NeoWalletApiService,
     private metaMaskWalletApiService: MetaMaskWalletApiService,
     private o3EthWalletApiService: O3EthWalletApiService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private drawerService: NzDrawerService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -233,17 +244,32 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   showRoutingModal(): void {
-    const modal = this.modal.create({
-      nzContent: SwapExchangeComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        chooseSwapPathIndex: this.chooseSwapPathIndex,
-        receiveSwapPathArray: this.receiveSwapPathArray,
-      },
-    });
+    let modal;
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      modal = this.modal.create({
+        nzContent: SwapExchangeModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          chooseSwapPathIndex: this.chooseSwapPathIndex,
+          receiveSwapPathArray: this.receiveSwapPathArray,
+        },
+      });
+    } else {
+      modal = this.drawerService.create({
+        nzContent: SwapExchangeDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer swap-exchange',
+        nzContentParams: {
+          chooseSwapPathIndex: this.chooseSwapPathIndex,
+          receiveSwapPathArray: this.receiveSwapPathArray,
+        },
+      });
+    }
     modal.afterClose.subscribe((index) => {
       if (index >= 0) {
         this.chooseSwapPathIndex = index;
@@ -614,20 +640,36 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    this.modal.create({
-      nzContent: ApproveComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzMaskClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        fromToken: this.fromToken,
-        fromAddress: this.fromAddress,
-        aggregator: this.chooseSwapPath.aggregator,
-        walletName,
-      },
-    });
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      this.modal.create({
+        nzContent: ApproveModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzMaskClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          fromToken: this.fromToken,
+          fromAddress: this.fromAddress,
+          aggregator: this.chooseSwapPath.aggregator,
+          walletName,
+        },
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: ApproveDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer approve',
+        nzContentParams: {
+          fromToken: this.fromToken,
+          fromAddress: this.fromAddress,
+          aggregator: this.chooseSwapPath.aggregator,
+          walletName,
+        },
+      });
+    }
   }
   getEthDapiService(): any {
     let walletName;

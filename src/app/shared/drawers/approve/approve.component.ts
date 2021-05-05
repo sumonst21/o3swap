@@ -1,22 +1,22 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Token } from '@lib';
-import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 
 @Component({
   templateUrl: './approve.component.html',
 })
-export class ApproveModalComponent implements OnInit {
+export class ApproveDrawerComponent implements OnInit {
   @Input() aggregator?: string;
   @Input() spender?: string;
   @Input() fromToken: Token;
   @Input() fromAddress: string;
   @Input() walletName: string;
 
-  constructor(private modal: NzModalRef) {}
+  constructor(private drawerRef: NzDrawerRef) {}
 
   ngOnInit(): void {}
 
   close(): void {
-    this.modal.close();
+    this.drawerRef.close();
   }
 }

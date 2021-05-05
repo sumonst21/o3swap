@@ -1,7 +1,10 @@
 section.wrapper {
   height: 560px;
-  & > .title {
-    padding: 30px 0 0 30px;
+  .header {
+    display: block;
+  }
+  .mobile-header {
+    display: none;
   }
   ul.exchanges {
     padding: 0 30px;
@@ -65,6 +68,31 @@ section.wrapper {
         img {
           width: 20px;
           margin-right: 10px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 420px) {
+  section.wrapper {
+    height: 100%;
+    .header {
+      display: none;
+    }
+    .mobile-header {
+      display: flex;
+    }
+    ul.exchanges {
+      padding: 0 5%;
+      margin-top: 0;
+      padding-top: 10px;
+      height: calc(100% - 60px);
+      & > li {
+        justify-content: space-between;
+        padding: 12px;
+        .left {
+          width: auto;
         }
       }
     }

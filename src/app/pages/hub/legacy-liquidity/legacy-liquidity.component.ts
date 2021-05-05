@@ -29,7 +29,8 @@ import {
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { ApproveComponent } from '@shared';
+import { ApproveDrawerComponent, ApproveModalComponent } from '@shared';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
   swap: SwapStateType;
@@ -99,7 +100,8 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     private o3EthWalletApiService: O3EthWalletApiService,
     private nzMessage: NzMessageService,
     private changeDetectorRef: ChangeDetectorRef,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private drawerService: NzDrawerService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -304,19 +306,34 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    this.modal.create({
-      nzContent: ApproveComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzMaskClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        fromToken: token,
-        fromAddress: this.currentAddress,
-        walletName,
-      },
-    });
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      this.modal.create({
+        nzContent: ApproveModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzMaskClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          fromToken: token,
+          fromAddress: this.currentAddress,
+          walletName,
+        },
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: ApproveDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer approve',
+        nzContentParams: {
+          fromToken: token,
+          fromAddress: this.currentAddress,
+          walletName,
+        },
+      });
+    }
   }
   checkWalletConnect(token: Token): boolean {
     if (token.chain === 'ETH' && !this.ethAccountAddress) {

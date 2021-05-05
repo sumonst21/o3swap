@@ -11,12 +11,18 @@ import {
 } from '@angular/core';
 import { MESSAGE, NEO_TOKEN, NNEO_TOKEN, SwapStateType, Token } from '@lib';
 import BigNumber from 'bignumber.js';
-import { SwapSettingComponent, SwapTokenComponent } from '@shared';
+import {
+  SwapSettingModalComponent,
+  SwapSettingDrawerComponent,
+  SwapTokenModalComponent,
+  SwapTokenDrawerComponent,
+} from '@shared';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { Store } from '@ngrx/store';
 import { Observable, Unsubscribable } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonService, ApiService } from '@core';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
   setting: any;
@@ -75,7 +81,8 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
     private nzMessage: NzMessageService,
     private commonService: CommonService,
     private apiService: ApiService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private drawerService: NzDrawerService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -138,18 +145,34 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   showTokens(type: 'from' | 'to'): void {
-    const modal = this.modal.create({
-      nzContent: SwapTokenComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        isFrom: type === 'from' ? true : false,
-        fromToken: this.fromToken,
-        toToken: this.toToken,
-      },
-    });
+    let modal;
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      modal = this.modal.create({
+        nzContent: SwapTokenModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          isFrom: type === 'from' ? true : false,
+          fromToken: this.fromToken,
+          toToken: this.toToken,
+        },
+      });
+    } else {
+      modal = this.drawerService.create({
+        nzContent: SwapTokenDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer swap-token',
+        nzContentParams: {
+          isFrom: type === 'from' ? true : false,
+          fromToken: this.fromToken,
+          toToken: this.toToken,
+        },
+      });
+    }
     modal.afterClose.subscribe((res: Token) => {
       if (res) {
         this.resetSwapData();
@@ -226,13 +249,23 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   showSetting(): void {
-    this.modal.create({
-      nzContent: SwapSettingComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzClassName: 'custom-modal',
-    });
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      this.modal.create({
+        nzContent: SwapSettingModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzClassName: 'custom-modal',
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: SwapSettingDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer swap-setting',
+      });
+    }
   }
   //#region
   handleTokenAmountBalance(state): void {

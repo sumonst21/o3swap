@@ -1,19 +1,19 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AssetQueryResponse } from '@lib';
-import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 
 @Component({
   templateUrl: './swap-exchange.component.html',
 })
-export class SwapExchangeModalComponent implements OnInit {
+export class SwapExchangeDrawerComponent implements OnInit {
   @Input() chooseSwapPathIndex: number;
   @Input() receiveSwapPathArray: AssetQueryResponse;
 
-  constructor(private modal: NzModalRef) {}
+  constructor(private drawerRef: NzDrawerRef) {}
 
   ngOnInit(): void {}
 
   close($event): void {
-    this.modal.close($event);
+    this.drawerRef.close($event);
   }
 }

@@ -11,6 +11,10 @@ const vault = {
     en: 'Claim',
     zh: '',
   },
+  Cancel: {
+    en: 'Cancel',
+    zh: '',
+  },
 };
 
 export default vault;

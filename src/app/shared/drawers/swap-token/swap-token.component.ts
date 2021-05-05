@@ -1,19 +1,19 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Token } from '@lib';
-import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 
 @Component({
   templateUrl: './swap-token.component.html',
 })
-export class SwapTokenModalComponent implements OnInit {
+export class SwapTokenDrawerComponent implements OnInit {
   @Input() isFrom: boolean;
   @Input() fromToken: Token;
   @Input() toToken: Token;
 
-  constructor(private modal: NzModalRef) {}
+  constructor(private drawerRef: NzDrawerRef) {}
   ngOnInit(): void {}
 
   close($event): void {
-    this.modal.close($event);
+    this.drawerRef.close($event);
   }
 }

@@ -1,20 +1,20 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Token } from '@lib';
-import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 
 @Component({
   templateUrl: './vault-stake.component.html',
 })
-export class VaultStakeModalComponent implements OnInit {
+export class VaultStakeDrawerComponent implements OnInit {
   @Input() balance = '0';
   @Input() isStake = true;
   @Input() token: Token;
 
-  constructor(private modal: NzModalRef) {}
+  constructor(private drawerRef: NzDrawerRef) {}
 
   ngOnInit(): void {}
 
   close($event): void {
-    this.modal.close($event);
+    this.drawerRef.close($event);
   }
 }

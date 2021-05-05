@@ -6,10 +6,16 @@ import {
 } from '@core';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { Unsubscribable, Observable, interval } from 'rxjs';
-import { ApproveComponent, VaultStakeComponent } from '@shared';
+import {
+  ApproveModalComponent,
+  ApproveDrawerComponent,
+  VaultStakeDrawerComponent,
+  VaultStakeModalComponent,
+} from '@shared';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
 import { O3STAKING_CONTRACT, O3TOKEN_CONTRACT, O3_TOKEN, Token } from '@lib';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
 interface State {
   language: any;
 }
@@ -50,7 +56,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     private modal: NzModalService,
     private nzMessage: NzMessageService,
     private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService
+    private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
+    private drawerService: NzDrawerService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -135,18 +142,34 @@ export class VaultComponent implements OnInit, OnDestroy {
     balance: string,
     isStake: boolean = true
   ): Promise<void> {
-    const modal = this.modal.create({
-      nzContent: VaultStakeComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzClassName: 'custom-modal custom-stake-modal',
-      nzComponentParams: {
-        token,
-        balance,
-        isStake,
-      },
-    });
+    let modal;
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      modal = this.modal.create({
+        nzContent: VaultStakeModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzClassName: 'custom-modal custom-stake-modal',
+        nzComponentParams: {
+          token,
+          balance,
+          isStake,
+        },
+      });
+    } else {
+      modal = this.drawerService.create({
+        nzContent: VaultStakeDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer',
+        nzContentParams: {
+          token,
+          balance,
+          isStake,
+        },
+      });
+    }
     modal.afterClose.subscribe(async (res) => {
       if (res) {
         const showApprove = await this.checkShowApprove(
@@ -174,18 +197,34 @@ export class VaultComponent implements OnInit, OnDestroy {
     isStake: boolean = true
   ): Promise<void> {
     const contractHash = O3STAKING_CONTRACT[token.assetID];
-    const modal = this.modal.create({
-      nzContent: VaultStakeComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzClassName: 'custom-modal custom-stake-modal',
-      nzComponentParams: {
-        token,
-        balance,
-        isStake,
-      },
-    });
+    let modal;
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      modal = this.modal.create({
+        nzContent: VaultStakeModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzClassName: 'custom-modal custom-stake-modal',
+        nzComponentParams: {
+          token,
+          balance,
+          isStake,
+        },
+      });
+    } else {
+      modal = this.drawerService.create({
+        nzContent: VaultStakeDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer',
+        nzContentParams: {
+          token,
+          balance,
+          isStake,
+        },
+      });
+    }
     modal.afterClose.subscribe(async (res) => {
       if (res) {
         const showApprove = await this.checkShowApprove(
@@ -237,19 +276,35 @@ export class VaultComponent implements OnInit, OnDestroy {
     const walletName = this.vaultdMetaMaskWalletApiService.vaultWallet
       .walletName;
     const address = this.vaultdMetaMaskWalletApiService.vaultWallet.address;
-    this.modal.create({
-      nzContent: ApproveComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzMaskClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        fromToken: token,
-        fromAddress: address,
-        walletName,
-        spender,
-      },
-    });
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      this.modal.create({
+        nzContent: ApproveModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzMaskClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          fromToken: token,
+          fromAddress: address,
+          walletName,
+          spender,
+        },
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: ApproveDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer approve',
+        nzContentParams: {
+          fromToken: token,
+          fromAddress: address,
+          walletName,
+          spender,
+        },
+      });
+    }
   }
 }

@@ -3,7 +3,7 @@
   nzClassName="custom-modal tx-modal">
   <ng-template nzModalContent>
     <div class="modal-content tx-modal-content" *ngIf="txAtPage!=='vault'">
-      <div class="close-group">
+      <div class="header">
         <img *ngIf='transaction?.isPending' (click)="minTxHashModal()" class="close"
           src="/assets/images/swap-result/close-pending.png" alt="">
         <img *ngIf='!transaction?.isPending' (click)="minTxHashModal()" class="close"
@@ -169,7 +169,7 @@
       </div>
     </div>
     <div class="modal-content tx-modal-content" *ngIf="txAtPage==='vault'">
-      <div class="close-group">
+      <div class="header">
         <img *ngIf='vaultTransaction?.isPending' (click)="minTxHashModal()" class="close"
           src="/assets/images/swap-result/close-pending.png" alt="">
         <img *ngIf='!vaultTransaction?.isPending' (click)="minTxHashModal()" class="close"

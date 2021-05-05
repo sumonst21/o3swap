@@ -23,7 +23,11 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import BigNumber from 'bignumber.js';
 import { interval, Observable, Unsubscribable } from 'rxjs';
-import { ApproveComponent, HubTokenComponent } from '@shared';
+import {
+  ApproveModalComponent,
+  ApproveDrawerComponent,
+  HubTokenComponent,
+} from '@shared';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
@@ -330,19 +334,34 @@ export class HubComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    this.modal.create({
-      nzContent: ApproveComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzMaskClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        fromToken: this.fromToken,
-        fromAddress: this.fromAddress,
-        walletName,
-      },
-    });
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      this.modal.create({
+        nzContent: ApproveModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzMaskClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          fromToken: this.fromToken,
+          fromAddress: this.fromAddress,
+          walletName,
+        },
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: ApproveDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer approve',
+        nzContentParams: {
+          fromToken: this.fromToken,
+          fromAddress: this.fromAddress,
+          walletName,
+        },
+      });
+    }
   }
   resetSwapData(): void {
     this.fromToken = JSON.parse(JSON.stringify(USD_TOKENS[0]));
