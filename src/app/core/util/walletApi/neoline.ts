@@ -510,7 +510,7 @@ export class NeolineWalletApiService {
     };
     if (addLister === false) {
       pendingTx.progress = {
-        step1: { hash: '', status: 1 },
+        step1: { hash: this.commonService.remove0xHash(txHash), status: 1 },
         step2: { hash: '', status: 0 },
         step3: { hash: '', status: 0 },
       };

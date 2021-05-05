@@ -47,15 +47,12 @@
             </div>
             <div class="right">
               <p class="name">{{ transaction?.toToken.symbol }}</p>
-              <div class="hash" *ngIf="transaction?.isFailed && !transaction?.txid">
-                {{ 'Failed' | translate: lang:langPageName }}
-              </div>
-              <div class="hash" *ngIf="transaction?.txid">
+              <div class="hash">
                 <span>{{ 'Hash' | translate: lang:langPageName }}</span>
                 {{ transaction?.txid | shortAddress: 6 }}
                 <img class="copy" (click)="copy(transaction?.txid)" src="/assets/images/swap/copy.png" alt="">
               </div>
-              <div class="link" *ngIf="!transaction?.isFailed && !transaction?.isPending">
+              <div class="link" *ngIf="!transaction?.isPending">
                 <a target="_blank" href="{{TX_PAGES_PREFIX[transaction?.fromToken.chain]}}{{transaction?.txid}}">
                   <span></span>
                 </a>
@@ -76,10 +73,7 @@
             </div>
             <div class="right">
               <p class="name">{{ transaction?.fromToken.chain }}</p>
-              <div class="hash" *ngIf="transaction?.isFailed">
-                {{ 'Failed' | translate: lang:langPageName }}
-              </div>
-              <div class="hash" *ngIf="!transaction?.isFailed && transaction?.progress.step1.status===2">
+              <div class="hash" *ngIf="transaction?.isFailed || transaction?.progress.step1.status===2">
                 <span>{{ 'Hash' | translate: lang:langPageName }}</span>
                 {{ transaction?.progress.step1.hash | shortAddress: 6 }}
                 <img class="copy" (click)="copy(transaction?.progress.step1.hash)" src="/assets/images/swap/copy.png"
@@ -88,7 +82,7 @@
               <div class="hash" *ngIf="!transaction?.isFailed && transaction?.progress.step1.status===1">
                 {{ 'InProgress' | translate: lang:langPageName }}
               </div>
-              <div class="link" *ngIf="!transaction?.isFailed && transaction?.progress.step1.status===2">
+              <div class="link" *ngIf="transaction?.isFailed || transaction?.progress.step1.status===2">
                 <a target="_blank"
                   href="{{TX_PAGES_PREFIX[transaction?.fromToken.chain]}}{{transaction?.progress.step1.hash}}">
                   <span></span>

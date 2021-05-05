@@ -290,7 +290,7 @@ export class ApiService {
       .pipe(
         map((res: any) => {
           const target: TxProgress = {
-            step1: { hash: '', status: 1 },
+            step1: { hash, status: 1 },
             step2: { hash: '', status: 0 },
             step3: { hash: '', status: 0 },
           };
