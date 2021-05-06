@@ -6,7 +6,6 @@ import { Unsubscribable, Observable } from 'rxjs';
 interface State {
   language: any;
 }
-
 @Component({
   templateUrl: './risk-warning.component.html',
   styleUrls: ['./risk-warning.component.scss'],

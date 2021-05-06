@@ -1,7 +1,11 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { DEFAULT_DEADLINE, DEFAULT_SLIPVALUE, UPDATE_SETTING } from '@lib';
-import { NzModalRef } from 'ng-zorro-antd/modal';
-import { CommonService } from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
 interface State {
@@ -33,10 +37,7 @@ export class SwapSettingComponent implements OnInit, OnDestroy {
   language$: Observable<any>;
   lang: string;
 
-  constructor(
-    private commonService: CommonService,
-    public store: Store<State>
-  ) {
+  constructor(public store: Store<State>) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
       this.lang = state.language;

@@ -39,7 +39,7 @@
     white-space: nowrap;
     animation: 15s wordsLoop linear infinite normal;
   }
-  img {
+  img.risk-icon {
     width: 16px;
     height: 16px;
     margin-right: 8px;
@@ -227,6 +227,16 @@ header {
     ul.menu,
     ul.left-menu {
       display: none;
+    }
+  }
+  .risk-tip {
+    padding-left: 3%;
+    padding-right: 3%;
+    .risk-tip-text-box {
+      width: calc(100% - 50px);
+    }
+    img.close {
+      right: 3%;
     }
   }
 }

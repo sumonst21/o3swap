@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Token, AssetQueryResponse } from '@lib';
 import { Store } from '@ngrx/store';
-import { NzModalRef } from 'ng-zorro-antd/modal';
 import { Unsubscribable, Observable } from 'rxjs';
 
 interface State {

@@ -1,5 +1,5 @@
-<nz-modal [nzVisible]="show" (nzOnCancel)="close()" [nzFooter]="null" [nzClosable]="false" [nzTitle]="null"
-  nzClassName="custom-modal connect-wallet-modal">
+<nz-modal *ngIf="showModal" [nzVisible]="show" (nzOnCancel)="close()" [nzFooter]="null" [nzClosable]="false"
+  [nzTitle]="null" nzClassName="custom-modal connect-wallet-modal">
   <ng-template nzModalContent>
     <div class="connect-modal-content modal-content">
       <div class="header">
@@ -28,3 +28,34 @@
     </div>
   </ng-template>
 </nz-modal>
+
+<nz-drawer *ngIf="!showModal" [nzClosable]="false" [nzVisible]="show" nzPlacement="bottom" [nzTitle]="null"
+  (nzOnClose)="close()" nzWrapClassName="custom-drawer">
+  <ng-container *nzDrawerContent>
+    <div class="connect-modal-content modal-content mobile-content">
+      <div class="header padding">
+        <span class="title">{{ 'ConnectWallet' | translate: lang:langPageName }}</span>
+        <img (click)="close()" class="close" src="/assets/images/swap/close.png" alt="">
+      </div>
+      <div class="chains">
+        <span class="eth" [ngClass]="{active: connectChainType==='ETH'}" (click)="connectChainType='ETH'"></span>
+        <span class="bsc" [ngClass]="{active: connectChainType==='BSC'}" (click)="connectChainType='BSC'"></span>
+        <span class="heco" [ngClass]="{active: connectChainType==='HECO'}" (click)="connectChainType='HECO'"></span>
+        <span class="neo" [ngClass]="{active: connectChainType==='NEO'}" (click)="connectChainType='NEO'"></span>
+      </div>
+      <p class="wallet-type">{{ connectChainType }} Wallet</p>
+      <app-wallet-connect-item *ngIf="connectChainType==='NEO'" [chain]="connectChainType" [walletList]="NEO_WALLETS"
+        [walletAddress]="neoAccountAddress" [walletName]="neoWalletName" (connect)="connectNeoWallet($event)">
+      </app-wallet-connect-item>
+      <app-wallet-connect-item *ngIf="connectChainType==='ETH'" [chain]="connectChainType" [walletList]="ETH_WALLETS"
+        [walletAddress]="ethAccountAddress" [walletName]="ethWalletName" (connect)="connectEthWallet($event)">
+      </app-wallet-connect-item>
+      <app-wallet-connect-item *ngIf="connectChainType==='BSC'" [chain]="connectChainType" [walletList]="BSC_WALLETS"
+        [walletAddress]="bscAccountAddress" [walletName]="bscWalletName" (connect)="connectEthWallet($event)">
+      </app-wallet-connect-item>
+      <app-wallet-connect-item *ngIf="connectChainType==='HECO'" [chain]="connectChainType" [walletList]="HECO_WALLETS"
+        [walletAddress]="hecoAccountAddress" [walletName]="hecoWalletName" (connect)="connectEthWallet($event)">
+      </app-wallet-connect-item>
+    </div>
+  </ng-container>
+</nz-drawer>

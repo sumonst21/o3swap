@@ -67,6 +67,8 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
   language$: Observable<any>;
   lang: string;
 
+  showModal = true;
+
   constructor(
     store: Store<State>,
     private commonService: CommonService,
@@ -93,6 +95,9 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (window.document.getElementsByTagName('body')[0].clientWidth <= 420) {
+      this.showModal = false;
+    }
     this.swapUnScribe = this.swap$.subscribe((state) => {
       this.neoAccountAddress = state.neoAccountAddress;
       this.ethAccountAddress = state.ethAccountAddress;

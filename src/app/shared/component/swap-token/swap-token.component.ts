@@ -18,7 +18,6 @@ import {
 import { Token } from '@lib';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { ApiService } from '@core';
 interface State {
   swap: SwapStateType;
   tokens: any;
@@ -63,8 +62,7 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<State>,
-    private changeDetectorRef: ChangeDetectorRef,
-    private apiService: ApiService
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {

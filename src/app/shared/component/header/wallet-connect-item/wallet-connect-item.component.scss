@@ -56,3 +56,10 @@ ul.wallets {
     }
   }
 }
+
+@media screen and (max-width: 420px) {
+  ul.wallets {
+    padding-left: 90px;
+    padding-right: 5%;
+  }
+}
