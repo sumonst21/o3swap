@@ -238,6 +238,30 @@ header {
     img.close {
       right: 3%;
     }
+    .risk-tip-text {
+      animation: 15s wordsLoop1 linear infinite normal;
+    }
+  }
+  @keyframes wordsLoop1 {
+    0% {
+      transform: translateX(320px);
+      -webkit-transform: translateX(320px);
+    }
+    100% {
+      transform: translateX(-100%);
+      -webkit-transform: translateX(-100%);
+    }
+  }
+
+  @-webkit-keyframes wordsLoop1 {
+    0% {
+      transform: translateX(320px);
+      -webkit-transform: translateX(320px);
+    }
+    100% {
+      transform: translateX(-100%);
+      -webkit-transform: translateX(-100%);
+    }
   }
 }
 
