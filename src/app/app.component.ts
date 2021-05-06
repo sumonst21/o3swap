@@ -128,4 +128,17 @@ export class AppComponent implements OnInit {
       sessionStorage.setItem(`${this.currentPage}WarningDialog`, 'true');
     });
   }
+
+  changeLang(lang: 'en' | 'zh'): void {
+    if (lang === this.lang) {
+      return;
+    }
+    this.lang = lang;
+    this.store.dispatch({ type: UPDATE_LANGUAGE, data: lang });
+    window.scrollTo({
+      left: 0,
+      top: 0,
+      behavior: 'smooth',
+    });
+  }
 }

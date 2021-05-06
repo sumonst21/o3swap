@@ -87,6 +87,11 @@ section.wrapper {
     .setting-item {
       padding: 0 5%;
     }
+  }
+}
+
+@media screen and (max-width: 370px) {
+  section.wrapper {
     .slip {
       ul.left li {
         width: 45px;

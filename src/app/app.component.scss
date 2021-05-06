@@ -269,6 +269,30 @@ ul.mobile-menu {
       background: linear-gradient(-30deg, #46b069, #00af92);
     }
   }
+  li.language {
+    height: 16px;
+    line-height: 16px;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: #fff;
+    font-family: "fontMedium";
+    font-size: 16px;
+    .line {
+      margin: 0 12px;
+    }
+    span.active {
+      font-family: "fontBold";
+      color: #46b069;
+      background: -webkit-linear-gradient(
+        -30deg,
+        #46b069 0%,
+        #00af92 99.6337890625%
+      );
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
   @media screen and (max-height: 762px) {
     li {
       height: 60px;
