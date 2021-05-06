@@ -65,6 +65,7 @@ export class O3EthWalletApiService {
   tokens$: Observable<any>;
   chainTokens = INIT_CHAIN_TOKENS;
 
+  isMobileO3Wallet = false;
   isConnected: boolean;
   web3 = new Web3();
   wEthJson;
@@ -110,6 +111,9 @@ export class O3EthWalletApiService {
     this.tokens$.subscribe((state) => {
       this.chainTokens = state.chainTokens;
     });
+    if ((window as any).ethereum) {
+      this.isMobileO3Wallet = (window as any).ethereum.isO3Wallet || false;
+    }
   }
 
   connect(chain: string): Promise<string> {

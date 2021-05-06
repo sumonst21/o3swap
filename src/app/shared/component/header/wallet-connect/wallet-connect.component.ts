@@ -169,9 +169,16 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
         );
         break;
       case 'O3':
-        connectRes = await this.o3EthWalletApiService.connect(
-          this.connectChainType
-        );
+        if (this.o3EthWalletApiService.isMobileO3Wallet) {
+          connectRes = await this.metaMaskWalletApiService.connect(
+            this.connectChainType,
+            this.o3EthWalletApiService.isMobileO3Wallet
+          );
+        } else {
+          connectRes = await this.o3EthWalletApiService.connect(
+            this.connectChainType
+          );
+        }
         break;
     }
     if (this.connectOne && connectRes) {

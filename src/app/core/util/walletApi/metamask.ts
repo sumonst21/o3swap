@@ -120,6 +120,11 @@ export class MetaMaskWalletApiService {
     this.tokens$.subscribe((state) => {
       this.chainTokens = state.chainTokens;
     });
+    if ((window as any).ethereum) {
+      this.myWalletName = (window as any).ethereum.isO3Wallet
+        ? 'O3'
+        : 'MetaMask';
+    }
   }
 
   //#region connect
@@ -1067,7 +1072,10 @@ export class MetaMaskWalletApiService {
     return this.ethereum
       .request({
         method: 'eth_call',
-        params: [this.getSendTransactionParams(fromAddress, tokenhash, data)],
+        params: [
+          this.getSendTransactionParams(fromAddress, tokenhash, data),
+          'latest',
+        ],
       })
       .then((result) => {
         this.commonService.log('allowance: ' + result);
