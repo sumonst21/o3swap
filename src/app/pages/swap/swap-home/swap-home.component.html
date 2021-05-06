@@ -55,6 +55,7 @@
 
 <section class="mobile-wrapper">
   <p class="title">{{ 'Swap' | translate: lang:'app' }}</p>
+  <div *ngIf="inputAmountError" class="input-token-error">{{ inputAmountError }}</div>
   <div class="token-select-content">
     <div class="from token-select-item">
       <div class="row1">

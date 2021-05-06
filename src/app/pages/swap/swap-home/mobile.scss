@@ -5,6 +5,21 @@
   section.mobile-wrapper {
     padding: 0 3%;
     display: block;
+    .input-token-error {
+      position: absolute;
+      top: 130px;
+      left: 50%;
+      margin-left: -150px;
+      width: 80%;
+      min-height: 50px;
+      background: #cd4242b3;
+      border-radius: 10px;
+      font-family: "fontRegular";
+      text-align: center;
+      line-height: 20px;
+      padding: 15px 5px;
+      z-index: 99;
+    }
     & > .title {
       font-size: 25px;
       padding: 22px 11px;
@@ -129,6 +144,14 @@
       background: #46b069;
       border-radius: 11px;
       font-size: 17px;
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+      &.active {
+        cursor: pointer;
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
   }
 }
