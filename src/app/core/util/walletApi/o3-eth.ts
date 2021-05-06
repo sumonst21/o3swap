@@ -1175,7 +1175,7 @@ export class O3EthWalletApiService {
         break;
     }
     this.store.dispatch({ type: dispatchType, data: pendingTx });
-    this.listerTxReceipt(
+    this.listenTxReceipt(
       txHash,
       dispatchType,
       hasCrossChain,
@@ -1185,7 +1185,7 @@ export class O3EthWalletApiService {
     );
   }
 
-  private listerTxReceipt(
+  private listenTxReceipt(
     txHash: string,
     dispatchType: string,
     hasCrossChain = true,

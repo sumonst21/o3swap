@@ -1229,7 +1229,7 @@ export class MetaMaskWalletApiService {
             return;
           } else {
             ethereumiInterval.unsubscribe();
-            this.listerTxReceipt(
+            this.listenTxReceipt(
               localTx.txid,
               dispatchType,
               localTx.progress ? true : false,
@@ -1238,7 +1238,7 @@ export class MetaMaskWalletApiService {
           }
         });
     } else {
-      this.listerTxReceipt(
+      this.listenTxReceipt(
         localTx.txid,
         dispatchType,
         localTx.progress ? true : false,
@@ -1291,10 +1291,10 @@ export class MetaMaskWalletApiService {
         break;
     }
     this.store.dispatch({ type: dispatchType, data: pendingTx });
-    this.listerTxReceipt(txHash, dispatchType, hasCrossChain, txAtPage);
+    this.listenTxReceipt(txHash, dispatchType, hasCrossChain, txAtPage);
   }
 
-  private listerTxReceipt(
+  private listenTxReceipt(
     txHash: string,
     dispatchType: string,
     hasCrossChain = true,

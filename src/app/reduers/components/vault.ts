@@ -16,10 +16,10 @@ const initialState = {
 export default function vault(state = initialState, action): any {
   switch (action.type) {
     case UPDATE_VAULT_WALLET:
-      setSessionStorage('valueWallet', action.data);
+      setSessionStorage('vaulteWallet', action.data);
       return { ...state, vaultWallet: action.data };
     case RESET_VAULT_WALLET:
-      setSessionStorage('valueWallet', null);
+      setSessionStorage('vaulteWallet', null);
       return { ...state, vaultWallet: null };
     case UPDATE_VAULT_STAKE_PENDING_TX:
       setlocalStorage('vaultTransaction', action.data);

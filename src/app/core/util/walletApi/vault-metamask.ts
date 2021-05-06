@@ -74,7 +74,7 @@ export class VaultdMetaMaskWalletApiService {
               return;
             }
             const localVaultWallet = JSON.parse(
-              sessionStorage.getItem('valueWallet')
+              sessionStorage.getItem('vaulteWallet')
             );
             if (
               localVaultWallet &&

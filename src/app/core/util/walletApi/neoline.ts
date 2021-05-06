@@ -44,7 +44,7 @@ export class NeolineWalletApiService {
   neolineNetwork: Network;
 
   neolineDapi;
-  listerTxinterval: Unsubscribable;
+  listenTxinterval: Unsubscribable;
   blockNumberInterval: Unsubscribable;
 
   language$: Observable<any>;
@@ -432,7 +432,7 @@ export class NeolineWalletApiService {
     if (localTx.isPending === false) {
       return;
     }
-    this.listerTxReceipt(localTx);
+    this.listenTxReceipt(localTx);
   }
 
   private listenBlockNumber(): void {
@@ -480,9 +480,7 @@ export class NeolineWalletApiService {
 
   private checkNetwork(): boolean {
     if (this.neolineNetwork !== NETWORK) {
-      this.nzMessage.error(
-        MESSAGE.SwitchNeolineNetwork[this.lang]([NETWORK])
-      );
+      this.nzMessage.error(MESSAGE.SwitchNeolineNetwork[this.lang]([NETWORK]));
       return false;
     }
     return true;
@@ -517,11 +515,11 @@ export class NeolineWalletApiService {
     }
     this.store.dispatch({ type: UPDATE_PENDING_TX, data: pendingTx });
     if (addLister) {
-      this.listerTxReceipt(this.transaction);
+      this.listenTxReceipt(this.transaction);
     }
   }
 
-  private listerTxReceipt(tx: SwapTransaction): void {
+  private listenTxReceipt(tx: SwapTransaction): void {
     const getTx = () => {
       this.rpcApiService
         .getNeoLineTxByHash(tx.txid)
@@ -530,8 +528,8 @@ export class NeolineWalletApiService {
             this.commonService.add0xHash(result.txid) ===
             this.commonService.add0xHash(this.transaction.txid)
           ) {
-            if (this.listerTxinterval) {
-              this.listerTxinterval.unsubscribe();
+            if (this.listenTxinterval) {
+              this.listenTxinterval.unsubscribe();
             }
             this.transaction.isPending = false;
             this.store.dispatch({
@@ -546,10 +544,10 @@ export class NeolineWalletApiService {
         });
     };
     getTx();
-    if (this.listerTxinterval) {
-      this.listerTxinterval.unsubscribe();
+    if (this.listenTxinterval) {
+      this.listenTxinterval.unsubscribe();
     }
-    this.listerTxinterval = interval(5000).subscribe(() => {
+    this.listenTxinterval = interval(5000).subscribe(() => {
       getTx();
     });
   }
