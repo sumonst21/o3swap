@@ -54,10 +54,10 @@
       }
     }
     & > .right {
-      width: 320px;
+      width: 400px;
       .item-group {
         width: 100%;
-        height: 200px;
+        height: auto;
         padding: 20px;
         & > .name {
           .token-img {
@@ -71,24 +71,30 @@
         }
         .detail-container {
           margin: 15px 0;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
           .detail-item {
             position: relative;
             flex: 1;
-            &:nth-child(1)::before {
+            word-wrap: break-word;
+            padding: 15px;
+            &:not(:nth-child(3))::after {
               position: absolute;
               right: 0;
-              top: 8px;
+              top: calc(50% - 15px);
               content: "";
               display: block;
               width: 1px;
               height: 30px;
               background-color: #ffffff;
-              opacity: 0.5;
+              opacity: 0.05;
             }
           }
           .value {
             font-size: 18px;
             color: #ffffff;
+            word-break: break-all;
           }
           .name {
             margin-top: 10px;
@@ -106,7 +112,10 @@
             flex: 1;
             color: #46b069;
             cursor: pointer;
-            &:nth-child(1)::before {
+            &:hover {
+              opacity: 0.7;
+            }
+            &:not(:nth-child(3))::after {
               position: absolute;
               right: 0;
               top: 10px;
@@ -115,7 +124,7 @@
               width: 1px;
               height: 30px;
               background-color: #ffffff;
-              opacity: 0.5;
+              opacity: 0.05;
             }
           }
         }
@@ -226,10 +235,33 @@
         }
       }
       .unlock-zone {
-        button {
-          width: calc(50% - 5px);
-          &:nth-child(2) {
-            margin-left: 10px;
+        .unlock-zone-btn-block {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-evenly;
+          div {
+            display: flex;
+          }
+          button {
+            width: 70px;
+            &:hover {
+              opacity: 0.7;
+            }
+          }
+          .stake-btn {
+            border-radius: 18px 0px 0px 18px;
+          }
+          .unstake-btn {
+            border-radius: 0 18px 18px 0;
+          }
+          .claim-btn {
+            background-color: #2b312d;
+            color: #46b069;
+            border-radius: 18px;
+            &:hover {
+              background-color: #46b069;
+              color: #fff;
+            }
           }
         }
       }

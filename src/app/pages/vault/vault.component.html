@@ -47,7 +47,7 @@
                 <th>Remaining</th>
                 <th>Claimable</th>
                 <th>Speed</th>
-                <th nzRight></th>
+                <th nzRight [nzWidth]="tableBtnWidth"></th>
               </tr>
             </thead>
             <tbody>
@@ -58,14 +58,20 @@
                 <td>{{ item.remaining || '--' }}</td>
                 <td>{{ item.claimable || '--' }}</td>
                 <td>{{ item.speed || '--' }}</td>
-                <td nzRight>
-                  <button class="btn-primary" (click)="showUnlockStake(stakeUnlockTokenList[i], item.remaining || '0')">
-                    Stake
+                <td nzRight class="unlock-zone-btn-block">
+                  <button class="btn-primary deposit-btn claim-btn" (click)="claimUnlockO3(item)">
+                    Claim
                   </button>
-                  <button class="btn-primary unstake-btn"
-                    (click)="showUnlockStake(stakeUnlockTokenList[i], item.staked || '0', false)">
-                    Unstake
-                  </button>
+                  <div>
+                    <button class="btn-primary stake-btn"
+                      (click)="showUnlockStake(stakeUnlockTokenList[i], item.remaining || '0')">
+                      Stake
+                    </button>
+                    <button class="btn-primary unstake-btn"
+                      (click)="showUnlockStake(stakeUnlockTokenList[i], item.staked || '0', false)">
+                      Unstake
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -126,6 +132,10 @@
             </div>
             <div class="detail-container">
               <div class="detail-item">
+                <div class="value">{{ item.staked || '--' }}</div>
+                <div class="name">Staked</div>
+              </div>
+              <div class="detail-item">
                 <div class="value">{{ item.totalStaking || '--' }}</div>
                 <div class="name">Total Staking</div>
               </div>
@@ -135,6 +145,7 @@
               </div>
             </div>
             <div class="stake">
+              <span (click)="claimProfit(item)">Claim</span>
               <span (click)="showStakingStake(item, item.balance, true)">Stake</span>
               <span (click)="showStakingStake(item, item.staked, false)">Unstake</span>
             </div>

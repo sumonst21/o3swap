@@ -6,8 +6,10 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
-import { SwapStateType, Token } from '@lib';
+import { MESSAGE, SwapStateType, Token } from '@lib';
 import { Store } from '@ngrx/store';
+import BigNumber from 'bignumber.js';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { Unsubscribable, Observable } from 'rxjs';
 
 interface State {
@@ -33,7 +35,7 @@ export class VaultStakeComponent implements OnInit, OnDestroy {
   language$: Observable<any>;
   lang: string;
 
-  constructor(store: Store<State>) {
+  constructor(store: Store<State>, private nzMessage: NzMessageService) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
       this.lang = state.language;
@@ -56,6 +58,16 @@ export class VaultStakeComponent implements OnInit, OnDestroy {
     this.closeThis.emit();
   }
   confirm(): void {
+    const inputNumber = new BigNumber(this.inputAmount);
+    const balanceNumber = new BigNumber(this.balance);
+    if (inputNumber.isNaN() || inputNumber.isZero()) {
+      this.nzMessage.error(MESSAGE.WrongInput[this.lang]);
+      return;
+    }
+    if (inputNumber.comparedTo(balanceNumber) === 1) {
+      this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
+      return;
+    }
     this.closeThis.emit(this.inputAmount);
   }
 }

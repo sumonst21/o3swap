@@ -32,6 +32,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   langUnScribe: Unsubscribable;
   language$: Observable<any>;
   lang: string;
+  tableBtnWidth = '300px';
   vault$: Observable<any>;
   vaultUnScribe: Unsubscribable;
 
@@ -75,6 +76,9 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.initO3Data();
       }
     });
+    if (window.document.getElementsByTagName('body')[0].clientWidth < 420) {
+      this.tableBtnWidth = '100px';
+    }
   }
   ngOnDestroy(): void {
     if (this.vaultUnScribe) {
@@ -92,6 +96,14 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.vaultdMetaMaskWalletApiService.getUnlockedOf() || '--',
     ]).then((res) => {
       [this.o3Locked, this.o3Available] = res;
+      const totleNum = new BigNumber(this.o3Locked).plus(
+        new BigNumber(this.o3Available)
+      );
+      if (!totleNum.isNaN()) {
+        this.o3Total = totleNum.toFixed();
+      } else {
+        this.o3Total = '--';
+      }
     });
     // unlock zoon
     this.stakeUnlockTokenList.forEach(async (item: any) => {
@@ -127,14 +139,6 @@ export class VaultComponent implements OnInit, OnDestroy {
           }
         });
     });
-    const totleNum = new BigNumber(this.o3Locked).plus(
-      new BigNumber(this.o3Available)
-    );
-    if (!totleNum.isNaN()) {
-      this.o3Total = totleNum.toFixed();
-    } else {
-      this.o3Total = '--';
-    }
   }
 
   async showUnlockStake(
@@ -246,7 +250,20 @@ export class VaultComponent implements OnInit, OnDestroy {
     });
   }
 
+  async claimUnlockO3(token: any): Promise<void> {
+    const claimable = new BigNumber(token.claimable);
+    if (claimable.isNaN() || claimable.isZero()) {
+      return;
+    }
+    const contractHash = O3TOKEN_CONTRACT;
+    this.vaultdMetaMaskWalletApiService.claimUnlocked(token, token.claimable);
+  }
+
   async claimProfit(token: any): Promise<void> {
+    const claimable = new BigNumber(token.profit);
+    if (claimable.isNaN() || claimable.isZero()) {
+      return;
+    }
     const contractHash = O3STAKING_CONTRACT[token.assetID];
     this.vaultdMetaMaskWalletApiService.o3StakingClaimProfit(
       token,

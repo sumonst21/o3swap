@@ -352,6 +352,31 @@ export class VaultdMetaMaskWalletApiService {
         this.handleDapiError(error);
       });
   }
+  async claimUnlocked(token: Token, unlocked: string): Promise<any> {
+    const json = await this.getO3Json();
+    const o3Contract = new this.web3.eth.Contract(json, O3TOKEN_CONTRACT);
+    const data = o3Contract.methods.claimUnlocked(token.assetID).encodeABI();
+    return this.ethereum
+      .request({
+        method: 'eth_sendTransaction',
+        params: [
+          this.getSendTransactionParams(
+            this.vaultWallet.address,
+            O3TOKEN_CONTRACT,
+            data
+          ),
+        ],
+      })
+      .then((hash) => {
+        this.commonService.log(hash);
+        this.handleTx(O3_TOKEN, unlocked, hash, false, true);
+        return hash;
+      })
+      .catch((error) => {
+        this.commonService.log(error);
+        this.handleDapiError(error);
+      });
+  }
   async getUnlockedOf(): Promise<string> {
     const token = O3_TOKEN;
     if (!this.vaultWallet) {
@@ -519,6 +544,7 @@ export class VaultdMetaMaskWalletApiService {
       return;
     }
     const localTx: StakeTransaction = JSON.parse(localTxString);
+    console.log(localTx);
     this.transaction = localTx;
     if (localTx.isPending === false) {
       return;
