@@ -30,7 +30,9 @@
 
     })();
 
-    window.intercomSettings = { app_id: "t9bwugq6" };
+    window.intercomSettings = {
+      app_id: "t9bwugq6"
+    };
     // We pre-filled your app ID in the widget URL: 'https://widget.intercom.io/widget/t9bwugq6'
     (function () {
       var w = window;
@@ -43,9 +45,13 @@
         ic('update', w.intercomSettings);
       } else {
         var d = document;
-        var i = function () { i.c(arguments); };
+        var i = function () {
+          i.c(arguments);
+        };
         i.q = [];
-        i.c = function (args) { i.q.push(args); };
+        i.c = function (args) {
+          i.q.push(args);
+        };
         w.Intercom = i;
         var l = function () {
           var s = d.createElement('script');
@@ -66,6 +72,20 @@
   </script>
 
   <!--End of Tawk.to Script-->
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0TDGYKX4KH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-0TDGYKX4KH');
+
+  </script>
 </head>
 
 <body>
