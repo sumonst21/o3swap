@@ -55,6 +55,8 @@ export class VaultWalletConnectComponent implements OnInit, OnDestroy {
   language$: Observable<any>;
   lang: string;
 
+  showModal = true;
+
   constructor(
     store: Store<State>,
     private commonService: CommonService,
@@ -80,6 +82,9 @@ export class VaultWalletConnectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (window.document.getElementsByTagName('body')[0].clientWidth <= 420) {
+      this.showModal = false;
+    }
     this.commonService.log(this.show);
     this.vaultUnScribe = this.vault$.subscribe((state) => {
       this.vaultWallet = state.vaultWallet;
