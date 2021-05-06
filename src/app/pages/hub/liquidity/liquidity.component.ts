@@ -81,7 +81,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
   ratesUnScribe: Unsubscribable;
   rates$: Observable<any>;
   rates = {};
-
+  isSwapCanClick = true;
   pusdtBalance = {
     ALL: '',
     ETH: { value: '', percentage: '0' },
@@ -320,6 +320,14 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.showApproveModal(token);
       return;
     }
+    if (this.isSwapCanClick) {
+      this.isSwapCanClick = false;
+      setTimeout(() => {
+        this.isSwapCanClick = true;
+      }, 4000);
+    } else {
+      return;
+    }
     const amountOut = new BigNumber(this.receiveAmount[index])
       .shiftedBy(this.LPToken.decimals)
       .dp(0)
@@ -372,6 +380,14 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     );
     if (new BigNumber(allowance).comparedTo(lpPayAmount) < 0) {
       this.showApproveModal(this.LPToken);
+      return;
+    }
+    if (this.isSwapCanClick) {
+      this.isSwapCanClick = false;
+      setTimeout(() => {
+        this.isSwapCanClick = true;
+      }, 4000);
+    } else {
       return;
     }
     const amountOut = new BigNumber(this.removeLiquidityInputAmount[index])
