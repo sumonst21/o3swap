@@ -96,6 +96,9 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+.scroll {
+  overflow: scroll;
+}
 
 // 滚动条样式
 .scroll::-webkit-scrollbar {

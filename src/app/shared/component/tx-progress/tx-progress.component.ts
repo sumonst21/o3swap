@@ -82,6 +82,8 @@ export class TxProgressComponent implements OnInit, OnDestroy {
   language$: Observable<any>;
   lang: string;
 
+  showModal = true;
+
   constructor(
     public store: Store<State>,
     private apiService: ApiService,
@@ -99,6 +101,9 @@ export class TxProgressComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (window.document.getElementsByTagName('body')[0].clientWidth <= 420) {
+      this.showModal = false;
+    }
     switch (this.txAtPage) {
       case 'swap':
         this.dispatchType = UPDATE_PENDING_TX;
