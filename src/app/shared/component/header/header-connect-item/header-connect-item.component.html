@@ -1,13 +1,13 @@
 <div class="wallet">
-  <img *ngIf="chain==='NEO'" (mouseenter)="showModal()" (mouseleave)="hideModal()"
+  <img *ngIf="chain==='NEO'" (click)="showCover()" (mouseenter)="showModal()" (mouseleave)="hideModal()"
     src="/assets/images/chains/neo-active.png" alt="">
-  <img *ngIf="chain==='ETH'" (mouseenter)="showModal()" (mouseleave)="hideModal()"
+  <img *ngIf="chain==='ETH'" (click)="showCover()" (mouseenter)="showModal()" (mouseleave)="hideModal()"
     src="/assets/images/chains/eth-active.png" alt="">
-  <img *ngIf="chain==='BSC'" (mouseenter)="showModal()" (mouseleave)="hideModal()"
+  <img *ngIf="chain==='BSC'" (click)="showCover()" (mouseenter)="showModal()" (mouseleave)="hideModal()"
     src="/assets/images/chains/bsc-active.png" alt="">
-  <img *ngIf="chain==='HECO'" (mouseenter)="showModal()" (mouseleave)="hideModal()"
+  <img *ngIf="chain==='HECO'" (click)="showCover()" (mouseenter)="showModal()" (mouseleave)="hideModal()"
     src="/assets/images/chains/heco-active.png" alt="">
-  <div class="dropdown" *ngIf="isShowModal" (mouseenter)="showModal()" (mouseleave)="hideModal()">
+  <div class="dropdown" *ngIf="isShowModal||isShowCover" (mouseenter)="showModal()" (mouseleave)="hideModal()">
     <div class="title">
       <span>{{ 'Account' | translate: lang:langPageName }}</span>
       <button class="change-btn" (click)="toChangeWallet()">
@@ -25,3 +25,5 @@
     <button class="disconnect" (click)="toDisConnect()">{{ 'Disconnect' | translate: lang:langPageName }}</button>
   </div>
 </div>
+
+<div class="cover" *ngIf="isShowCover" (click)="isShowCover=false"></div>

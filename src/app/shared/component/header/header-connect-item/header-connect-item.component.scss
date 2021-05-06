@@ -77,3 +77,28 @@
     }
   }
 }
+.cover {
+  z-index: 999;
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: #0a0a0a66;
+}
+
+@media screen and (max-width: 420px) {
+  .wallet {
+    margin: 0 10px;
+    .dropdown {
+      width: 260px;
+      right: -50px;
+      padding: 30px 20px;
+      left: auto;
+      &::before {
+        right: 61px;
+        left: auto;
+      }
+    }
+  }
+}

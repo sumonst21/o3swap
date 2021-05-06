@@ -93,6 +93,10 @@ header {
   img.mobile-menu-icon {
     display: none;
   }
+  .right {
+    display: inline-flex;
+    align-items: center;
+  }
   ul.menu {
     display: flex;
     justify-content: flex-end;
@@ -223,6 +227,7 @@ header {
     img.mobile-menu-icon {
       display: block;
       height: 10px;
+      margin-left: 20px;
     }
     ul.menu,
     ul.left-menu {

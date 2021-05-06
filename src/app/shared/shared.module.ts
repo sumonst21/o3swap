@@ -33,6 +33,7 @@ import { SwapTokenModalComponent } from './modal/swap-token/swap-token.component
 import { VaultStakeModalComponent } from './modal/vault-stake/vault-stake.component';
 import { ApproveModalComponent } from './modal/approve/approve.component';
 import { RiskWarningComponent } from './modal/risk-warning/risk-warning.component';
+import { AccountComponent } from './modal/account/account.component';
 
 import { ShortAddressPipe } from './pipes/short-address.pipe';
 import { TransNumberPipe } from './pipes/trans-number.pipe';
@@ -81,6 +82,7 @@ const COMPONENTS = [
   ApproveComponent,
   ApproveDrawerComponent,
   ApproveModalComponent,
+  AccountComponent,
 ];
 const PIPES = [ShortAddressPipe, TransNumberPipe, TranslatePipe];
 const DIRECTIVES = [ErrSrcDirective];

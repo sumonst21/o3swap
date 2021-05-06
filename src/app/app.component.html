@@ -67,10 +67,12 @@
           <a href="https://docs.o3swap.com/" target="_blank">{{ 'Doc' | translate: lang:langPageName }}</a>
         </li>
       </ul>
-      <app-header-connect *ngIf="isHome===false && currentPage!=='/vault'"></app-header-connect>
-      <app-vault-header-connect *ngIf="isHome===false && currentPage==='/vault'"></app-vault-header-connect>
-      <img class="mobile-menu-icon" nz-dropdown nzTrigger="click" [nzDropdownMenu]="mobileMenu"
-        [nzOverlayClassName]="'custom-mobile-menu'" src="/assets/mobile-images/menu.png" alt="">
+      <div class="right">
+        <app-header-connect *ngIf="isHome===false && currentPage!=='/vault'"></app-header-connect>
+        <app-vault-header-connect *ngIf="isHome===false && currentPage==='/vault'"></app-vault-header-connect>
+        <img class="mobile-menu-icon" nz-dropdown nzTrigger="click" [nzDropdownMenu]="mobileMenu"
+          [nzOverlayClassName]="'custom-mobile-menu'" src="/assets/mobile-images/menu.png" alt="">
+      </div>
     </div>
   </header>
   <div class="risk-tip" *ngIf="showRisk && !isHome">

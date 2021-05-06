@@ -18,5 +18,27 @@
   </div>
 </div>
 
+<div class="mobile-connect">
+  <div class="connect-icon" (click)="isShowMobileModal=!isShowMobileModal">
+    <img src="/assets/images/swap/link.png" alt="">
+  </div>
+  <div class="dropdown" *ngIf="isShowMobileModal">
+    <div class="images">
+      <img *ngIf="neoWalletName" (click)="showAccountModal('NEO')" src="/assets/images/chains/neo-active.png" alt="">
+      <img *ngIf="ethWalletName" (click)="showAccountModal('ETH')" src="/assets/images/chains/eth-active.png" alt="">
+      <img *ngIf="bscWalletName" (click)="showAccountModal('BSC')" src="/assets/images/chains/bsc-active.png" alt="">
+      <img *ngIf="hecoWalletName" (click)="showAccountModal('HECO')" src="/assets/images/chains/heco-active.png"
+        alt="">
+    </div>
+    <div class="connect-btn" *ngIf="!neoWalletName||!ethWalletName||!bscWalletName||!hecoWalletName"
+      (click)="showConnect()">
+      <img src="/assets/images/swap/link.png" alt="">
+      <span>{{ 'ConnectWallet' | translate: lang:langPageName }}</span>
+    </div>
+  </div>
+</div>
+
 <app-wallet-connect [show]="showConnectModal" [connectChainType]="connectChainType"
   (closePage)="showConnectModal=false"></app-wallet-connect>
+
+<div class="cover" *ngIf="isShowMobileModal" (click)="isShowMobileModal=false"></div>

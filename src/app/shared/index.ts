@@ -4,6 +4,7 @@ export { SwapSettingModalComponent } from './modal/swap-setting/swap-setting.com
 export { VaultStakeModalComponent } from './modal/vault-stake/vault-stake.component';
 export { ApproveModalComponent } from './modal/approve/approve.component';
 export { RiskWarningComponent } from './modal/risk-warning/risk-warning.component';
+export { AccountComponent } from './modal/account/account.component';
 
 export { HubTokenComponent } from './drawers/hub-token/hub-token.component';
 export { SwapTokenDrawerComponent } from './drawers/swap-token/swap-token.component';

@@ -1,4 +1,5 @@
-.connect {
+.connect,
+.mobile-connect {
   min-width: 190px;
   display: flex;
   .connect-btn {
@@ -19,7 +20,8 @@
 }
 
 @media screen and (max-width: 420px) {
-  .connect {
+  .connect,
+  .mobile-connect {
     min-width: auto;
     .connect-btn {
       width: 134px;

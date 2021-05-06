@@ -29,6 +29,7 @@ export class HeaderConnectItemComponent implements OnInit, OnDestroy {
 
   isShowModal = false;
   showModalTimeOut;
+  isShowCover = false;
 
   langPageName = 'app';
   langUnScribe: Unsubscribable;
@@ -53,7 +54,17 @@ export class HeaderConnectItemComponent implements OnInit, OnDestroy {
     }
   }
 
+  showCover(): void {
+    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+      return;
+    }
+    this.isShowCover = true;
+  }
+
   showModal(): void {
+    if (window.document.getElementsByTagName('body')[0].clientWidth <= 420) {
+      return;
+    }
     clearTimeout(this.showModalTimeOut);
     this.isShowModal = true;
   }

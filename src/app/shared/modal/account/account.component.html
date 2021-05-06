@@ -1,0 +1,21 @@
+<section class="wrapper modal-content">
+  <div class="header">
+    <span class="title">{{ 'Account' | translate: lang:langPageName }}</span>
+    <img (click)="close()" class="close" src="/assets/images/swap/close.png" alt="">
+  </div>
+  <div class="change-content">
+    <span class="title">{{ chain }} Wallet</span>
+    <button class="change-btn" (click)="toChangeWallet()">
+      <img class="change" src="/assets/images/swap/account-change.png"
+        alt="">{{ 'Change' | translate: lang:langPageName }}
+    </button>
+  </div>
+  <div class="account">
+    <p class="name">{{ walletName }} {{ 'Wallet' | translate: lang:langPageName }}</p>
+    <p class="address">
+      {{ accountAddress | shortAddress: 10 }}
+      <img class="copy" (click)="copy(accountAddress)" src="/assets/images/swap/copy.png" alt="">
+    </p>
+  </div>
+  <button class="disconnect" (click)="toDisConnect()">{{ 'Disconnect' | translate: lang:langPageName }}</button>
+</section>
