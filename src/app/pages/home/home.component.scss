@@ -16,6 +16,7 @@ section.content {
 section.home {
   height: 680px;
   font-family: "fontBold";
+  position: relative;
   .wrapper {
     position: relative;
     padding-left: 90px;
@@ -46,6 +47,43 @@ section.home {
     position: absolute;
     top: 100px;
     left: 860px;
+  }
+  .total-data {
+    position: absolute;
+    bottom: -80px;
+    left: 50%;
+    margin-left: -630px;
+    width: 1260px;
+    height: 120px;
+    background: #1e1e1e;
+    border-radius: 10px;
+    .data-item {
+      width: 33%;
+      height: 100%;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: 59px;
+      position: relative;
+      &:not(:last-child)::before {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        margin-top: -25px;
+        content: "";
+        height: 50px;
+        width: 1px;
+        background: #353535;
+      }
+      .name {
+        font-size: 16px;
+      }
+      .data {
+        font-size: 24px;
+        color: #43b06b;
+        margin-top: 19px;
+      }
+    }
   }
 }
 

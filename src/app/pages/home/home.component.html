@@ -6,6 +6,20 @@
     <!-- <ng-lottie class="price-json" [options]="priceOptions"></ng-lottie> -->
     <img class="price-json" src="/assets/images/home/price.png" alt="">
   </div>
+  <div class="total-data">
+    <div class="data-item">
+      <p class="name">Transactions</p>
+      <p class="data">{{ totalData?.total_tx_count | number }}</p>
+    </div>
+    <div class="data-item">
+      <p class="name">Addresses</p>
+      <p class="data">{{ totalData?.total_addresses | number }}</p>
+    </div>
+    <div class="data-item">
+      <p class="name">Liquidity Amount</p>
+      <p class="data">{{ totalData?.pool_tvl | number: '1.0-8' }}</p>
+    </div>
+  </div>
 </section>
 <section class="content exchanges">
   <div class="wrapper">

@@ -44,6 +44,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   language$: Observable<any>;
   lang: string;
 
+  totalData = { pool_tvl: '', total_addresses: '', total_tx_count: '' };
+
   constructor(
     private store: Store<State>,
     private nzMessage: NzMessageService,
@@ -56,6 +58,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.getTotalData();
     this.roadmapIntervalFun();
   }
 
@@ -66,6 +69,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();
     }
+  }
+
+  getTotalData(): void {
+    this.apiService.getTotalData().subscribe((res: CommonHttpResponse) => {
+      if (res.status === 'success') {
+        this.totalData = res.data;
+      }
+    });
   }
 
   roadmapIntervalFun(): void {

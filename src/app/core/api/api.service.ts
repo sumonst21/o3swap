@@ -45,6 +45,7 @@ interface State {
 export class ApiService {
   apiDo = environment.apiDomain;
   RATE_HOST = 'https://hub.o3.network/v1';
+  TOTAL_DATA_HOST = 'https://monitor.api.o3swap.com';
 
   tokens$: Observable<any>;
   chainTokens = INIT_CHAIN_TOKENS;
@@ -61,6 +62,9 @@ export class ApiService {
   //#region home
   postEmail(email: string): Observable<any> {
     return this.http.post(`https://subscribe.o3swap.com/subscribe`, { email });
+  }
+  getTotalData(): Observable<any> {
+    return this.http.get(`${this.TOTAL_DATA_HOST}/v1/statistics`);
   }
   //#endregion
 
@@ -397,7 +401,11 @@ export class ApiService {
    * @param amount LP amount
    * @return promise
    */
-  getSingleOutGivenPoolIn(fromToken: Token, amount: string, isUsdtLp = true): Promise<string> {
+  getSingleOutGivenPoolIn(
+    fromToken: Token,
+    amount: string,
+    isUsdtLp = true
+  ): Promise<string> {
     let poolPUsdtHash = ETH_PUSDT_ASSET.ETH.assetID;
     if (isUsdtLp === false) {
       poolPUsdtHash = ETH_PUSDT_ASSET[fromToken.chain].assetID;

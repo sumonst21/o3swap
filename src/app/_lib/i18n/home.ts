@@ -131,6 +131,18 @@ const home = {
     en: 'Doc',
     zh: '',
   },
+  Transactions: {
+    en: 'Transactions',
+    zh: '',
+  },
+  Addresses: {
+    en: 'Addresses',
+    zh: '',
+  },
+  LiquidityAmount: {
+    en: 'Liquidity Amount',
+    zh: '',
+  },
 };
 
 export default home;
