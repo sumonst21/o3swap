@@ -52,7 +52,7 @@ section.home {
     position: absolute;
     bottom: -80px;
     left: 50%;
-    margin-left: -630px;
+    transform: translateX(-50%);
     width: 1260px;
     height: 120px;
     background: #1e1e1e;

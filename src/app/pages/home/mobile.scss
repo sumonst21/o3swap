@@ -42,6 +42,38 @@
       left: 50%;
       margin-left: -125px;
     }
+    .total-data {
+      bottom: -120px;
+      width: 94%;
+      height: 160px;
+      .data-item {
+        height: 80px;
+        width: 50%;
+        padding-left: 5%;
+        &:nth-child(2)::before {
+          display: none;
+        }
+        &:nth-child(3) {
+          width: 100%;
+          ::before {
+            position: absolute;
+            right: 4%;
+            left: 4%;
+            top: 0;
+            content: "";
+            height: 1px;
+            background: #353535;
+          }
+        }
+        .name {
+          font-size: 13px;
+        }
+        .data {
+          font-size: 20px;
+          margin-top: 13px;
+        }
+      }
+    }
   }
   section.exchanges {
     background-image: url("/assets/mobile-images/home/exchange-bg.png");
@@ -52,10 +84,10 @@
     overflow: hidden;
     .wrapper {
       padding: 0 5%;
-      padding-top: 90px;
+      padding-top: 220px;
     }
     img.bg {
-      top: 65px;
+      top: 200px;
       right: -20px;
       left: auto;
       height: 102px;
