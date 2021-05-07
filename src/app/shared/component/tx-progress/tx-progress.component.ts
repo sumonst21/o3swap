@@ -1,10 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import {
-  ApiService,
-  CommonService,
-  MetaMaskWalletApiService,
-  O3EthWalletApiService,
-} from '@core';
+import { ApiService, CommonService, SwapService } from '@core';
 import {
   SwapStateType,
   SwapTransaction,
@@ -89,8 +84,7 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private nzMessage: NzMessageService,
     private commonService: CommonService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private o3EthWalletApiService: O3EthWalletApiService
+    private swapService: SwapService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -185,9 +179,8 @@ export class TxProgressComponent implements OnInit, OnDestroy {
         .subscribe((res: TxProgress) => {
           this.commonService.log(res);
           this.transaction.progress = res;
-          const swapApi = this.getEthDapiService();
           if (res.step1.status === 2 && hasGetBalance1 === false) {
-            swapApi.getBalance(this.transaction.fromToken.chain);
+            this.swapService.getBalance(this.transaction.fromToken.chain);
             hasGetBalance1 = true;
           }
           if (
@@ -197,8 +190,8 @@ export class TxProgressComponent implements OnInit, OnDestroy {
           ) {
             this.transaction.isPending = false;
             this.requestCrossInterval.unsubscribe();
-            swapApi.getBalance(this.transaction.fromToken.chain);
-            swapApi.getBalance(this.transaction.toToken.chain);
+            this.swapService.getBalance(this.transaction.fromToken.chain);
+            this.swapService.getBalance(this.transaction.toToken.chain);
           }
           this.store.dispatch({
             type: this.dispatchType,
@@ -317,23 +310,6 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     } else {
       this.swapProgress = 20;
     }
-  }
-  getEthDapiService(): any {
-    let walletName;
-    switch (this.transaction.fromToken.chain) {
-      case 'ETH':
-        walletName = this.ethWalletName;
-        break;
-      case 'BSC':
-        walletName = this.bscWalletName;
-        break;
-      case 'HECO':
-        walletName = this.hecoWalletName;
-        break;
-    }
-    return walletName === 'MetaMask' || !walletName
-      ? this.metaMaskWalletApiService
-      : this.o3EthWalletApiService;
   }
   //#endregion
 }

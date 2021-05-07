@@ -1,16 +1,212 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { ALL_PERCENTAGE, Token, WalletName, NeoWalletName, CHAINS } from '@lib';
+import {
+  ALL_PERCENTAGE,
+  Token,
+  WalletName,
+  NeoWalletName,
+  CHAINS,
+  ETH_SOURCE_ASSET_HASH,
+  SwapStateType,
+  INIT_CHAIN_TOKENS,
+  UPDATE_BSC_BALANCES,
+  UPDATE_ETH_BALANCES,
+  UPDATE_HECO_BALANCES,
+  UPDATE_BSC_ACCOUNT,
+  UPDATE_BSC_WALLET_NAME,
+  UPDATE_ETH_ACCOUNT,
+  UPDATE_ETH_WALLET_NAME,
+  UPDATE_HECO_ACCOUNT,
+  UPDATE_HECO_WALLET_NAME,
+  EthWalletName,
+} from '@lib';
 import { CommonService } from './common.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { getMessageFromCode } from 'eth-rpc-errors';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { RpcApiService } from '../api/rpc.service';
+import Web3 from 'web3';
+import { Store } from '@ngrx/store';
+import { HttpClient } from '@angular/common/http';
+
+interface State {
+  swap: SwapStateType;
+  tokens: any;
+  language: any;
+}
 
 @Injectable()
 export class SwapService {
-  constructor(
-    private commonService: CommonService,
-    private nzMessage: NzMessageService
-  ) {}
+  private web3 = new Web3();
 
+  private swap$: Observable<any>;
+  private walletName = { ETH: '', BSC: '', HECO: '' };
+  private accountAddress = { ETH: '', BSC: '', HECO: '' };
+
+  private tokens$: Observable<any>;
+  private chainTokens = INIT_CHAIN_TOKENS;
+
+  private wEthJson;
+  private swapperJson;
+  private ethErc20Json;
+  private aggregatorSwapJson = {
+    BSC: {
+      Pancakeswap: null,
+    },
+    ETH: {
+      Uniswap: null,
+    },
+    HECO: {
+      'Mdex-Heco': null,
+    },
+  };
+
+  constructor(
+    private store: Store<State>,
+    private commonService: CommonService,
+    private nzMessage: NzMessageService,
+    private nzNotification: NzNotificationService,
+    private rpcApiService: RpcApiService,
+    private http: HttpClient
+  ) {
+    this.swap$ = store.select('swap');
+    this.tokens$ = store.select('tokens');
+    this.swap$.subscribe((state) => {
+      this.walletName.ETH = state.ethWalletName;
+      this.walletName.BSC = state.bscWalletName;
+      this.walletName.HECO = state.hecoWalletName;
+      this.accountAddress.ETH = state.ethAccountAddress;
+      this.accountAddress.BSC = state.bscAccountAddress;
+      this.accountAddress.HECO = state.hecoAccountAddress;
+    });
+    this.tokens$.subscribe((state) => {
+      this.chainTokens = state.chainTokens;
+    });
+  }
+
+  //#region eth get balance
+  async getBalance(
+    chain: CHAINS,
+    isUpdate = true,
+    address?: string
+  ): Promise<boolean> {
+    if (!this.accountAddress[chain] && !address) {
+      return;
+    }
+    const tempTokenBalance: Token[] = JSON.parse(
+      JSON.stringify(this.chainTokens[chain])
+    );
+    return new Promise(async (resolve, reject) => {
+      const result = {};
+      for (const item of tempTokenBalance) {
+        const tempAmount = await this.getBalancByHash(item, address);
+        if (tempAmount) {
+          result[item.assetID] = JSON.parse(JSON.stringify(item));
+          result[item.assetID].amount = tempAmount;
+          if (isUpdate === false) {
+            this.dispatchUpdateBalance(chain, result);
+          }
+        }
+      }
+      if (isUpdate === true) {
+        this.dispatchUpdateBalance(chain, result);
+      }
+      resolve(true);
+    });
+  }
+
+  async getBalancByHash(token: Token, address?: string): Promise<string> {
+    if (!this.accountAddress[token.chain] && !address) {
+      return;
+    }
+    address = address || this.accountAddress[token.chain];
+    let params;
+    if (token.assetID !== ETH_SOURCE_ASSET_HASH) {
+      const json = await this.getEthErc20Json();
+      const ethErc20Contract = new this.web3.eth.Contract(json, token.assetID);
+      const data = await ethErc20Contract.methods
+        .balanceOf(address)
+        .encodeABI();
+      params = [
+        this.getSendTransactionParams(address, token.assetID, data),
+        'latest',
+      ];
+    } else {
+      params = [address, 'latest'];
+    }
+    return this.rpcApiService.getEthTokenBalance(params, token).then((res) => {
+      if (res) {
+        return res;
+      }
+    });
+  }
+  //#endregion
+
+  //#region contract json
+  getAggregatorSwapJson(chain: CHAINS, aggregator: string): Promise<any> {
+    if (this.aggregatorSwapJson[chain][aggregator]) {
+      return of(this.aggregatorSwapJson[chain][aggregator]).toPromise();
+    }
+    return this.http
+      .get(`assets/contracts-json/O3Swap${chain}${aggregator}Bridge.json`)
+      .pipe(
+        map((res) => {
+          this.aggregatorSwapJson[chain][aggregator] = res;
+          return res;
+        })
+      )
+      .toPromise();
+  }
+
+  getWEthJson(): Promise<any> {
+    if (this.wEthJson) {
+      return of(this.wEthJson).toPromise();
+    }
+    return this.http
+      .get('assets/contracts-json/weth.json')
+      .pipe(
+        map((res) => {
+          this.wEthJson = res;
+          return res;
+        })
+      )
+      .toPromise();
+  }
+
+  getEthErc20Json(): Promise<any> {
+    if (this.ethErc20Json) {
+      return of(this.ethErc20Json).toPromise();
+    }
+    return this.http
+      .get('assets/contracts-json/eth-erc20.json')
+      .pipe(
+        map((res) => {
+          this.ethErc20Json = res;
+          return res;
+        })
+      )
+      .toPromise();
+  }
+
+  getSwapperJson(): Promise<any> {
+    if (this.swapperJson) {
+      return of(this.swapperJson).toPromise();
+    }
+    return this.http
+      .get('assets/contracts-json/eth-swapper.json')
+      .pipe(
+        map((res) => {
+          this.swapperJson = res;
+          return res;
+        })
+      )
+      .toPromise();
+  }
+  //#endregion
+
+  //#region util
   getAmountIn(fromToken: Token, inputAmount: string): string {
     const factAmount = new BigNumber(inputAmount)
       .dividedBy(ALL_PERCENTAGE)
@@ -43,12 +239,71 @@ export class SwapService {
     text = this.commonService.remove0xHash(text);
     return this.reverseHex(text);
   }
-  private reverseHex(hex): string {
-    let out = '';
-    for (let i = hex.length - 2; i >= 0; i -= 2) {
-      out += hex.substr(i, 2);
+  getSendTransactionParams(
+    from: string,
+    to: string,
+    data: string,
+    value?: string,
+    gas?: string,
+    gasPrice?: string
+  ): object {
+    if (value && !value.startsWith('0x')) {
+      value = '0x' + new BigNumber(value).toString(16);
     }
-    return out;
+    to = this.commonService.add0xHash(to);
+    return {
+      from,
+      to,
+      value,
+      gas,
+      gasPrice,
+      data,
+    };
+  }
+  updateAccount(
+    chain: string,
+    address: string,
+    walletName: EthWalletName
+  ): void {
+    let dispatchAccountType;
+    let dispatchWalletNameType;
+    switch (chain) {
+      case 'ETH':
+        dispatchAccountType = UPDATE_ETH_ACCOUNT;
+        dispatchWalletNameType = UPDATE_ETH_WALLET_NAME;
+        break;
+      case 'BSC':
+        dispatchAccountType = UPDATE_BSC_ACCOUNT;
+        dispatchWalletNameType = UPDATE_BSC_WALLET_NAME;
+        break;
+      case 'HECO':
+        dispatchAccountType = UPDATE_HECO_ACCOUNT;
+        dispatchWalletNameType = UPDATE_HECO_WALLET_NAME;
+        break;
+    }
+    this.store.dispatch({
+      type: dispatchAccountType,
+      data: address,
+    });
+    this.store.dispatch({
+      type: dispatchWalletNameType,
+      data: walletName,
+    });
+  }
+  //#endregion
+
+  //#region handle dapi error
+  handleEthDapiError(error, walletName: WalletName): void {
+    if (error.type && error.type === 'NO_PROVIDER') {
+      this.toDownloadWallet(walletName);
+      return;
+    }
+    const title = getMessageFromCode(error.code);
+    if (error.message && error.code !== 4001) {
+      this.nzNotification.error(title, error.message);
+    } else {
+      this.nzMessage.error(title);
+    }
   }
   handleNeoDapiError(error, walletName: NeoWalletName): void {
     let message: string;
@@ -86,7 +341,6 @@ export class SwapService {
       this.nzMessage.error(message);
     }
   }
-
   toDownloadWallet(type: WalletName): void {
     switch (type) {
       case 'O3':
@@ -104,4 +358,33 @@ export class SwapService {
         break;
     }
   }
+  //#endregion
+
+  //#region private function
+  private reverseHex(hex): string {
+    let out = '';
+    for (let i = hex.length - 2; i >= 0; i -= 2) {
+      out += hex.substr(i, 2);
+    }
+    return out;
+  }
+  private dispatchUpdateBalance(chain: CHAINS, balances): void {
+    let dispatchBalanceType;
+    switch (chain) {
+      case 'ETH':
+        dispatchBalanceType = UPDATE_ETH_BALANCES;
+        break;
+      case 'BSC':
+        dispatchBalanceType = UPDATE_BSC_BALANCES;
+        break;
+      case 'HECO':
+        dispatchBalanceType = UPDATE_HECO_BALANCES;
+        break;
+    }
+    this.store.dispatch({
+      type: dispatchBalanceType,
+      data: balances,
+    });
+  }
+  //#endregion
 }

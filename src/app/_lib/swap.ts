@@ -18,7 +18,7 @@ export interface SwapTransaction {
   receiveAmount: string;
   progress?: TxProgress;
   isFailed?: boolean;
-  walletName: WalletName;
+  walletName?: WalletName;
 }
 
 export interface StakeTransaction {

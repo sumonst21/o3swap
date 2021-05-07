@@ -12,10 +12,10 @@ interface State {
 
 @Injectable()
 export class CommonService {
-  isProduction = environment.production;
+  private isProduction = environment.production;
 
-  language$: Observable<any>;
-  lang: string;
+  private language$: Observable<any>;
+  private lang: string;
 
   constructor(public store: Store<State>, private nzMessage: NzMessageService) {
     this.language$ = store.select('language');

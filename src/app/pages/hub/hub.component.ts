@@ -1,10 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import {
-  ApiService,
-  MetaMaskWalletApiService,
-  O3EthWalletApiService,
-  CommonService,
-} from '@core';
+import { ApiService, EthApiService, CommonService } from '@core';
 import {
   BRIDGE_SLIPVALUE,
   EthWalletName,
@@ -96,11 +91,10 @@ export class HubComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private modal: NzModalService,
     private nzMessage: NzMessageService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
     private changeDetectorRef: ChangeDetectorRef,
-    private o3EthWalletApiService: O3EthWalletApiService,
     private commonService: CommonService,
-    private drawerService: NzDrawerService
+    private drawerService: NzDrawerService,
+    private ethApiService: EthApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -276,8 +270,7 @@ export class HubComponent implements OnInit, OnDestroy {
     if (!this.fromAddress || !this.toAddress) {
       this.getFromAndToAddress();
     }
-    const swapApi = this.getEthDapiService();
-    if (swapApi.checkNetwork(this.fromToken) === false) {
+    if (this.ethApiService.checkNetwork(this.fromToken) === false) {
       return;
     }
     if (this.checkBalance() === false) {
@@ -292,7 +285,7 @@ export class HubComponent implements OnInit, OnDestroy {
       .shiftedBy(this.toToken.decimals)
       .dp(0)
       .toFixed();
-    swapApi
+    this.ethApiService
       .swapCrossChain(
         this.fromToken,
         this.toToken,
@@ -446,26 +439,8 @@ export class HubComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  getEthDapiService(): any {
-    let walletName;
-    switch (this.fromToken?.chain) {
-      case 'ETH':
-        walletName = this.ethWalletName;
-        break;
-      case 'BSC':
-        walletName = this.bscWalletName;
-        break;
-      case 'HECO':
-        walletName = this.hecoWalletName;
-        break;
-    }
-    return walletName === 'MetaMask' || !walletName
-      ? this.metaMaskWalletApiService
-      : this.o3EthWalletApiService;
-  }
   async checkShowApprove(): Promise<boolean> {
-    const swapApi = this.getEthDapiService();
-    const balance = await swapApi.getAllowance(
+    const balance = await this.ethApiService.getAllowance(
       this.fromToken,
       this.fromAddress
     );

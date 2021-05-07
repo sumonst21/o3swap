@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import {
   ApiService,
   CommonService,
+  EthApiService,
   MetaMaskWalletApiService,
-  O3EthWalletApiService,
+  SwapService,
 } from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -95,11 +96,12 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     private commonService: CommonService,
     public store: Store<State>,
     private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private o3EthWalletApiService: O3EthWalletApiService,
     private nzMessage: NzMessageService,
     private changeDetectorRef: ChangeDetectorRef,
     private modal: NzModalService,
-    private drawerService: NzDrawerService
+    private drawerService: NzDrawerService,
+    private ethApiService: EthApiService,
+    private swapService: SwapService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -235,8 +237,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     if (this.checkWalletConnect(token) === false) {
       return;
     }
-    const swapApi = this.getEthDapiService();
-    if (swapApi.checkNetwork(token) === false) {
+    if (this.ethApiService.checkNetwork(token) === false) {
       return;
     }
     const lpBalance = new BigNumber(this.LPToken.amount);
@@ -249,7 +250,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return;
     }
-    const allowance = await swapApi.getAllowance(
+    const allowance = await this.ethApiService.getAllowance(
       this.LPToken,
       this.currentAddress
     );
@@ -263,7 +264,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       .dp(0)
       .toFixed();
     const fee = await this.apiService.getFromEthPolyFee(token, token);
-    swapApi
+    this.ethApiService
       .removeLiquidity(
         this.LPToken,
         token,
@@ -367,8 +368,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     if (!this.LPToken) {
       return;
     }
-    const swapApi = this.getEthDapiService();
-    swapApi.getBalancByHash(this.LPToken).then((res) => {
+    this.swapService.getBalancByHash(this.LPToken).then((res) => {
       // this.LPToken['amount'] = res || '0';
       if (this.LPToken.amount !== res) {
         this.getPusdtBalance();
@@ -413,23 +413,6 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       default:
         return;
     }
-  }
-  getEthDapiService(): any {
-    let walletName;
-    switch (this.currentChain) {
-      case 'ETH':
-        walletName = this.ethWalletName;
-        break;
-      case 'BSC':
-        walletName = this.bscWalletName;
-        break;
-      case 'HECO':
-        walletName = this.hecoWalletName;
-        break;
-    }
-    return walletName === 'MetaMask' || !walletName
-      ? this.metaMaskWalletApiService
-      : this.o3EthWalletApiService;
   }
   //#endregion
 }

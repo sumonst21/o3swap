@@ -1,7 +1,14 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Token } from '@lib';
 import { interval, Observable, Unsubscribable } from 'rxjs';
-import { O3EthWalletApiService, MetaMaskWalletApiService } from '@core';
+import { EthApiService } from '@core';
 import { Store } from '@ngrx/store';
 
 interface State {
@@ -31,8 +38,7 @@ export class ApproveComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<State>,
-    private o3EthWalletApiService: O3EthWalletApiService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
+    private ethApiService: EthApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -52,13 +58,12 @@ export class ApproveComponent implements OnInit, OnDestroy {
       this.approveInterval.unsubscribe();
     }
     this.isApproveLoading = true;
-    const swapApi = this.getEthDapiService();
-    swapApi
+    this.ethApiService
       .approve(this.fromToken, this.fromAddress, this.aggregator, this.spender)
       .then((hash) => {
         if (hash) {
           this.approveInterval = interval(5000).subscribe(async () => {
-            const receipt = await swapApi.getReceipt(
+            const receipt = await this.ethApiService.getReceipt(
               hash,
               this.fromToken.chain
             );
@@ -72,12 +77,6 @@ export class ApproveComponent implements OnInit, OnDestroy {
           this.isApproveLoading = false;
         }
       });
-  }
-
-  getEthDapiService(): any {
-    return this.walletName === 'MetaMask' || !this.walletName
-      ? this.metaMaskWalletApiService
-      : this.o3EthWalletApiService;
   }
 
   close(): void {

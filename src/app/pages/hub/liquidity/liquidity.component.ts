@@ -1,10 +1,5 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
-import {
-  ApiService,
-  CommonService,
-  MetaMaskWalletApiService,
-  O3EthWalletApiService,
-} from '@core';
+import { ApiService, CommonService, EthApiService, SwapService } from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { SwapStateType } from 'src/app/_lib/swap';
@@ -98,13 +93,13 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private commonService: CommonService,
     public store: Store<State>,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private o3EthWalletApiService: O3EthWalletApiService,
     private nzMessage: NzMessageService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private modal: NzModalService,
-    private drawerService: NzDrawerService
+    private drawerService: NzDrawerService,
+    private ethApiService: EthApiService,
+    private swapService: SwapService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -298,8 +293,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     if (this.checkWalletConnect(token) === false) {
       return;
     }
-    const swapApi = this.getEthDapiService(token);
-    if (swapApi.checkNetwork(token) === false) {
+    if (this.ethApiService.checkNetwork(token) === false) {
       return;
     }
     const tokenBalance = new BigNumber(token.amount);
@@ -312,7 +306,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return;
     }
-    const allowance = await swapApi.getAllowance(
+    const allowance = await this.ethApiService.getAllowance(
       token,
       this.getFromTokenAddress(token)
     );
@@ -338,7 +332,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         this.LPToken
       );
     }
-    swapApi
+    this.ethApiService
       .addLiquidity(
         token,
         this.LPToken,
@@ -360,8 +354,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     if (this.checkWalletConnect(token) === false) {
       return;
     }
-    const swapApi = this.getEthDapiService(this.LPToken);
-    if (swapApi.checkNetwork(this.LPToken) === false) {
+    if (this.ethApiService.checkNetwork(this.LPToken) === false) {
       return;
     }
     const lpBalance = new BigNumber(this.LPToken.amount);
@@ -374,7 +367,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return;
     }
-    const allowance = await swapApi.getAllowance(
+    const allowance = await this.ethApiService.getAllowance(
       this.LPToken,
       this.getFromTokenAddress(token)
     );
@@ -400,7 +393,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         token
       );
     }
-    swapApi
+    this.ethApiService
       .removeLiquidity(
         this.LPToken,
         token,
@@ -522,8 +515,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.LPToken.amount = '--';
       return;
     }
-    const swapApi = this.getEthDapiService(this.LPToken);
-    swapApi.getBalancByHash(this.LPToken).then((res) => {
+    this.swapService.getBalancByHash(this.LPToken).then((res) => {
       if (this.LPToken.amount !== res) {
         this.getPusdtBalance();
       }
@@ -572,23 +564,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         this.addLiquidityTokens[index].amount = '--';
       }
     });
-  }
-  getEthDapiService(token: Token): any {
-    let walletName;
-    switch (this.getFromTokenAddress(token)) {
-      case 'ETH':
-        walletName = this.ethWalletName;
-        break;
-      case 'BSC':
-        walletName = this.bscWalletName;
-        break;
-      case 'HECO':
-        walletName = this.hecoWalletName;
-        break;
-    }
-    return walletName === 'MetaMask' || !walletName
-      ? this.metaMaskWalletApiService
-      : this.o3EthWalletApiService;
   }
   //#endregion
 }

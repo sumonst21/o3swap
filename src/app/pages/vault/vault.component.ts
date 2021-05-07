@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {
   CommonService,
-  MetaMaskWalletApiService,
   VaultdMetaMaskWalletApiService,
+  SwapService,
+  EthApiService,
 } from '@core';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { Unsubscribable, Observable, interval } from 'rxjs';
@@ -67,10 +68,11 @@ export class VaultComponent implements OnInit, OnDestroy {
     private store: Store<State>,
     private modal: NzModalService,
     private nzMessage: NzMessageService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
     private drawerService: NzDrawerService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private swapService: SwapService,
+    private ethApiService: EthApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -121,7 +123,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.stakeUnlockTokenList.forEach(async (item: any) => {
       Promise.all([
         this.vaultdMetaMaskWalletApiService.getStaked(item) || '--',
-        this.metaMaskWalletApiService.getBalancByHash(item) || '--',
+        this.swapService.getBalancByHash(item) || '--',
         this.vaultdMetaMaskWalletApiService.claimableUnlocked(item) || '--',
         this.vaultdMetaMaskWalletApiService.getUnlockSpeed(item) || '--',
       ]).then((res) => {
@@ -131,7 +133,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     // o3 Staking
     this.o3StakingTokenList.forEach(async (item: any) => {
       Promise.all([
-        this.metaMaskWalletApiService.getBalancByHash(item) || '--',
+        this.swapService.getBalancByHash(item) || '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
           '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',
@@ -142,7 +144,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     // lp staking
     this.lpstakingTokenList.forEach(async (item: any) => {
       Promise.all([
-        this.metaMaskWalletApiService.getBalancByHash(item) || '--',
+        this.swapService.getBalancByHash(item) || '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
           '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',
@@ -307,7 +309,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     inputAmount: string,
     spender: string
   ): Promise<boolean> {
-    const balance = await this.metaMaskWalletApiService.getAllowance(
+    const balance = await this.ethApiService.getAllowance(
       token,
       address,
       null,

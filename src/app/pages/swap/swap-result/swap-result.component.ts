@@ -26,11 +26,9 @@ import {
 import {
   ApiService,
   CommonService,
-  SwapService,
   NeolineWalletApiService,
   O3NeoWalletApiService,
-  MetaMaskWalletApiService,
-  O3EthWalletApiService,
+  EthApiService,
 } from '@core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import BigNumber from 'bignumber.js';
@@ -129,13 +127,11 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private nzMessage: NzMessageService,
     private commonService: CommonService,
-    private swapService: SwapService,
     private neolineWalletApiService: NeolineWalletApiService,
     private o3NeoWalletApiService: O3NeoWalletApiService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private o3EthWalletApiService: O3EthWalletApiService,
     private modal: NzModalService,
-    private drawerService: NzDrawerService
+    private drawerService: NzDrawerService,
+    private ethApiService: EthApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -288,7 +284,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     }
     if (
       this.fromToken.chain !== 'NEO' &&
-      this.getEthDapiService().checkNetwork(this.fromToken) === false
+      this.ethApiService.checkNetwork(this.fromToken) === false
     ) {
       return;
     }
@@ -400,7 +396,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
   //#region 合约调用
   depositWEth(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .depositWEth(
         this.fromToken,
         this.toToken,
@@ -415,7 +411,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   withdrawalWeth(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .withdrawalWeth(
         this.fromToken,
         this.toToken,
@@ -510,7 +506,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapExactTokensForETH(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactTokensForETH(
         this.fromToken,
         this.toToken,
@@ -529,7 +525,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapExactETHForTokens(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactETHForTokens(
         this.fromToken,
         this.toToken,
@@ -548,7 +544,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapExactTokensForTokens(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactTokensForTokens(
         this.fromToken,
         this.toToken,
@@ -567,7 +563,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapExactETHForTokensCrossChain(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactETHForTokensCrossChain(
         this.fromToken,
         this.toToken,
@@ -586,7 +582,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       });
   }
   swapExactTokensForTokensCrossChain(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactTokensForTokensCrossChain(
         this.fromToken,
         this.toToken,
@@ -606,7 +602,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapCrossChainEth(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapCrossChain(
         this.fromToken,
         this.toToken,
@@ -671,23 +667,6 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       });
     }
   }
-  getEthDapiService(): any {
-    let walletName;
-    switch (this.fromToken.chain) {
-      case 'ETH':
-        walletName = this.ethWalletName;
-        break;
-      case 'BSC':
-        walletName = this.bscWalletName;
-        break;
-      case 'HECO':
-        walletName = this.hecoWalletName;
-        break;
-    }
-    return walletName === 'MetaMask' || !walletName
-      ? this.metaMaskWalletApiService
-      : this.o3EthWalletApiService;
-  }
   async checkShowApprove(): Promise<boolean> {
     this.commonService.log('check show approve');
     if (this.fromToken.chain === 'NEO' || this.toToken.chain === 'NEO') {
@@ -704,7 +683,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.commonService.log('check show approve return');
       return false;
     }
-    const balance = await this.getEthDapiService().getAllowance(
+    const balance = await this.ethApiService.getAllowance(
       this.fromToken,
       this.fromAddress,
       this.chooseSwapPath.aggregator

@@ -4,9 +4,8 @@ import {
   NeolineWalletApiService,
   MetaMaskWalletApiService,
   VaultdMetaMaskWalletApiService,
-  O3NeoWalletApiService,
-  O3EthWalletApiService,
   ApiService,
+  EthApiService,
 } from '@core';
 import { Store } from '@ngrx/store';
 import { RiskWarningComponent } from '@shared';
@@ -40,11 +39,10 @@ export class AppComponent implements OnInit {
     private router: Router,
     private metaMaskWalletApiService: MetaMaskWalletApiService,
     private neolineWalletApiService: NeolineWalletApiService,
-    private o3NeoWalletApiService: O3NeoWalletApiService,
-    private o3EthWalletApiService: O3EthWalletApiService,
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
     private modal: NzModalService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private ethApiService: EthApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -78,8 +76,7 @@ export class AppComponent implements OnInit {
       this.neolineWalletApiService.init();
       this.metaMaskWalletApiService.init();
       this.vaultdMetaMaskWalletApiService.init();
-      this.o3NeoWalletApiService.init();
-      this.o3EthWalletApiService.init();
+      this.ethApiService.initTxs();
     }
   }
 
