@@ -515,7 +515,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.LPToken.amount = '--';
       return;
     }
-    this.swapService.getBalancByHash(this.LPToken).then((res) => {
+    this.swapService.getEthBalancByHash(this.LPToken).then((res) => {
       if (this.LPToken.amount !== res) {
         this.getPusdtBalance();
       }

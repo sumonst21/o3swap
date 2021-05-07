@@ -6,6 +6,7 @@ import {
   VaultdMetaMaskWalletApiService,
   ApiService,
   EthApiService,
+  NeoApiService,
 } from '@core';
 import { Store } from '@ngrx/store';
 import { RiskWarningComponent } from '@shared';
@@ -42,7 +43,8 @@ export class AppComponent implements OnInit {
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
     private modal: NzModalService,
     private apiService: ApiService,
-    private ethApiService: EthApiService
+    private ethApiService: EthApiService,
+    private neoApiService: NeoApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -77,6 +79,7 @@ export class AppComponent implements OnInit {
       this.metaMaskWalletApiService.init();
       this.vaultdMetaMaskWalletApiService.init();
       this.ethApiService.initTxs();
+      this.neoApiService.initTx();
     }
   }
 

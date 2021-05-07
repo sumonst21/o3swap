@@ -18,7 +18,9 @@ import {
   UPDATE_ETH_WALLET_NAME,
   UPDATE_HECO_ACCOUNT,
   UPDATE_HECO_WALLET_NAME,
-  EthWalletName,
+  UPDATE_NEO_BALANCES,
+  UPDATE_NEO_ACCOUNT,
+  UPDATE_NEO_WALLET_NAME,
 } from '@lib';
 import { CommonService } from './common.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -42,8 +44,8 @@ export class SwapService {
   private web3 = new Web3();
 
   private swap$: Observable<any>;
-  private walletName = { ETH: '', BSC: '', HECO: '' };
-  private accountAddress = { ETH: '', BSC: '', HECO: '' };
+  private walletName = { ETH: '', BSC: '', HECO: '', NEO: '' };
+  private accountAddress = { ETH: '', BSC: '', HECO: '', NEO: '' };
 
   private tokens$: Observable<any>;
   private chainTokens = INIT_CHAIN_TOKENS;
@@ -74,9 +76,11 @@ export class SwapService {
     this.swap$ = store.select('swap');
     this.tokens$ = store.select('tokens');
     this.swap$.subscribe((state) => {
+      this.walletName.NEO = state.neoWalletName;
       this.walletName.ETH = state.ethWalletName;
       this.walletName.BSC = state.bscWalletName;
       this.walletName.HECO = state.hecoWalletName;
+      this.accountAddress.NEO = state.neoAccountAddress;
       this.accountAddress.ETH = state.ethAccountAddress;
       this.accountAddress.BSC = state.bscAccountAddress;
       this.accountAddress.HECO = state.hecoAccountAddress;
@@ -86,8 +90,32 @@ export class SwapService {
     });
   }
 
-  //#region eth get balance
-  async getBalance(
+  //#region balance
+  getNeoBalances(
+    walletName: NeoWalletName,
+    fromTokenAssetId?: string,
+    inputAmount?: string
+  ): Promise<boolean> {
+    return this.rpcApiService
+      .getNeoTokenBalances(this.accountAddress.NEO, walletName)
+      .then((addressTokens) => {
+        if (this.walletName.NEO !== walletName) {
+          return;
+        }
+        this.dispatchUpdateBalance('NEO', addressTokens);
+        if (
+          addressTokens[fromTokenAssetId] &&
+          new BigNumber(addressTokens[fromTokenAssetId].amount).comparedTo(
+            new BigNumber(inputAmount)
+          ) >= 0
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+  }
+  async getEthBalance(
     chain: CHAINS,
     isUpdate = true,
     address?: string
@@ -101,7 +129,7 @@ export class SwapService {
     return new Promise(async (resolve, reject) => {
       const result = {};
       for (const item of tempTokenBalance) {
-        const tempAmount = await this.getBalancByHash(item, address);
+        const tempAmount = await this.getEthBalancByHash(item, address);
         if (tempAmount) {
           result[item.assetID] = JSON.parse(JSON.stringify(item));
           result[item.assetID].amount = tempAmount;
@@ -116,8 +144,7 @@ export class SwapService {
       resolve(true);
     });
   }
-
-  async getBalancByHash(token: Token, address?: string): Promise<string> {
+  async getEthBalancByHash(token: Token, address?: string): Promise<string> {
     if (!this.accountAddress[token.chain] && !address) {
       return;
     }
@@ -260,14 +287,14 @@ export class SwapService {
       data,
     };
   }
-  updateAccount(
-    chain: string,
-    address: string,
-    walletName: EthWalletName
-  ): void {
+  updateAccount(chain: string, address: string, walletName: WalletName): void {
     let dispatchAccountType;
     let dispatchWalletNameType;
     switch (chain) {
+      case 'NEO':
+        dispatchAccountType = UPDATE_NEO_ACCOUNT;
+        dispatchWalletNameType = UPDATE_NEO_WALLET_NAME;
+        break;
       case 'ETH':
         dispatchAccountType = UPDATE_ETH_ACCOUNT;
         dispatchWalletNameType = UPDATE_ETH_WALLET_NAME;
@@ -371,6 +398,9 @@ export class SwapService {
   private dispatchUpdateBalance(chain: CHAINS, balances): void {
     let dispatchBalanceType;
     switch (chain) {
+      case 'NEO':
+        dispatchBalanceType = UPDATE_NEO_BALANCES;
+        break;
       case 'ETH':
         dispatchBalanceType = UPDATE_ETH_BALANCES;
         break;

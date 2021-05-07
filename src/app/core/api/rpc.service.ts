@@ -14,10 +14,11 @@ import {
   CommonHttpResponse,
   Token,
   ETH_SOURCE_ASSET_HASH,
+  NeoWalletName,
+  WalletName,
 } from '@lib';
 import { CommonService } from '../util/common.service';
 import { map } from 'rxjs/operators';
-import { rpc } from '@cityofzion/neon-js';
 import { BigNumber } from 'bignumber.js';
 
 @Injectable()
@@ -28,7 +29,95 @@ export class RpcApiService {
   constructor(private http: HttpClient, private commonService: CommonService) {}
 
   //#region balances
-  getO3TokenBalance(address: string): Promise<any> {
+  getEthTokenBalance(params, token: Token): Promise<any> {
+    let method = 'eth_call';
+    if (token.assetID === ETH_SOURCE_ASSET_HASH) {
+      method = 'eth_getBalance';
+    }
+    return this.http
+      .post(this.getEthRpcHost(token.chain), {
+        jsonrpc: '2.0',
+        id: METAMASK_CHAIN_ID[token.chain],
+        method,
+        params,
+      })
+      .pipe(
+        map((response: any) => {
+          const balance = response.result;
+          if (
+            balance &&
+            !new BigNumber(balance).isNaN() &&
+            new BigNumber(balance).comparedTo(0) > 0
+          ) {
+            return new BigNumber(balance).shiftedBy(-token.decimals).toFixed();
+          }
+        })
+      )
+      .toPromise();
+  }
+  getNeoTokenBalances(
+    address: string,
+    walletName: NeoWalletName
+  ): Promise<any> {
+    if (walletName === 'O3') {
+      return this.getO3TokenBalance(address);
+    } else {
+      return this.getNeoLineTokenBalance(address);
+    }
+  }
+  getEthCall(params, token: Token): Promise<any> {
+    const method = 'eth_call';
+    return this.http
+      .post(this.getEthRpcHost(token.chain), {
+        jsonrpc: '2.0',
+        id: METAMASK_CHAIN_ID[token.chain],
+        method,
+        params,
+      })
+      .pipe(
+        map((response: any) => {
+          const balance = response.result;
+          if (
+            balance &&
+            !new BigNumber(balance).isNaN() &&
+            new BigNumber(balance).comparedTo(0) >= 0
+          ) {
+            return new BigNumber(balance).shiftedBy(-token.decimals).toFixed();
+          }
+        })
+      )
+      .toPromise();
+  }
+  //#endregion
+
+  //#region transaction
+  getEthTxReceipt(txHash: string, chain: CHAINS): Observable<any> {
+    return this.http
+      .post(this.getEthRpcHost(chain), {
+        jsonrpc: '2.0',
+        id: METAMASK_CHAIN_ID[chain],
+        method: 'eth_getTransactionReceipt',
+        params: [this.commonService.add0xHash(txHash)],
+      })
+      .pipe(
+        map((res: any) => {
+          if (res.result) {
+            return res.result;
+          }
+        })
+      );
+  }
+  getNeoTxByHash(txHash: string, walletName: WalletName): Promise<any> {
+    if (walletName === 'O3') {
+      return this.getO3TxByHash(txHash);
+    } else {
+      return this.getNeoLineTxByHash(txHash);
+    }
+  }
+  //#endregion
+
+  //#region private function
+  private getO3TokenBalance(address: string): Promise<any> {
     return this.http
       .get(`${O3_TX_HOST}/v1/neo2/address/assets?address=${address}`, {
         headers: this.headers,
@@ -64,8 +153,7 @@ export class RpcApiService {
       )
       .toPromise();
   }
-
-  getNeoLineTokenBalance(address: string): Promise<any> {
+  private getNeoLineTokenBalance(address: string): Promise<any> {
     return this.http
       .post(
         `${NEOLINE_TX_HOST}/v1/neo2/address/balances`,
@@ -93,61 +181,7 @@ export class RpcApiService {
       )
       .toPromise();
   }
-
-  getEthTokenBalance(params, token: Token): Promise<any> {
-    let method = 'eth_call';
-    if (token.assetID === ETH_SOURCE_ASSET_HASH) {
-      method = 'eth_getBalance';
-    }
-    return this.http
-      .post(this.getEthRpcHost(token.chain), {
-        jsonrpc: '2.0',
-        id: METAMASK_CHAIN_ID[token.chain],
-        method,
-        params,
-      })
-      .pipe(
-        map((response: any) => {
-          const balance = response.result;
-          if (
-            balance &&
-            !new BigNumber(balance).isNaN() &&
-            new BigNumber(balance).comparedTo(0) > 0
-          ) {
-            return new BigNumber(balance).shiftedBy(-token.decimals).toFixed();
-          }
-        })
-      )
-      .toPromise();
-  }
-
-  getEthCall(params, token: Token): Promise<any> {
-    const method = 'eth_call';
-    return this.http
-      .post(this.getEthRpcHost(token.chain), {
-        jsonrpc: '2.0',
-        id: METAMASK_CHAIN_ID[token.chain],
-        method,
-        params,
-      })
-      .pipe(
-        map((response: any) => {
-          const balance = response.result;
-          if (
-            balance &&
-            !new BigNumber(balance).isNaN() &&
-            new BigNumber(balance).comparedTo(0) >= 0
-          ) {
-            return new BigNumber(balance).shiftedBy(-token.decimals).toFixed();
-          }
-        })
-      )
-      .toPromise();
-  }
-  //#endregion
-
-  //#region transaction
-  getNeoLineTxByHash(txHash: string): Promise<any> {
+  private getNeoLineTxByHash(txHash: string): Promise<any> {
     txHash = this.commonService.add0xHash(txHash);
     return this.http
       .get(`${NEOLINE_TX_HOST}/v1/neo2/transaction/${txHash}`, {
@@ -155,8 +189,8 @@ export class RpcApiService {
       })
       .pipe(
         map((res: CommonHttpResponse) => {
-          if (res.status === 'success') {
-            return res.data;
+          if (res.status === 'success' && res.data) {
+            return res.data.txid;
           } else {
             return null;
           }
@@ -164,8 +198,7 @@ export class RpcApiService {
       )
       .toPromise();
   }
-
-  getO3TxByHash(txHash: string): Promise<any> {
+  private getO3TxByHash(txHash: string): Promise<any> {
     txHash = this.commonService.add0xHash(txHash);
     return this.http
       .post(
@@ -184,25 +217,6 @@ export class RpcApiService {
       )
       .toPromise();
   }
-
-  getEthTxReceipt(txHash: string, chain: CHAINS): Observable<any> {
-    return this.http
-      .post(this.getEthRpcHost(chain), {
-        jsonrpc: '2.0',
-        id: METAMASK_CHAIN_ID[chain],
-        method: 'eth_getTransactionReceipt',
-        params: [this.commonService.add0xHash(txHash)],
-      })
-      .pipe(
-        map((res: any) => {
-          if (res.result) {
-            return res.result;
-          }
-        })
-      );
-  }
-  //#endregion
-
   private getEthRpcHost(chain: CHAINS): string {
     switch (chain) {
       case 'ETH':
@@ -213,4 +227,5 @@ export class RpcApiService {
         return HECO_RPC_HOST;
     }
   }
+  //#endregion
 }

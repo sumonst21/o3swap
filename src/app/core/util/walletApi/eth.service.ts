@@ -1033,7 +1033,7 @@ export class EthApiService {
               } else {
                 if (hasCrossChain === false) {
                   currentTx.isPending = false;
-                  this.swapService.getBalance(currentTx.fromToken.chain);
+                  this.swapService.getEthBalance(currentTx.fromToken.chain);
                   this.store.dispatch({ type: dispatchType, data: currentTx });
                 }
               }

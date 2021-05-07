@@ -23,13 +23,7 @@ import {
   NNEO_TOKEN,
   MESSAGE,
 } from '@lib';
-import {
-  ApiService,
-  CommonService,
-  NeolineWalletApiService,
-  O3NeoWalletApiService,
-  EthApiService,
-} from '@core';
+import { ApiService, CommonService, EthApiService, NeoApiService } from '@core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import BigNumber from 'bignumber.js';
 import { interval, Observable, timer, Unsubscribable } from 'rxjs';
@@ -41,7 +35,7 @@ import {
   SwapExchangeDrawerComponent,
   SwapExchangeModalComponent,
 } from '@shared';
-import { take, timeout } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
@@ -127,11 +121,10 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private nzMessage: NzMessageService,
     private commonService: CommonService,
-    private neolineWalletApiService: NeolineWalletApiService,
-    private o3NeoWalletApiService: O3NeoWalletApiService,
     private modal: NzModalService,
     private drawerService: NzDrawerService,
-    private ethApiService: EthApiService
+    private ethApiService: EthApiService,
+    private neoApiService: NeoApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -426,11 +419,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapNeoCrossChainEth(): void {
-    const swapApi =
-      this.neoWalletName === 'NeoLine'
-        ? this.neolineWalletApiService
-        : this.o3NeoWalletApiService;
-    swapApi
+    this.neoApiService
       .swapCrossChain(
         this.fromToken,
         this.toToken,
@@ -449,11 +438,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapNeo(): void {
-    const swapApi =
-      this.neoWalletName === 'NeoLine'
-        ? this.neolineWalletApiService
-        : this.o3NeoWalletApiService;
-    swapApi
+    this.neoApiService
       .swap(
         this.fromToken,
         this.toToken,
@@ -471,11 +456,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   mintNNeo(): void {
-    const swapApi =
-      this.neoWalletName === 'NeoLine'
-        ? this.neolineWalletApiService
-        : this.o3NeoWalletApiService;
-    swapApi
+    this.neoApiService
       .mintNNeo(this.fromToken, this.toToken, this.inputAmount)
       .then((res) => {
         this.commonService.log(res);
@@ -486,11 +467,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   releaseNeo(): void {
-    const swapApi =
-      this.neoWalletName === 'NeoLine'
-        ? this.neolineWalletApiService
-        : this.o3NeoWalletApiService;
-    swapApi
+    this.neoApiService
       .releaseNeo(
         this.fromToken,
         this.toToken,

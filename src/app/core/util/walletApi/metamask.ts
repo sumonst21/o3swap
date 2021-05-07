@@ -123,7 +123,7 @@ export class MetaMaskWalletApiService {
           this.nzMessage.success(MESSAGE.ConnectionSucceeded[this.lang]);
         }
         this.listenBlockNumber();
-        this.swapService.getBalance(chain as CHAINS, false, address);
+        this.swapService.getEthBalance(chain as CHAINS, false, address);
         this.swapService.updateAccount(chain, address, this.myWalletName);
         this.addListener();
         return address;
@@ -164,9 +164,9 @@ export class MetaMaskWalletApiService {
       return;
     }
     this.blockNumberInterval = interval(15000).subscribe(() => {
-      this.swapService.getBalance('ETH');
-      this.swapService.getBalance('BSC');
-      this.swapService.getBalance('HECO');
+      this.swapService.getEthBalance('ETH');
+      this.swapService.getEthBalance('BSC');
+      this.swapService.getEthBalance('HECO');
       // 没有连接时不获取 balances
       if (
         this.walletName.ETH !== 'MetaMask' &&
@@ -201,9 +201,9 @@ export class MetaMaskWalletApiService {
         this.updateWalletName(null);
       }
       if (address) {
-        this.swapService.getBalance('ETH');
-        this.swapService.getBalance('BSC');
-        this.swapService.getBalance('HECO');
+        this.swapService.getEthBalance('ETH');
+        this.swapService.getEthBalance('BSC');
+        this.swapService.getEthBalance('HECO');
       }
     });
     this.ethereum.on('chainChanged', (chainId) => {

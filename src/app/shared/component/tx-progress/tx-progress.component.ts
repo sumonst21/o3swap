@@ -180,7 +180,7 @@ export class TxProgressComponent implements OnInit, OnDestroy {
           this.commonService.log(res);
           this.transaction.progress = res;
           if (res.step1.status === 2 && hasGetBalance1 === false) {
-            this.swapService.getBalance(this.transaction.fromToken.chain);
+            this.swapService.getEthBalance(this.transaction.fromToken.chain);
             hasGetBalance1 = true;
           }
           if (
@@ -190,8 +190,8 @@ export class TxProgressComponent implements OnInit, OnDestroy {
           ) {
             this.transaction.isPending = false;
             this.requestCrossInterval.unsubscribe();
-            this.swapService.getBalance(this.transaction.fromToken.chain);
-            this.swapService.getBalance(this.transaction.toToken.chain);
+            this.swapService.getEthBalance(this.transaction.fromToken.chain);
+            this.swapService.getEthBalance(this.transaction.toToken.chain);
           }
           this.store.dispatch({
             type: this.dispatchType,

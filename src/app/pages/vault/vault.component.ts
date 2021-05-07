@@ -123,7 +123,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.stakeUnlockTokenList.forEach(async (item: any) => {
       Promise.all([
         this.vaultdMetaMaskWalletApiService.getStaked(item) || '--',
-        this.swapService.getBalancByHash(item) || '--',
+        this.swapService.getEthBalancByHash(item) || '--',
         this.vaultdMetaMaskWalletApiService.claimableUnlocked(item) || '--',
         this.vaultdMetaMaskWalletApiService.getUnlockSpeed(item) || '--',
       ]).then((res) => {
@@ -133,7 +133,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     // o3 Staking
     this.o3StakingTokenList.forEach(async (item: any) => {
       Promise.all([
-        this.swapService.getBalancByHash(item) || '--',
+        this.swapService.getEthBalancByHash(item) || '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
           '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',
@@ -144,7 +144,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     // lp staking
     this.lpstakingTokenList.forEach(async (item: any) => {
       Promise.all([
-        this.swapService.getBalancByHash(item) || '--',
+        this.swapService.getEthBalancByHash(item) || '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
           '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',

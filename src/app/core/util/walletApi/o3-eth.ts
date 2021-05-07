@@ -69,7 +69,7 @@ export class O3EthWalletApiService {
         this.nzMessage.success(MESSAGE.ConnectionSucceeded[this.lang]);
         this.walletName[chain] = this.myWalletName;
         this.listenBlockNumber();
-        this.swapService.getBalance(chain as CHAINS, false, address);
+        this.swapService.getEthBalance(chain as CHAINS, false, address);
         this.swapService.updateAccount(chain, address, this.myWalletName);
         return address;
       })
@@ -100,9 +100,9 @@ export class O3EthWalletApiService {
       return;
     }
     this.blockNumberInterval = interval(15000).subscribe(() => {
-      this.swapService.getBalance('ETH');
-      this.swapService.getBalance('BSC');
-      this.swapService.getBalance('HECO');
+      this.swapService.getEthBalance('ETH');
+      this.swapService.getEthBalance('BSC');
+      this.swapService.getEthBalance('HECO');
       // 没有连接时不获取 balances
       if (
         this.walletName.ETH !== 'O3' &&
