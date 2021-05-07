@@ -34,6 +34,7 @@ import {
   BRIDGE_SLIPVALUE,
   O3_AGGREGATOR_SLIPVALUE,
   INIT_CHAIN_TOKENS,
+  MESSAGE,
 } from '@lib';
 import BigNumber from 'bignumber.js';
 import { Unsubscribable, Observable, of, interval } from 'rxjs';
@@ -47,12 +48,15 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 interface State {
   swap: SwapStateType;
   tokens: any;
+  language: any;
 }
 
 @Injectable()
 export class O3EthWalletApiService {
   myWalletName: EthWalletName = 'O3';
   requestTxStatusInterval: Unsubscribable;
+  requestBridgeTxStatusInterval: Unsubscribable;
+  requestLiquidityTxStatusInterval: Unsubscribable;
   blockNumberInterval: Unsubscribable;
 
   swap$: Observable<any>;
@@ -83,6 +87,9 @@ export class O3EthWalletApiService {
     },
   };
 
+  language$: Observable<any>;
+  lang: string;
+
   constructor(
     private http: HttpClient,
     private store: Store<State>,
@@ -95,6 +102,10 @@ export class O3EthWalletApiService {
     o3dapi.initPlugins([ETH]);
     o3dapi.initPlugins([BSC]);
     o3dapi.initPlugins([HECO]);
+    this.language$ = store.select('language');
+    this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.swap$ = store.select('swap');
     this.tokens$ = store.select('tokens');
     this.swap$.subscribe((state) => {
@@ -116,6 +127,10 @@ export class O3EthWalletApiService {
     }
   }
 
+  init(): void {
+    this.initTxs();
+  }
+
   connect(chain: string): Promise<string> {
     return o3dapi[chain]
       .request({ method: 'eth_requestAccounts' })
@@ -132,6 +147,7 @@ export class O3EthWalletApiService {
           }
           this.accountAddress[chain] = response[0].address;
         }
+        this.nzMessage.success(MESSAGE.ConnectionSucceeded[this.lang]);
         this.walletName[chain] = this.myWalletName;
         this.listenBlockNumber();
         this.getBalance(chain as CHAINS, false);
@@ -915,6 +931,7 @@ export class O3EthWalletApiService {
 
   async removeLiquidity(
     fromToken: Token, // LP token
+    toToken: Token,
     inputAmount: string,
     address: string,
     toChainId: number,
@@ -927,13 +944,12 @@ export class O3EthWalletApiService {
       json,
       ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain]
     );
-    const usdtToken = USD_TOKENS.find((item) => item.chain === fromToken.chain);
     const bigNumberPolyFee = new BigNumber(fee).shiftedBy(18).dp(0).toFixed();
     const params = {
       fromAssetHash: this.commonService.add0xHash(fromToken.assetID),
       toPoolId: 1,
       toChainId,
-      toAssetHash: this.commonService.add0xHash(usdtToken.assetID),
+      toAssetHash: this.commonService.add0xHash(toToken.assetID),
       toAddress: address,
       amount: new BigNumber(inputAmount)
         .shiftedBy(fromToken.decimals)
@@ -977,7 +993,7 @@ export class O3EthWalletApiService {
         this.commonService.log(hash);
         this.handleTx(
           fromToken,
-          usdtToken,
+          toToken,
           inputAmount,
           receiveAmount,
           hash,
@@ -1134,6 +1150,52 @@ export class O3EthWalletApiService {
       }
     });
   }
+  private initTxs(): void {
+    const localTxString = localStorage.getItem('transaction');
+    const localBridgeTxString = localStorage.getItem('bridgeeTransaction');
+    const localLiquidityTxString = localStorage.getItem('liquidityTransaction');
+    this.handleLocalTx(localTxString, UPDATE_PENDING_TX, 'swap');
+    this.handleLocalTx(localBridgeTxString, UPDATE_BRIDGE_PENDING_TX, 'bridge');
+    this.handleLocalTx(
+      localLiquidityTxString,
+      UPDATE_LIQUIDITY_PENDING_TX,
+      'liquidity'
+    );
+  }
+  private handleLocalTx(
+    localTxString: string,
+    dispatchType: string,
+    txAtPage: TxAtPage
+  ): void {
+    if (localTxString === null || localTxString === undefined) {
+      return;
+    }
+    const localTx: SwapTransaction = JSON.parse(localTxString);
+    if (localTx.fromToken.chain === 'NEO' || localTx.walletName !== 'O3') {
+      return;
+    }
+    switch (txAtPage) {
+      case 'swap':
+        this.transaction = localTx;
+        break;
+      case 'bridge':
+        this.bridgeeTransaction = localTx;
+        break;
+      case 'liquidity':
+        this.liquidityTransaction = localTx;
+        break;
+    }
+    this.store.dispatch({ type: dispatchType, data: localTx });
+    if (localTx.isPending === false) {
+      return;
+    }
+    this.listenTxReceipt(
+      localTx.txid,
+      dispatchType,
+      localTx.progress ? true : false,
+      txAtPage
+    );
+  }
   private handleTx(
     fromToken: Token,
     toToken: Token,
@@ -1167,40 +1229,43 @@ export class O3EthWalletApiService {
     switch (txAtPage) {
       case 'swap':
         dispatchType = UPDATE_PENDING_TX;
-        this.transaction = this.transaction;
+        this.transaction = pendingTx;
         break;
       case 'bridge':
         dispatchType = UPDATE_BRIDGE_PENDING_TX;
-        this.bridgeeTransaction = this.bridgeeTransaction;
+        this.bridgeeTransaction = pendingTx;
         break;
       case 'liquidity':
         dispatchType = UPDATE_LIQUIDITY_PENDING_TX;
-        this.liquidityTransaction = this.liquidityTransaction;
+        this.liquidityTransaction = pendingTx;
         break;
     }
     this.store.dispatch({ type: dispatchType, data: pendingTx });
-    this.listenTxReceipt(
-      txHash,
-      dispatchType,
-      hasCrossChain,
-      fromToken.chain,
-      toToken.chain,
-      txAtPage
-    );
+    this.listenTxReceipt(txHash, dispatchType, hasCrossChain, txAtPage);
   }
 
   private listenTxReceipt(
     txHash: string,
     dispatchType: string,
     hasCrossChain = true,
-    fromChain: CHAINS,
-    toChain: CHAINS,
     txAtPage: TxAtPage
   ): void {
-    if (this.requestTxStatusInterval) {
-      this.requestTxStatusInterval.unsubscribe();
+    let myInterval;
+    switch (txAtPage) {
+      case 'swap':
+        myInterval = this.requestTxStatusInterval;
+        break;
+      case 'bridge':
+        myInterval = this.requestBridgeTxStatusInterval;
+        break;
+      case 'liquidity':
+        myInterval = this.requestLiquidityTxStatusInterval;
+        break;
     }
-    this.requestTxStatusInterval = interval(5000).subscribe(() => {
+    if (myInterval) {
+      myInterval.unsubscribe();
+    }
+    myInterval = interval(5000).subscribe(() => {
       let currentTx: SwapTransaction;
       switch (txAtPage) {
         case 'swap':
@@ -1218,22 +1283,22 @@ export class O3EthWalletApiService {
         .subscribe(
           (receipt: any) => {
             if (receipt) {
-              this.requestTxStatusInterval.unsubscribe();
+              myInterval.unsubscribe();
               if (new BigNumber(receipt.status, 16).isZero()) {
                 currentTx.isPending = false;
                 currentTx.isFailed = true;
                 this.store.dispatch({ type: dispatchType, data: currentTx });
               } else {
                 if (hasCrossChain === false) {
-                  this.getBalance(fromChain);
                   currentTx.isPending = false;
+                  this.getBalance(currentTx.fromToken.chain);
                   this.store.dispatch({ type: dispatchType, data: currentTx });
                 }
               }
             }
           },
           (error) => {
-            this.requestTxStatusInterval.unsubscribe();
+            myInterval.unsubscribe();
             this.handleDapiError(error);
           }
         );
@@ -1337,6 +1402,5 @@ export class O3EthWalletApiService {
       )
       .toPromise();
   }
-
   //#endregion
 }

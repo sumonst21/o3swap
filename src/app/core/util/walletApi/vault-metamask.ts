@@ -23,6 +23,8 @@ import { HttpClient } from '@angular/common/http';
 import { map, take } from 'rxjs/operators';
 import BigNumber from 'bignumber.js';
 import { RpcApiService } from '@core/api/rpc.service';
+import { getMessageFromCode } from 'eth-rpc-errors';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 interface State {
   vault: any;
   language: any;
@@ -50,7 +52,8 @@ export class VaultdMetaMaskWalletApiService {
     private nzMessage: NzMessageService,
     private swapService: SwapService,
     private commonService: CommonService,
-    private rpcApiService: RpcApiService
+    private rpcApiService: RpcApiService,
+    private nzNotification: NzNotificationService,
   ) {
     this.language$ = store.select('language');
     this.language$.subscribe((state) => {
@@ -65,11 +68,18 @@ export class VaultdMetaMaskWalletApiService {
   //#region connect
   init(): void {
     this.handleLocalTx();
-    setTimeout(() => {
-      if ((window as any).ethereum && (window as any).ethereum.isConnected()) {
-        (window as any).ethereum
-          .request({ method: 'eth_accounts' })
-          .then((result) => {
+    const intervalReq = interval(1000)
+      .pipe(take(5))
+      .subscribe(() => {
+        if (!(window as any).ethereum) {
+          return;
+        } else {
+          intervalReq.unsubscribe();
+        }
+        this.ethereum = (window as any).ethereum;
+        this.web3 = new Web3((window as any).ethereum);
+        if (this.ethereum.isConnected()) {
+          this.ethereum.request({ method: 'eth_accounts' }).then((result) => {
             if (result.length === 0) {
               return;
             }
@@ -83,8 +93,8 @@ export class VaultdMetaMaskWalletApiService {
               this.vaultConnect(localVaultWallet.chain, false);
             }
           });
-      }
-    }, 1000);
+        }
+      });
   }
   vaultConnect(chain: string, showMessage = true): Promise<VaultWallet> {
     if (!(window as any).ethereum) {
@@ -119,6 +129,7 @@ export class VaultdMetaMaskWalletApiService {
         this.handleDapiError(error);
       });
   }
+  //#endregion
 
   //#region vault staking
   async o3StakingStake(token: Token, inputAmount: string): Promise<any> {
@@ -504,17 +515,11 @@ export class VaultdMetaMaskWalletApiService {
 
   //#region private function
   private handleDapiError(error): void {
-    this.commonService.log(error);
-    switch (error.code) {
-      case 4001:
-        this.nzMessage.error('The request was rejected by the user');
-        break;
-      case -32602:
-        this.nzMessage.error('The parameters were invalid');
-        break;
-      case -32603:
-        this.nzMessage.error('Internal error'); // transaction underpriced
-        break;
+    const title = getMessageFromCode(error.code);
+    if (error.message && error.code !== 4001) {
+      this.nzNotification.error(title, error.message);
+    } else {
+      this.nzMessage.error(title);
     }
   }
 
@@ -549,20 +554,7 @@ export class VaultdMetaMaskWalletApiService {
     if (localTx.isPending === false) {
       return;
     }
-    if (!this.ethereum) {
-      const ethereumiInterval = interval(1000)
-        .pipe(take(5))
-        .subscribe(() => {
-          if (!this.ethereum) {
-            return;
-          } else {
-            ethereumiInterval.unsubscribe();
-            this.listenTxReceipt(localTx.txid, UPDATE_VAULT_STAKE_PENDING_TX);
-          }
-        });
-    } else {
-      this.listenTxReceipt(localTx.txid, UPDATE_VAULT_STAKE_PENDING_TX);
-    }
+    this.listenTxReceipt(localTx.txid, UPDATE_VAULT_STAKE_PENDING_TX);
   }
 
   private handleTx(
@@ -591,9 +583,6 @@ export class VaultdMetaMaskWalletApiService {
   }
 
   private listenTxReceipt(txHash: string, dispatchType: string): void {
-    if (!this.ethereum) {
-      return;
-    }
     let myInterval = this.requestTxStatusInterval;
     if (myInterval) {
       myInterval.unsubscribe();

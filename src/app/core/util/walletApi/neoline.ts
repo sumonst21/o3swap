@@ -452,9 +452,6 @@ export class NeolineWalletApiService {
     fromTokenAssetId?: string,
     inputAmount?: string
   ): Promise<boolean> {
-    if (!this.neolineDapi) {
-      return;
-    }
     return this.rpcApiService
       .getNeoLineTokenBalance(this.neoAccountAddress)
       .then((addressTokens) => {

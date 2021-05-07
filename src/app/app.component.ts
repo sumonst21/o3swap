@@ -5,6 +5,7 @@ import {
   MetaMaskWalletApiService,
   VaultdMetaMaskWalletApiService,
   O3NeoWalletApiService,
+  O3EthWalletApiService,
   ApiService,
 } from '@core';
 import { Store } from '@ngrx/store';
@@ -40,6 +41,7 @@ export class AppComponent implements OnInit {
     private metaMaskWalletApiService: MetaMaskWalletApiService,
     private neolineWalletApiService: NeolineWalletApiService,
     private o3NeoWalletApiService: O3NeoWalletApiService,
+    private o3EthWalletApiService: O3EthWalletApiService,
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
     private modal: NzModalService,
     private apiService: ApiService
@@ -77,6 +79,7 @@ export class AppComponent implements OnInit {
       this.metaMaskWalletApiService.init();
       this.vaultdMetaMaskWalletApiService.init();
       this.o3NeoWalletApiService.init();
+      this.o3EthWalletApiService.init();
     }
   }
 

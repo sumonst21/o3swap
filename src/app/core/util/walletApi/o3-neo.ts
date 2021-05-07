@@ -445,9 +445,6 @@ export class O3NeoWalletApiService {
     fromTokenAssetId?: string,
     inputAmount?: string
   ): Promise<boolean> {
-    if (this.o3DapiIsReady === false) {
-      return;
-    }
     if (NETWORK === 'TestNet') {
       this.store.dispatch({
         type: UPDATE_NEO_BALANCES,

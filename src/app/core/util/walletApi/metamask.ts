@@ -1218,10 +1218,10 @@ export class MetaMaskWalletApiService {
       case 'swap':
         this.transaction = localTx;
         break;
-      case 'swap':
+      case 'bridge':
         this.bridgeeTransaction = localTx;
         break;
-      case 'swap':
+      case 'liquidity':
         this.liquidityTransaction = localTx;
         break;
     }
@@ -1229,30 +1229,12 @@ export class MetaMaskWalletApiService {
     if (localTx.isPending === false) {
       return;
     }
-    if (!this.ethereum) {
-      const ethereumiInterval = interval(1000)
-        .pipe(take(5))
-        .subscribe(() => {
-          if (!this.ethereum) {
-            return;
-          } else {
-            ethereumiInterval.unsubscribe();
-            this.listenTxReceipt(
-              localTx.txid,
-              dispatchType,
-              localTx.progress ? true : false,
-              txAtPage
-            );
-          }
-        });
-    } else {
-      this.listenTxReceipt(
-        localTx.txid,
-        dispatchType,
-        localTx.progress ? true : false,
-        txAtPage
-      );
-    }
+    this.listenTxReceipt(
+      localTx.txid,
+      dispatchType,
+      localTx.progress ? true : false,
+      txAtPage
+    );
   }
   private handleTx(
     fromToken: Token,
@@ -1308,9 +1290,6 @@ export class MetaMaskWalletApiService {
     hasCrossChain = true,
     txAtPage: TxAtPage
   ): void {
-    if (!this.ethereum) {
-      return;
-    }
     let myInterval;
     switch (txAtPage) {
       case 'swap':
