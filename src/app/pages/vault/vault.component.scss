@@ -130,6 +130,29 @@
         }
       }
     }
+    .line {
+      background-color: #353535;
+      height: 0.5px;
+      margin-top: 16px;
+      border-radius: 0.5px;
+    }
+    .claimable-box {
+      color: #8aa1a1;
+      font-size: 14px;
+      margin-top: 20px;
+      .value {
+        color: white;
+      }
+      .claim-btn {
+        cursor: pointer;
+        color: #46b069;
+        padding: 5px;
+        margin-left: 5px;
+      }
+    }
+    > .right .claimable-box {
+      margin-top: 6px;
+    }
     .item-group {
       font-size: 14px;
       flex-direction: column;
@@ -262,7 +285,8 @@
           .unstake-btn {
             border-radius: 0 18px 18px 0;
           }
-          .claim-btn {
+          .claim-btn,
+          .get-lp-btn {
             background-color: #2b312d;
             color: #46b069;
             border-radius: 18px;
@@ -270,6 +294,10 @@
               background-color: #46b069;
               color: #fff;
             }
+          }
+          .get-lp-btn {
+            background-color: transparent;
+            border: 1px solid #46b069;
           }
         }
       }
@@ -299,7 +327,6 @@
         }
         .item-group {
           width: 100%;
-          height: 150px;
           padding: 30px;
         }
         .item-group-title {

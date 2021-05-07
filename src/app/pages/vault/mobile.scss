@@ -29,6 +29,9 @@
     .item-container.row-2 {
       margin-top: 0px;
       margin-bottom: 14px;
+      .list-container {
+        border-radius: 10px;
+      }
       .list-head {
         flex-direction: row;
         flex-wrap: wrap;
@@ -58,12 +61,29 @@
         }
       }
       .unlock-zone {
-        .operation-box {
-          width: 200px;
+        .unlock-zone-btn-block {
+          padding: 0;
         }
         button {
-          width: 60px;
-          margin-bottom: 10px;
+          width: 75px;
+          height: 50px;
+          margin: 0;
+          border-radius: 0;
+        }
+        .stake-btn {
+          background-color: #46b069;
+          color: white;
+        }
+        .unstake-btn {
+          background-color: #6162ef;
+          color: white;
+        }
+        .claim-btn {
+          background-color: #2b312d;
+          color: #46b069;
+        }
+        .get-lp-btn {
+          background-color: #252525;
         }
       }
     }

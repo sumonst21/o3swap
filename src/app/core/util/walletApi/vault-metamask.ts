@@ -220,7 +220,7 @@ export class VaultdMetaMaskWalletApiService {
       })
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(token, profit, hash, false, true);
+        this.handleTx(O3_TOKEN, profit, hash, false, true);
         return hash;
       })
       .catch((error) => {

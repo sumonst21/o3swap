@@ -41,26 +41,30 @@
           <nz-table class="unlock-zone" nzAlign="center" nzTemplateMode [nzScroll]="{ x: '1200px', y: '500px' }">
             <thead>
               <tr>
-                <th></th>
-                <th>Name</th>
+                <th *ngIf="!isMobile"></th>
+                <th [nzWidth]="isMobile ? '75px': '100px'">Name</th>
                 <th>Staked</th>
                 <th>Remaining</th>
-                <th>Claimable</th>
                 <th>Speed</th>
-                <th nzRight [nzWidth]="tableBtnWidth"></th>
+                <th>Unlocked amount</th>
+                <th nzRight [nzWidth]="isMobile ? '150px': '350px'"></th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of stakeUnlockTokenList; let i = index">
-                <td><img class="token-img" [src]="item.logo" alt=""></td>
-                <td>{{ stakeUnlockTokenList[i].symbol }}</td>
+                <td *ngIf="!isMobile"><img class="token-img" [src]="item.logo" alt=""></td>
+                <td><img *ngIf="isMobile" class="token-img" [src]="item.logo"
+                    alt="">{{ stakeUnlockTokenList[i].symbol }}</td>
                 <td>{{ item.staked || '--' }}</td>
                 <td>{{ item.remaining || '--' }}</td>
-                <td>{{ item.claimable || '--' }}</td>
                 <td>{{ item.speed || '--' }}</td>
+                <td>{{ item.claimable || '--' }}</td>
                 <td nzRight class="unlock-zone-btn-block">
                   <button class="btn-primary deposit-btn claim-btn" (click)="claimUnlockO3(item)">
                     Claim
+                  </button>
+                  <button class="btn-primary deposit-btn get-lp-btn" (click)="claimUnlockO3(item)">
+                    Get LP
                   </button>
                   <div>
                     <button class="btn-primary stake-btn"
@@ -92,9 +96,6 @@
             <div class="item-group-title">
               <div class="token"><img src="" alt="">{{ item.symbol }}</div>
               <div class="right">
-                <button class="btn-primary deposit-btn claim-btn" (click)="claimProfit(item)">
-                  Claim
-                </button>
                 <button class="btn-primary" (click)="showStakingStake(item, item.balance, true)">Stake</button>
                 <button class="btn-primary unstake-btn"
                   (click)="showStakingStake(item, item.staked, false)">Unstake</button>
@@ -118,6 +119,9 @@
                 <div class="name">APY%</div>
               </div>
             </div>
+            <p class="line"></p>
+            <p class="claimable-box">Claimable O3: &nbsp;<span class="value">{{ item.profit }}</span><span
+                class="claim-btn" (click)="claimProfit(item)">Claim</span></p>
           </div>
         </div>
 
@@ -132,7 +136,12 @@
           <div class="item-group" *ngFor="let item of o3StakingTokenList">
             <div class="name">
               <img [src]="item.logo" alt="" class="token-img">
-              {{ item.symbol }}
+              <div>
+                {{ item.symbol }}
+                <p class="claimable-box">Claimable O3: &nbsp;<span class="value">{{ item.profit }}</span><span
+                    class="claim-btn" (click)="claimProfit(item)">Claim</span></p>
+              </div>
+
             </div>
             <div class="detail-container">
               <div class="detail-item">
@@ -149,7 +158,6 @@
               </div>
             </div>
             <div class="stake">
-              <span (click)="claimProfit(item)">Claim</span>
               <span (click)="showStakingStake(item, item.balance, true)">Stake</span>
               <span (click)="showStakingStake(item, item.staked, false)">Unstake</span>
             </div>

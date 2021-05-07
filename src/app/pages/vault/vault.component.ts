@@ -33,7 +33,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   langUnScribe: Unsubscribable;
   language$: Observable<any>;
   lang: string;
-  tableBtnWidth = '300px';
+  isMobile = false;
   vault$: Observable<any>;
   vaultUnScribe: Unsubscribable;
 
@@ -89,7 +89,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
     });
     if (this.commonService.isMobileWidth()) {
-      this.tableBtnWidth = '100px';
+      this.isMobile = true;
     }
   }
   ngOnDestroy(): void {
