@@ -522,8 +522,9 @@ export class NeolineWalletApiService {
         .getNeoLineTxByHash(tx.txid)
         .then((result) => {
           if (
+            result &&
             this.commonService.add0xHash(result.txid) ===
-            this.commonService.add0xHash(this.transaction.txid)
+              this.commonService.add0xHash(this.transaction.txid)
           ) {
             if (this.listenTxinterval) {
               this.listenTxinterval.unsubscribe();

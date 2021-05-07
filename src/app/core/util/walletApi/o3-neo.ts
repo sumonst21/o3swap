@@ -401,8 +401,9 @@ export class O3NeoWalletApiService {
         .getO3TxByHash(tx.txid)
         .then((txid) => {
           if (
+            txid &&
             this.commonService.add0xHash(txid) ===
-            this.commonService.add0xHash(this.transaction.txid)
+              this.commonService.add0xHash(this.transaction.txid)
           ) {
             if (this.listenTxinterval) {
               this.listenTxinterval.unsubscribe();
