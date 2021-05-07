@@ -22,8 +22,8 @@ export class SwapSettingComponent implements OnInit, OnDestroy {
   @Output() closeThis = new EventEmitter();
 
   // setting modal
-  setting$: Observable<any>;
   settingUnScribe: Unsubscribable;
+  setting$: Observable<any>;
   slipValue: any;
   isCustomSlip: boolean; // 自定义滑点
   deadline: number;
@@ -78,10 +78,17 @@ export class SwapSettingComponent implements OnInit, OnDestroy {
   inputSlipValue(event): void {
     this.slipValue = event.target.value;
     this.isCustomSlip = true;
+    this.checkSlipValue();
+    if (this.getSlipValue() !== Number(this.slipValue)) {
+      return;
+    }
     this.updateSettingData();
   }
   inputDeadline(event): void {
     this.deadline = event.target.value;
+    if (this.getDeadline() !== Math.floor(Number(this.deadline))) {
+      return;
+    }
     this.updateSettingData();
   }
   close(): void {

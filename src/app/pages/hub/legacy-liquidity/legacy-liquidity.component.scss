@@ -4,10 +4,16 @@
     background: url("/assets/images/bridge-liquidity/defult.png") no-repeat !important;
   }
 }
-.btn-liquidity {
-  font-family: "fontMedium";
-  width: 90px;
-  height: 50px;
-  background: #2f2f3b;
-  border-radius: 6px;
+
+.page-container .tab-container .tab-wrap .tab-content .list-wrap li {
+  .detail {
+    flex: 1;
+  }
+  .receive {
+    margin-left: 10px;
+  }
+  .btn-liquidity {
+    height: 60px;
+    margin-left: 10px;
+  }
 }
