@@ -1,4 +1,5 @@
-@media screen and (max-width: 800px) {
+@import "src/styles/variable.scss";
+@media screen and (max-width: $mobileMinWidth) {
   .page-container {
     display: none;
   }
@@ -13,7 +14,7 @@
       flex: 1;
       .item {
         flex: 1;
-        background-color: #1E2621;
+        background-color: #1e2621;
         border-radius: 3px;
         margin-bottom: 5px;
         padding: 20px;
@@ -49,7 +50,6 @@
           width: 60px;
           font-size: 12px;
         }
-
       }
     }
     .tab-container {
@@ -61,17 +61,19 @@
           height: 62px;
           .tabs {
             border-radius: 10px;
-            background: #2A2A2A;
+            background: #2a2a2a;
             font-size: 15px;
             height: 70;
             &.tabs-add {
-              &:hover, &:focus {
-                background: #37814F;
+              &:hover,
+              &:focus {
+                background: #37814f;
               }
             }
             &.tabs-remove {
-              &:hover, &:focus {
-                background: #494AAD;
+              &:hover,
+              &:focus {
+                background: #494aad;
               }
             }
             &.addActive {
@@ -83,7 +85,6 @@
               background: #202020 !important;
             }
           }
-
         }
         .tab-content {
           border-radius: 10px;
@@ -101,7 +102,7 @@
               }
               .detail {
                 border-radius: 15px;
-                background: #2A2A2A;
+                background: #2a2a2a;
                 flex-direction: row;
                 flex-wrap: wrap;
                 padding: 30px 20px;
@@ -111,7 +112,7 @@
                   display: flex;
                   flex: 1;
                   font-size: 12px;
-                  color: #8AA1A1;
+                  color: #8aa1a1;
                   justify-content: space-between;
                   .head-right {
                     flex-direction: row;
@@ -122,7 +123,7 @@
                   }
                 }
                 .max-status {
-                  color: #6162EF;
+                  color: #6162ef;
                   padding: 12px;
                   padding-right: 0;
                 }
@@ -169,12 +170,12 @@
                   background: transparent;
                   display: block;
                   text-align: end;
-                  color: #4A4A4A;
+                  color: #4a4a4a;
                   font-size: 12px;
                   width: 100%;
                 }
                 .deposit-btn {
-                  background: #46B069;
+                  background: #46b069;
                   border-radius: 10px;
                   height: 45px;
                   width: calc(100% - 45px);

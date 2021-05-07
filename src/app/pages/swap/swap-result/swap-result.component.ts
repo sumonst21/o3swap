@@ -245,7 +245,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
 
   showRoutingModal(): void {
     let modal;
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       modal = this.modal.create({
         nzContent: SwapExchangeModalComponent,
         nzFooter: null,
@@ -640,7 +640,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       this.modal.create({
         nzContent: ApproveModalComponent,
         nzFooter: null,

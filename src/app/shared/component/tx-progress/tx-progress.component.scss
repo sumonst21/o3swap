@@ -1,3 +1,4 @@
+@import "src/styles/variable.scss";
 section.min-tx {
   position: fixed;
   right: 154px;
@@ -168,7 +169,7 @@ section.min-tx {
   }
 }
 
-@media screen and (max-width: 420px) {
+@media screen and (max-width: $mobileMinWidth) {
   section.min-tx {
     right: 100px;
   }

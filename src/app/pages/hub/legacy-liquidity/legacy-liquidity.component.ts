@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import {
   ApiService,
   CommonService,
@@ -40,7 +35,10 @@ interface State {
 @Component({
   selector: 'app-legacy-liquidity',
   templateUrl: './legacy-liquidity.component.html',
-  styleUrls: ['../liquidity/liquidity.component.scss', './legacy-liquidity.component.scss'],
+  styleUrls: [
+    '../liquidity/liquidity.component.scss',
+    './legacy-liquidity.component.scss',
+  ],
 })
 export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   BRIDGE_SLIPVALUE = BRIDGE_SLIPVALUE;
@@ -306,7 +304,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       this.modal.create({
         nzContent: ApproveModalComponent,
         nzFooter: null,

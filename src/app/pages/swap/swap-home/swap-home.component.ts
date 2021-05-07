@@ -146,7 +146,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
 
   showTokens(type: 'from' | 'to'): void {
     let modal;
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       modal = this.modal.create({
         nzContent: SwapTokenModalComponent,
         nzFooter: null,
@@ -249,7 +249,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   showSetting(): void {
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       this.modal.create({
         nzContent: SwapSettingModalComponent,
         nzFooter: null,

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {
+  CommonService,
   MetaMaskWalletApiService,
   VaultdMetaMaskWalletApiService,
 } from '@core';
@@ -58,7 +59,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     private nzMessage: NzMessageService,
     private metaMaskWalletApiService: MetaMaskWalletApiService,
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
-    private drawerService: NzDrawerService
+    private drawerService: NzDrawerService,
+    private commonService: CommonService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -76,7 +78,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.initO3Data();
       }
     });
-    if (window.document.getElementsByTagName('body')[0].clientWidth < 420) {
+    if (this.commonService.isMobileWidth()) {
       this.tableBtnWidth = '100px';
     }
   }
@@ -147,7 +149,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     isStake: boolean = true
   ): Promise<void> {
     let modal;
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       modal = this.modal.create({
         nzContent: VaultStakeModalComponent,
         nzFooter: null,
@@ -202,7 +204,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   ): Promise<void> {
     const contractHash = O3STAKING_CONTRACT[token.assetID];
     let modal;
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       modal = this.modal.create({
         nzContent: VaultStakeModalComponent,
         nzFooter: null,
@@ -293,7 +295,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     const walletName = this.vaultdMetaMaskWalletApiService.vaultWallet
       .walletName;
     const address = this.vaultdMetaMaskWalletApiService.vaultWallet.address;
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       this.modal.create({
         nzContent: ApproveModalComponent,
         nzFooter: null,

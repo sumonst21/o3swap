@@ -1,3 +1,4 @@
+@import "src/styles/variable.scss";
 .connect,
 .mobile-connect {
   min-width: 190px;
@@ -19,7 +20,7 @@
   }
 }
 
-@media screen and (max-width: 420px) {
+@media screen and (max-width: $mobileMinWidth) {
   .connect,
   .mobile-connect {
     min-width: auto;

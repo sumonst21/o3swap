@@ -3,7 +3,7 @@
 @import "./styles/drawer.scss";
 @import "./styles/btn.scss";
 @import "./styles/page.scss";
-
+@import "./styles/variable.scss";
 * {
   margin: 0;
   padding: 0;
@@ -50,7 +50,7 @@ body {
   line-height: 1;
   color: #fff;
   min-width: 1440px;
-  @media screen and (max-width: 420px) {
+  @media screen and (max-width: $mobileMinWidth) {
     min-width: 100%;
     font-size: 13px;
   }
@@ -119,8 +119,9 @@ input[type="number"] {
   background: transparent;
 }
 
-@media screen and (max-width: 800px) {
-  html, body {
+@media screen and (max-width: $mobileMinWidth) {
+  html,
+  body {
     height: 100%;
     width: 100%;
     min-width: 100%;

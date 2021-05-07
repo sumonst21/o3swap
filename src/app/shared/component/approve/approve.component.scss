@@ -1,3 +1,4 @@
+@import "src/styles/variable.scss";
 section.wrapper {
   .header {
     display: block;
@@ -43,7 +44,7 @@ section.wrapper {
   }
 }
 
-@media screen and (max-width: 420px) {
+@media screen and (max-width: $mobileMinWidth) {
   section.wrapper {
     .header {
       display: none;

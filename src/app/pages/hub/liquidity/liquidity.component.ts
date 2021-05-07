@@ -451,7 +451,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       this.modal.create({
         nzContent: ApproveModalComponent,
         nzFooter: null,

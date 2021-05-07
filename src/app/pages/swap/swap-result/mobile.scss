@@ -1,4 +1,5 @@
-@media screen and (max-width: 420px) {
+@import "src/styles/variable.scss";
+@media screen and (max-width: $mobileMinWidth) {
   section.inquiry-wrapper {
     display: none;
   }

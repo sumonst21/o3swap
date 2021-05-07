@@ -1,9 +1,10 @@
-@media screen and (max-width: 420px) {
+@import "src/styles/variable.scss";
+@media screen and (max-width: $mobileMinWidth) {
   .mobile-title {
     display: block;
     font-size: 25px;
     margin: 22px;
-    font-family: 'fontBold';
+    font-family: "fontBold";
   }
   .page-container {
     padding-left: 3%;

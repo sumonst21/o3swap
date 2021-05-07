@@ -1,3 +1,4 @@
+@import "src/styles/variable.scss";
 section.wrapper {
   height: 560px;
   .header {
@@ -130,7 +131,7 @@ section.wrapper {
   }
 }
 
-@media screen and (max-width: 420px) {
+@media screen and (max-width: $mobileMinWidth) {
   section.wrapper {
     height: 100%;
     position: relative;

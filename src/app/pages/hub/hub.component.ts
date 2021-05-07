@@ -148,7 +148,7 @@ export class HubComponent implements OnInit, OnDestroy {
   }
 
   clickShowTokenListModal(type: 'from' | 'to'): void {
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       return;
     }
     const drawerRef = this.drawerService.create({
@@ -166,7 +166,7 @@ export class HubComponent implements OnInit, OnDestroy {
   }
 
   showTokenListModal(type: 'from' | 'to'): void {
-    if (window.document.getElementsByTagName('body')[0].clientWidth <= 420) {
+    if (this.commonService.isMobileWidth()) {
       return;
     }
     if (type === 'from') {
@@ -334,7 +334,7 @@ export class HubComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    if (window.document.getElementsByTagName('body')[0].clientWidth > 420) {
+    if (!this.commonService.isMobileWidth()) {
       this.modal.create({
         nzContent: ApproveModalComponent,
         nzFooter: null,

@@ -92,4 +92,7 @@ export class CommonService {
       return hash;
     }
   }
+  isMobileWidth(): boolean {
+    return window.document.getElementsByTagName('body')[0].clientWidth <= 750;
+  }
 }

@@ -95,7 +95,7 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (window.document.getElementsByTagName('body')[0].clientWidth <= 420) {
+    if (this.commonService.isMobileWidth()) {
       this.showModal = false;
     }
     this.swapUnScribe = this.swap$.subscribe((state) => {

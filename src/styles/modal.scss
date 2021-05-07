@@ -1,3 +1,4 @@
+@import "src/styles/variable.scss";
 .custom-modal {
   width: 400px !important;
   transform-origin: center !important;
@@ -52,7 +53,7 @@
   background-color: #2a2a2a !important;
 }
 
-@media screen and (max-width: 420px) {
+@media screen and (max-width: $mobileMinWidth) {
   .custom-modal {
     width: 80% !important;
     top: 98px;
