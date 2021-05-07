@@ -88,29 +88,33 @@
           </div>
         </div>
         <div class="group-container">
-          <div class="item-group">
+          <div class="item-group" *ngFor="let item of lpstakingTokenList">
             <div class="item-group-title">
-              <div class="token"><img src="" alt="">pnUNI_V2_ETH_WBTC</div>
+              <div class="token"><img src="" alt="">{{ item.symbol }}</div>
               <div class="right">
-                <button class="btn-primary">Stake</button>
-                <button class="btn-primary unstake-btn">Unstake</button>
+                <button class="btn-primary deposit-btn claim-btn" (click)="claimProfit(item)">
+                  Claim
+                </button>
+                <button class="btn-primary" (click)="showStakingStake(item, item.balance, true)">Stake</button>
+                <button class="btn-primary unstake-btn"
+                  (click)="showStakingStake(item, item.staked, false)">Unstake</button>
               </div>
             </div>
             <div class="detail-item">
               <div class="col">
-                <div class="value">9.31673761</div>
+                <div class="value">{{ item.staked || '--' }}</div>
                 <div class="name">Staked</div>
               </div>
               <div class="col">
-                <div class="value">9.31673761</div>
+                <div class="value">{{ item.balance || '--' }}</div>
                 <div class="name">Remaining</div>
               </div>
               <div class="col">
-                <div class="value">9.31673761</div>
+                <div class="value">{{ item.totalStaking || '--' }}</div>
                 <div class="name">Total Staking</div>
               </div>
               <div class="col">
-                <div class="value">9.31673761</div>
+                <div class="value">--</div>
                 <div class="name">APY%</div>
               </div>
             </div>

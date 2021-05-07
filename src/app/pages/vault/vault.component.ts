@@ -53,6 +53,16 @@ export class VaultComponent implements OnInit, OnDestroy {
     },
   ];
   o3StakingTokenList: any[] = [O3_TOKEN];
+  lpstakingTokenList: any[] = [
+    {
+      assetID: '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
+      symbol: 'LP',
+      decimals: 18,
+      amount: '0',
+      chain: 'ETH',
+      logo: '/assets/images/tokens/lp-eth.png',
+    },
+  ];
   constructor(
     private store: Store<State>,
     private modal: NzModalService,
@@ -128,19 +138,37 @@ export class VaultComponent implements OnInit, OnDestroy {
       ]).then((res) => {
         [item.balance, item.totalStaking, item.staked] = res;
       });
-      this.vaultdMetaMaskWalletApiService
-        .getO3StakingTotalProfit(item)
-        .then((res) => {
-          if (res) {
-            item.profit = res || '--';
-            this.totalProfit = '0';
-            this.totalProfit = new BigNumber(this.totalProfit)
-              .plus(new BigNumber(res))
-              .dp(18)
-              .toFixed();
-          }
-        });
     });
+    // lp staking
+    this.lpstakingTokenList.forEach(async (item: any) => {
+      Promise.all([
+        this.metaMaskWalletApiService.getBalancByHash(item) || '--',
+        this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
+          '--',
+        this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',
+      ]).then((res) => {
+        [item.balance, item.totalStaking, item.staked] = res;
+      });
+    });
+    let tempTotalProfit = new BigNumber('0');
+    const earnO3TokenList = this.lpstakingTokenList.concat(
+      this.o3StakingTokenList
+    );
+    for (const [index, item] of earnO3TokenList.entries()) {
+      item.profit =
+        (await this.vaultdMetaMaskWalletApiService.getO3StakingTotalProfit(
+          item
+        )) || '--';
+      tempTotalProfit = new BigNumber(tempTotalProfit)
+        .plus(new BigNumber(item.profit))
+        .dp(18);
+      if (
+        (index === earnO3TokenList.length - 1 || this.totalProfit === '--') &&
+        !tempTotalProfit.isNaN()
+      ) {
+        this.totalProfit = tempTotalProfit.toFixed() || '--';
+      }
+    }
   }
 
   async showUnlockStake(

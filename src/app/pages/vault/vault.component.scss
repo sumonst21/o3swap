@@ -279,7 +279,7 @@
         flex: 1;
         margin-right: 30px;
         font-size: 14px;
-        .right .unstake-btn {
+        .right button:not(:nth-child(1)) {
           margin-left: 20px;
         }
         .detail-item {
