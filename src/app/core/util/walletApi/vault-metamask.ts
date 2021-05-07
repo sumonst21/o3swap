@@ -36,7 +36,7 @@ export class VaultdMetaMaskWalletApiService {
 
   vault$: Observable<any>;
   vaultWallet: VaultWallet;
-  transaction: StakeTransaction;
+  vaultTransaction: StakeTransaction;
 
   ethereum;
   web3: Web3;
@@ -53,7 +53,7 @@ export class VaultdMetaMaskWalletApiService {
     private swapService: SwapService,
     private commonService: CommonService,
     private rpcApiService: RpcApiService,
-    private nzNotification: NzNotificationService,
+    private nzNotification: NzNotificationService
   ) {
     this.language$ = store.select('language');
     this.language$.subscribe((state) => {
@@ -62,6 +62,7 @@ export class VaultdMetaMaskWalletApiService {
     this.vault$ = store.select('vault');
     this.vault$.subscribe((state) => {
       this.vaultWallet = state.vaultWallet;
+      this.vaultTransaction = state.vaultTransaction;
     });
   }
 
@@ -550,7 +551,14 @@ export class VaultdMetaMaskWalletApiService {
     }
     const localTx: StakeTransaction = JSON.parse(localTxString);
     console.log(localTx);
-    this.transaction = localTx;
+    if (
+      localTx.fromToken.chain === 'NEO' ||
+      localTx.walletName !== 'MetaMask'
+    ) {
+      return;
+    }
+    this.vaultTransaction = localTx;
+    this.store.dispatch({ type: UPDATE_VAULT_STAKE_PENDING_TX, data: localTx });
     if (localTx.isPending === false) {
       return;
     }
@@ -574,7 +582,7 @@ export class VaultdMetaMaskWalletApiService {
       min: false,
       walletName: 'MetaMask',
     };
-    this.transaction = pendingTx;
+    this.vaultTransaction = pendingTx;
     this.store.dispatch({
       type: UPDATE_VAULT_STAKE_PENDING_TX,
       data: pendingTx,
@@ -588,8 +596,7 @@ export class VaultdMetaMaskWalletApiService {
       myInterval.unsubscribe();
     }
     myInterval = interval(5000).subscribe(() => {
-      let currentTx: StakeTransaction;
-      currentTx = this.transaction;
+      const currentTx: StakeTransaction = this.vaultTransaction;
       this.rpcApiService
         .getEthTxReceipt(txHash, currentTx.fromToken.chain)
         .subscribe(

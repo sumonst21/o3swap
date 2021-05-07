@@ -6,6 +6,7 @@ import {
 
 const initialState = {
   vaultWallet: null,
+  vaultTransaction: null,
   // {
   //   walletName: null,
   //   address: null,
