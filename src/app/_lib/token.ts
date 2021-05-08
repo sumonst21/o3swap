@@ -103,7 +103,7 @@ export const O3_TOKEN: Token = {
   decimals: 18,
   amount: '0',
   chain: 'ETH',
-  logo: '',
+  logo: '/assets/images/logo-O3.png',
 };
 //#endregion
 

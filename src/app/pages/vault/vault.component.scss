@@ -26,6 +26,7 @@
     display: flex;
     &.row-1 {
       margin-top: 40px;
+      margin-bottom: 10px;
     }
     &.row-2,
     &.row-3 {
@@ -236,11 +237,9 @@
       justify-content: space-between;
       .item-group {
         width: 260px;
-        height: 180px;
-        padding: 0 30px;
+        padding: 26px 30px;
       }
       .item-total {
-        margin-bottom: 10px;
         flex: 1;
       }
     }
@@ -267,17 +266,17 @@
       }
       .unlock-zone {
         .unlock-zone-btn-block {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-evenly;
           div {
-            display: flex;
+            display: inline-block;
           }
           button {
             width: 70px;
             &:hover {
               opacity: 0.7;
             }
+          }
+          & > button {
+            margin-right: 10px;
           }
           .stake-btn {
             border-radius: 18px 0px 0px 18px;
@@ -316,9 +315,9 @@
           .col {
             width: 120px;
             .value {
-              height: 40px;
               line-height: 40px;
               font-size: 18px;
+              word-break: break-all;
             }
             & > .name {
               color: #8aa1a1;
@@ -327,12 +326,17 @@
         }
         .item-group {
           width: 100%;
-          padding: 30px;
+          padding: 14px 22px;
         }
         .item-group-title {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          img {
+            width: 30px;
+            height: 30px;
+            margin-right: 16px;
+          }
         }
       }
     }
