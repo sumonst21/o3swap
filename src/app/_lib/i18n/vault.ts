@@ -1,63 +1,63 @@
 const vault = {
   Total: {
     en: 'Total',
-    zh: '',
+    zh: '总额',
   },
   Locked: {
     en: 'Locked',
-    zh: '',
+    zh: '冻结',
   },
   Available: {
     en: 'Available',
-    zh: '',
+    zh: '可用的',
   },
   TotalProfit: {
     en: 'Total Profit',
-    zh: '',
+    zh: '总利润',
   },
   Unlock: {
     en: 'Unlock',
-    zh: '',
+    zh: '解锁',
   },
   Name: {
     en: 'Name',
-    zh: '',
+    zh: '名称',
   },
   Staked: {
     en: 'Staked',
-    zh: '',
+    zh: '已质押',
   },
   Remaining: {
     en: 'Remaining',
-    zh: '',
+    zh: '可质押',
   },
   Speed: {
     en: 'Speed',
-    zh: '',
+    zh: '解锁速度',
   },
   UnlockedAmount: {
     en: 'Unlocked Amount',
-    zh: '',
+    zh: '解锁数量',
   },
   GetLP: {
     en: 'Get LP',
-    zh: '',
+    zh: '取得 LP',
   },
   StakeLPToEarnO3: {
     en: 'Stake LP To Earn O3',
-    zh: '',
+    zh: '流动性质押得O3',
   },
   TotalStaking: {
     en: 'Total Staking',
-    zh: '',
+    zh: '总质押数',
   },
   StakeTokenToEarnO3: {
     en: 'Stake Token To Earn O3',
-    zh: '',
+    zh: '单币质押得O3',
   },
   Claimable: {
     en: 'Claimable',
-    zh: '',
+    zh: '可领取',
   },
   Stake: {
     en: 'Stake',
@@ -65,7 +65,7 @@ const vault = {
   },
   Unstake: {
     en: 'Unstake',
-    zh: '取消',
+    zh: '解锁',
   },
   Claim: {
     en: 'Claim',
@@ -77,7 +77,7 @@ const vault = {
   },
   unlockO3Tip: {
     en: 'Provide O3 liquidity on DEX to unlock your O3',
-    zh: '',
+    zh: '提供O3流动性以解锁O3',
   },
 };
 

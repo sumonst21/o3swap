@@ -399,14 +399,14 @@
         </div>
       </div>
     </div>
-    <div class="modal-content tx-modal-content" *ngIf="txAtPage==='vault'">
-      <div class="header">
+    <div class="modal-content tx-modal-content mobile-content" *ngIf="txAtPage==='vault'">
+      <div class="header flex-end">
         <img *ngIf='vaultTransaction?.isPending' (click)="minTxHashModal()" class="close"
           src="/assets/images/swap-result/close-pending.png" alt="">
         <img *ngIf='!vaultTransaction?.isPending' (click)="minTxHashModal()" class="close"
           src="/assets/images/swap/close.png" alt="">
       </div>
-      <div class="content">
+      <div class="content scroll">
         <div class="status-img">
           <ng-lottie *ngIf='!vaultTransaction?.isFailed && vaultTransaction?.isPending' class="pending-json"
             [options]="pendingOptions"></ng-lottie>

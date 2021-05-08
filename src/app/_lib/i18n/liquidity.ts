@@ -57,15 +57,15 @@ const liquidity = {
   },
   lpBalanceTip: {
     en: 'Please connect ETH wallet to view the Balance',
-    zh: '请连接ETH钱包查看余额',
+    zh: '请先连接以太坊钱包查看余额',
   },
   LegacyLPTip: {
     en: 'Please go to Legacy LP to remove your BUSD_LP and HUSD_LP',
-    zh: '',
+    zh: '请至旧版流动性移除BUSD_LP和HUSD_LP',
   },
   LegacyLP: {
     en: 'Legacy LP',
-    zh: ''
+    zh: '旧版流动性'
   },
 };
 
