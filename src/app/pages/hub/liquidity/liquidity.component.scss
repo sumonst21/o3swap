@@ -42,6 +42,13 @@
         span {
           color: #8aa1a1;
         }
+        img.question {
+          width: 14px;
+          height: 14px;
+          margin-left: 5px;
+          cursor: pointer;
+          vertical-align: bottom;
+        }
       }
       .content {
         display: flex;
@@ -123,9 +130,27 @@
         border-radius: 20px;
         display: flex;
         flex-direction: column;
-        padding: 40px 30px 30px 40px;
+        padding: 20px 30px 30px 40px;
         background-color: #202020;
         z-index: 100;
+        .legacy-lp {
+          text-align: right;
+          margin-bottom: 10px;
+          img {
+            width: 14px;
+            height: 14px;
+            margin-right: 3px;
+            cursor: pointer;
+          }
+          a {
+            font-size: 12px;
+            text-decoration: underline;
+            color: #546a6a;
+            &:hover {
+              color: #46b069;
+            }
+          }
+        }
         .list-wrap {
           li {
             margin-top: 10px;
@@ -266,6 +291,9 @@
                   height: 50px;
                   background: #2f2f3b;
                   border-radius: 6px;
+                  &:hover {
+                    background: #6162ef;
+                  }
                 }
                 .showPolyFeeArrow {
                   width: 25px;
@@ -396,4 +424,7 @@
   .row2 {
     margin-top: 20px;
   }
+}
+.page-container.mobile {
+  display: none;
 }

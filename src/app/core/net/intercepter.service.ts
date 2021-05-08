@@ -64,21 +64,6 @@ export class HttpInterceptor implements NgHttpInterceptor {
 
   private handleError(ev: HttpResponseBase): Observable<any> {
     this.checkStatus(ev);
-    switch (ev.status) {
-      case 200:
-        if (ev instanceof HttpResponse) {
-          const body: CommonHttpResponse = ev.body;
-          if (
-            body.status === 'error' &&
-            INGORE_ERROR.has(body.error_code) === false
-          ) {
-            const errortext = RESPONSE_ERROR[body.error_code] || body.error_msg;
-            this.message.error(errortext);
-          }
-          return of(ev);
-        }
-        break;
-    }
     return of(ev);
   }
 }

@@ -2,7 +2,7 @@
   <div class="group-container row1">
     <div class="item">
       <div class="header">
-        {{LPToken ? LPToken.symbol : '--' }} <span>BALANCE</span>
+        {{LPToken ? LPToken.symbol : '--' }} <span>{{ 'BALANCE' | translate: lang:langPageName }}</span>
       </div>
       <div class="content">
         <div class="value">
@@ -13,29 +13,29 @@
     </div>
     <div class="item">
       <div class="header">
-        {{LPToken ? LPToken.symbol : '--' }} <span>STAKED</span>
+        {{LPToken ? LPToken.symbol : '--' }} <span>{{ 'STAKED' | translate: lang:langPageName }}</span>
       </div>
       <div class="content">
         <div class="value">
           <span class="amount">--</span>
           <span class="rate">≈＄0.0</span>
         </div>
-        <div class="btn-primary receive-btn" nz-tooltip nzTooltipTitle="Coming soon..." nzTooltipPlacement="top">
-          STAKE
+        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'" nzTooltipPlacement="top">
+          {{ 'STAKE' | translate: lang:langPageName }}
         </div>
       </div>
     </div>
     <div class="item">
       <div class="header">
-        O3 <span>EARNED</span>
+        O3 <span>{{ 'EARNED' | translate: lang:langPageName }}</span>
       </div>
       <div class="content">
         <div class="value">
           <span class="amount">--</span>
           <span class="rate">≈＄0.0</span>
         </div>
-        <div class="btn-primary receive-btn" nz-tooltip nzTooltipTitle="Coming soon..." nzTooltipPlacement="top">
-          CLAIM
+        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'" nzTooltipPlacement="top">
+          {{ 'CLAIM' | translate: lang:langPageName }}
         </div>
       </div>
     </div>
@@ -44,10 +44,10 @@
     <div class="tab-wrap">
       <div class="tab-nav-scroll">
         <div class="tabs tabs-add">
-          Add Liquidity
+          {{ 'AddLiquidity' | translate: lang:langPageName }}
         </div>
         <div class="tabs tabs-remove removeActive">
-          Remove Liquidity
+          {{ 'RemoveLiquidity' | translate: lang:langPageName }}
         </div>
       </div>
       <div class="tab-content">
@@ -69,29 +69,29 @@
                 </div>
                 <div class="right">
                   <div class="input-container">
-                    <input type="number" title="Receive amount" (input)="changeOutAmount(tokenItem, i)"
+                    <input type="number" title="Receive amount" (input)="changeOutAmount(tokenItem, i, $event)"
                       [(ngModel)]="removeLiquidityInputAmount[i]" placeholder="0.0">
                   </div>
                   <div class="max-status" (click)="maxRemoveLiquidityInput(i)"
-                    [ngClass]="{active: tokenItem.amount != '--'}">MAX</div>
+                    [ngClass]="{active: tokenItem.amount != '--'}">{{ 'MAX' | translate: lang:langPageName }}</div>
                   <div class="balance">
-                    <span>Balance</span>
+                    <span>{{ 'Balance' | translate: lang:langPageName }}</span>
                     <app-long-balance [balance]="tokenItem?.amount"></app-long-balance>
                   </div>
                 </div>
               </div>
               <div class="receive">
-                <span>PayAmount</span>
+                <span>{{ 'PayLP' | translate: lang:langPageName }}</span>
                 <app-long-balance [balance]="payAmount[i]"></app-long-balance>
               </div>
               <div class="btn-primary btn-liquidity" (click)=" withdrawal(tokenItem, i)">
-                Withdraw
+                {{ 'Withdraw' | translate: lang:langPageName }}
               </div>
             </li>
           </ng-container>
         </ul>
         <div class="slipvalue">
-          <span class="name">Max slippage：</span>
+          <span class="name">{{ 'MaxSlippage' | translate: lang:langPageName }}：</span>
           <span class="value">{{BRIDGE_SLIPVALUE}}%</span>
         </div>
       </div>

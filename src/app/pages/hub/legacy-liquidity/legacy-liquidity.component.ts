@@ -1,22 +1,11 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  ChangeDetectorRef,
-} from '@angular/core';
-import {
-  ApiService,
-  CommonService,
-  MetaMaskWalletApiService,
-  O3EthWalletApiService,
-} from '@core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ApiService, CommonService, EthApiService, SwapService } from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { SwapStateType } from 'src/app/_lib/swap';
 import {
   SWAP_CONTRACT_CHAIN_ID,
   METAMASK_CHAIN,
-  METAMASK_CHAIN_ID,
   BRIDGE_SLIPVALUE,
   Token,
   USD_TOKENS,
@@ -24,81 +13,97 @@ import {
   ETH_PUSDT_ASSET,
   ConnectChainType,
   EthWalletName,
+  MESSAGE,
 } from '@lib';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { ApproveComponent } from '@shared';
+import { ApproveDrawerComponent, ApproveModalComponent } from '@shared';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
   swap: SwapStateType;
   rates: any;
+  language: any;
 }
 @Component({
   selector: 'app-legacy-liquidity',
   templateUrl: './legacy-liquidity.component.html',
-  styleUrls: ['../liquidity/liquidity.component.scss', './legacy-liquidity.component.scss'],
+  styleUrls: [
+    '../liquidity/liquidity.component.scss',
+    './legacy-liquidity.component.scss',
+  ],
 })
 export class LegacyLiquidityComponent implements OnInit, OnDestroy {
-  BRIDGE_SLIPVALUE = BRIDGE_SLIPVALUE;
-  swapProgress = 20;
-  addLiquidityTokens: Token[] = JSON.parse(JSON.stringify(USD_TOKENS));
-  USDTToken: Token = this.addLiquidityTokens.find(
+  public BRIDGE_SLIPVALUE = BRIDGE_SLIPVALUE;
+  public addLiquidityTokens: Token[] = JSON.parse(JSON.stringify(USD_TOKENS));
+  public USDTToken: Token = this.addLiquidityTokens.find(
     (item) => item.symbol.indexOf('USDT') >= 0
   );
-  BUSDToken: Token = this.addLiquidityTokens.find(
+  public BUSDToken: Token = this.addLiquidityTokens.find(
     (item) => item.symbol.indexOf('BUSD') >= 0
   );
-  HUSDToken: Token = this.addLiquidityTokens.find(
+  public HUSDToken: Token = this.addLiquidityTokens.find(
     (item) => item.symbol.indexOf('HUSD') >= 0
   );
 
-  LPToken: Token;
-  LPTokens: Token[];
-  removeLiquidityInputAmount = [];
-  payAmount: string[] = [];
-  currentAddress: string;
-  currentChain: string;
-  showConnectWallet = false;
-  connectChainType: ConnectChainType;
+  public LPToken: Token;
+  private LPTokens: Token[];
+  public removeLiquidityInputAmount = [];
+  public payAmount: string[] = [];
+  private currentAddress: string;
+  private currentChain: string;
+  public showConnectWallet = false;
+  public connectChainType: ConnectChainType;
 
-  swap$: Observable<any>;
-  swapUnScribe: Unsubscribable;
-  ethAccountAddress: string;
-  bscAccountAddress: string;
-  hecoAccountAddress: string;
-  ethWalletName: EthWalletName;
-  bscWalletName: EthWalletName;
-  hecoWalletName: EthWalletName;
-  metamaskNetworkId: number;
-  tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
+  private swap$: Observable<any>;
+  private swapUnScribe: Unsubscribable;
+  private ethAccountAddress: string;
+  private bscAccountAddress: string;
+  private hecoAccountAddress: string;
+  private ethWalletName: EthWalletName;
+  private bscWalletName: EthWalletName;
+  private hecoWalletName: EthWalletName;
+  private metamaskNetworkId: number;
+  private tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
 
-  ratesUnScribe: Unsubscribable;
-  rates$: Observable<any>;
-  rates = {};
+  private ratesUnScribe: Unsubscribable;
+  private rates$: Observable<any>;
+  private rates = {};
 
-  pusdtBalance = {
+  public pusdtBalance = {
     ALL: '',
     ETH: { value: '', percentage: '0' },
     BSC: { value: '', percentage: '0' },
     HECO: { value: '', percentage: '0' },
   };
 
+  public langPageName = 'liquidity';
+  private langUnScribe: Unsubscribable;
+  private language$: Observable<any>;
+  public lang: string;
+
   constructor(
     private apiService: ApiService,
     private commonService: CommonService,
     public store: Store<State>,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private o3EthWalletApiService: O3EthWalletApiService,
     private nzMessage: NzMessageService,
     private changeDetectorRef: ChangeDetectorRef,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private drawerService: NzDrawerService,
+    private ethApiService: EthApiService,
+    private swapService: SwapService
   ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.swap$ = store.select('swap');
     this.rates$ = store.select('rates');
-    this.addLiquidityTokens.forEach(() => {
+    this.addLiquidityTokens.forEach((item) => {
       this.removeLiquidityInputAmount.push('');
       this.payAmount.push('--');
+      item.amount = '--';
     });
   }
 
@@ -108,11 +113,6 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     });
     this.getPusdtBalance();
     this.LPTokens = JSON.parse(JSON.stringify(LP_TOKENS));
-    this.addLiquidityTokens.forEach((item) => {
-      if (this.metaMaskWalletApiService !== METAMASK_CHAIN_ID[item.chain]) {
-        item.amount = '--';
-      }
-    });
     this.swapUnScribe = this.swap$.subscribe((state: SwapStateType) => {
       this.ethAccountAddress = state.ethAccountAddress;
       this.bscAccountAddress = state.bscAccountAddress;
@@ -120,7 +120,8 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       this.ethWalletName = state.ethWalletName;
       this.bscWalletName = state.bscWalletName;
       this.hecoWalletName = state.hecoWalletName;
-      this.getCurrentChain(state.metamaskNetworkId);
+      this.metamaskNetworkId = state.metamaskNetworkId;
+      this.getCurrentChain();
       this.handleAccountBalance(state);
       this.handleCurrentAddress();
       this.getLPBalance();
@@ -134,6 +135,9 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     }
     if (this.ratesUnScribe) {
       this.ratesUnScribe.unsubscribe();
+    }
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
     }
   }
 
@@ -177,13 +181,21 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       .toFixed();
   }
 
-  async changeOutAmount(token: Token, index: number): Promise<void> {
+  async changeOutAmount(token: Token, index: number, $event?): Promise<void> {
+    if (
+      $event &&
+      this.checkInputAmountDecimal($event.target.value, token.decimals) ===
+        false
+    ) {
+      this.payAmount[index] = '--';
+      return;
+    }
     const inputAmount = new BigNumber(this.removeLiquidityInputAmount[index]);
     if (!inputAmount.isNaN() && inputAmount.comparedTo(0) > 0) {
-      if (inputAmount.comparedTo(50) === 1) {
-        this.nzMessage.error(`You've exceeded the maximum limit`);
-        return;
-      }
+      // if (inputAmount.comparedTo(50) === 1) {
+      //   this.nzMessage.error(MESSAGE.maximumLimit[this.lang]);
+      //   return;
+      // }
       this.payAmount[index] = await this.apiService.getPoolInGivenSingleOut(
         token,
         this.removeLiquidityInputAmount[index]
@@ -194,6 +206,9 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   }
 
   async maxRemoveLiquidityInput(index: number): Promise<void> {
+    if (!this.LPToken) {
+      return;
+    }
     if (
       !new BigNumber(this.LPToken.amount).isNaN() &&
       !new BigNumber(this.LPToken.amount).isZero()
@@ -210,24 +225,26 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   }
 
   async withdrawal(token: Token, index: number): Promise<void> {
+    if (!this.LPToken) {
+      return;
+    }
     if (this.checkWalletConnect(token) === false) {
       return;
     }
-    const swapApi = this.getEthDapiService();
-    if (swapApi.checkNetwork(token) === false) {
+    if (this.ethApiService.checkNetwork(token) === false) {
       return;
     }
     const lpBalance = new BigNumber(this.LPToken.amount);
     const lpPayAmount = new BigNumber(this.payAmount[index]);
     if (lpPayAmount.isNaN() || lpPayAmount.comparedTo(0) <= 0) {
-      this.nzMessage.error('Wrong input');
+      this.nzMessage.error(MESSAGE.WrongInput[this.lang]);
       return;
     }
     if (lpBalance.comparedTo(lpPayAmount) < 0) {
-      this.nzMessage.error('Insufficient balance');
+      this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return;
     }
-    const allowance = await swapApi.getAllowance(
+    const allowance = await this.ethApiService.getAllowance(
       this.LPToken,
       this.currentAddress
     );
@@ -241,7 +258,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       .dp(0)
       .toFixed();
     const fee = await this.apiService.getFromEthPolyFee(token, token);
-    swapApi
+    this.ethApiService
       .removeLiquidity(
         this.LPToken,
         token,
@@ -260,6 +277,15 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   }
 
   //#region
+  checkInputAmountDecimal(amount: string, decimals: number): boolean {
+    const decimalPart = amount && amount.split('.')[1];
+    if (decimalPart && decimalPart.length > decimals) {
+      this.nzMessage.error(MESSAGE.decimalLimit[this.lang]);
+      return false;
+    }
+    return true;
+  }
+
   showApproveModal(token: Token): void {
     let walletName: string;
     switch (token.chain) {
@@ -273,56 +299,78 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    this.modal.create({
-      nzContent: ApproveComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzMaskClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        fromToken: token,
-        fromAddress: this.currentAddress,
-        walletName,
-      },
-    });
+    if (!this.commonService.isMobileWidth()) {
+      this.modal.create({
+        nzContent: ApproveModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzMaskClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          fromToken: token,
+          fromAddress: this.currentAddress,
+          walletName,
+        },
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: ApproveDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer approve',
+        nzContentParams: {
+          fromToken: token,
+          fromAddress: this.currentAddress,
+          walletName,
+        },
+      });
+    }
   }
   checkWalletConnect(token: Token): boolean {
     if (token.chain === 'ETH' && !this.ethAccountAddress) {
-      this.nzMessage.error('Please connect the ETH wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['ETH']));
       this.showConnectWallet = true;
       this.connectChainType = 'ETH';
       return false;
     }
     if (token.chain === 'BSC' && !this.bscAccountAddress) {
-      this.nzMessage.error('Please connect the BSC wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['BSC']));
       this.showConnectWallet = true;
       this.connectChainType = 'BSC';
       return false;
     }
     if (token.chain === 'HECO' && !this.hecoAccountAddress) {
-      this.nzMessage.error('Please connect the HECO wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['HECO']));
       this.showConnectWallet = true;
       this.connectChainType = 'HECO';
       return false;
     }
     return true;
   }
-  getCurrentChain(metamaskNetworkId): void {
-    if (this.currentChain !== METAMASK_CHAIN[metamaskNetworkId]) {
-      this.currentChain = METAMASK_CHAIN[metamaskNetworkId];
+  getCurrentChain(): void {
+    if (this.currentChain !== METAMASK_CHAIN[this.metamaskNetworkId]) {
+      this.currentChain = METAMASK_CHAIN[this.metamaskNetworkId];
       const token = this.LPTokens.find(
         (item) => item.chain === this.currentChain
       );
-      this.LPToken = JSON.parse(JSON.stringify(token));
+      this.LPToken = token && JSON.parse(JSON.stringify(token));
     }
   }
   private getLPBalance(): void {
     if (!this.LPToken) {
       return;
     }
-    const swapApi = this.getEthDapiService();
-    swapApi.getBalancByHash(this.LPToken).then((res) => {
+    if (
+      (this.LPToken.chain === 'ETH' && !this.ethWalletName) ||
+      (this.LPToken.chain === 'BSC' && !this.bscWalletName) ||
+      (this.LPToken.chain === 'HECO' && !this.hecoWalletName)
+    ) {
+      this.LPToken.amount = '--';
+      return;
+    }
+    this.swapService.getEthBalancByHash(this.LPToken).then((res) => {
       // this.LPToken['amount'] = res || '0';
       if (this.LPToken.amount !== res) {
         this.getPusdtBalance();
@@ -340,13 +388,15 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
           item.assetID
         ].amount;
       } else {
-        this.addLiquidityTokens[index].amount = '--';
-      }
-      if (item.chain === this.currentChain && item.amount === '--') {
-        this.addLiquidityTokens[index].amount = '0';
-      }
-      if (item.chain !== this.currentChain) {
-        this.addLiquidityTokens[index].amount = '--';
+        if (
+          (item.chain === 'ETH' && this.ethAccountAddress) ||
+          (item.chain === 'BSC' && this.bscAccountAddress) ||
+          (item.chain === 'HECO' && this.hecoAccountAddress)
+        ) {
+          this.addLiquidityTokens[index].amount = '0';
+        } else {
+          this.addLiquidityTokens[index].amount = '--';
+        }
       }
     });
   }
@@ -367,23 +417,6 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       default:
         return;
     }
-  }
-  getEthDapiService(): any {
-    let walletName;
-    switch (this.currentChain) {
-      case 'ETH':
-        walletName = this.ethWalletName;
-        break;
-      case 'BSC':
-        walletName = this.bscWalletName;
-        break;
-      case 'HECO':
-        walletName = this.hecoWalletName;
-        break;
-    }
-    return walletName === 'MetaMask' || !walletName
-      ? this.metaMaskWalletApiService
-      : this.o3EthWalletApiService;
   }
   //#endregion
 }

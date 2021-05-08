@@ -26,7 +26,7 @@ import {
   WETH_ASSET_HASH,
   LP_TOKENS,
   UPDATE_CHAIN_TOKENS,
-  ChainTokens,
+  INIT_CHAIN_TOKENS,
   NEO_TOKEN,
   CHAINS,
   UPDATE_RATES,
@@ -45,9 +45,10 @@ interface State {
 export class ApiService {
   apiDo = environment.apiDomain;
   RATE_HOST = 'https://hub.o3.network/v1';
+  TOTAL_DATA_HOST = 'https://monitor.api.o3swap.com';
 
   tokens$: Observable<any>;
-  chainTokens = new ChainTokens();
+  chainTokens = INIT_CHAIN_TOKENS;
 
   constructor(
     private http: HttpClient,
@@ -61,6 +62,9 @@ export class ApiService {
   //#region home
   postEmail(email: string): Observable<any> {
     return this.http.post(`https://subscribe.o3swap.com/subscribe`, { email });
+  }
+  getTotalData(): Observable<any> {
+    return this.http.get(`${this.TOTAL_DATA_HOST}/v1/statistics`);
   }
   //#endregion
 
@@ -290,7 +294,7 @@ export class ApiService {
       .pipe(
         map((res: any) => {
           const target: TxProgress = {
-            step1: { hash: '', status: 1 },
+            step1: { hash, status: 1 },
             step2: { hash: '', status: 0 },
             step3: { hash: '', status: 0 },
           };
@@ -397,7 +401,11 @@ export class ApiService {
    * @param amount LP amount
    * @return promise
    */
-  getSingleOutGivenPoolIn(fromToken: Token, amount: string, isUsdtLp = true): Promise<string> {
+  getSingleOutGivenPoolIn(
+    fromToken: Token,
+    amount: string,
+    isUsdtLp = true
+  ): Promise<string> {
     let poolPUsdtHash = ETH_PUSDT_ASSET.ETH.assetID;
     if (isUsdtLp === false) {
       poolPUsdtHash = ETH_PUSDT_ASSET[fromToken.chain].assetID;

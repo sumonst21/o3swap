@@ -1,10 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import {
-  ApiService,
-  MetaMaskWalletApiService,
-  O3EthWalletApiService,
-  CommonService,
-} from '@core';
+import { ApiService, EthApiService, CommonService } from '@core';
 import {
   BRIDGE_SLIPVALUE,
   EthWalletName,
@@ -15,24 +10,31 @@ import {
   ConnectChainType,
   ETH_SOURCE_ASSET_HASH,
   CONST_BRIDGE_TOKENS,
-  ChainTokens,
+  INIT_CHAIN_TOKENS,
+  MESSAGE,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import BigNumber from 'bignumber.js';
 import { interval, Observable, Unsubscribable } from 'rxjs';
-import { ApproveComponent } from '@shared';
+import {
+  ApproveModalComponent,
+  ApproveDrawerComponent,
+  HubTokenComponent,
+} from '@shared';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
   swap: SwapStateType;
   tokens: any;
   rates: any;
+  language: any;
 }
 @Component({
   selector: 'app-hub',
   templateUrl: './hub.component.html',
-  styleUrls: ['./hub.component.scss'],
+  styleUrls: ['./hub.component.scss', './mobile.scss'],
 })
 export class HubComponent implements OnInit, OnDestroy {
   CONST_BRIDGE_TOKENS = CONST_BRIDGE_TOKENS;
@@ -61,7 +63,7 @@ export class HubComponent implements OnInit, OnDestroy {
 
   tokensUnScribe: Unsubscribable;
   tokens$: Observable<any>;
-  chainTokens = new ChainTokens();
+  chainTokens = INIT_CHAIN_TOKENS;
 
   ratesUnScribe: Unsubscribable;
   rates$: Observable<any>;
@@ -79,16 +81,25 @@ export class HubComponent implements OnInit, OnDestroy {
   showConnectWallet = false;
   connectChainType: ConnectChainType;
 
+  langPageName = 'hub';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
+
   constructor(
     public store: Store<State>,
     private apiService: ApiService,
     private modal: NzModalService,
     private nzMessage: NzMessageService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
     private changeDetectorRef: ChangeDetectorRef,
-    private o3EthWalletApiService: O3EthWalletApiService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private drawerService: NzDrawerService,
+    private ethApiService: EthApiService
   ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.swap$ = store.select('swap');
     this.tokens$ = store.select('tokens');
     this.rates$ = store.select('rates');
@@ -102,6 +113,9 @@ export class HubComponent implements OnInit, OnDestroy {
     }
     if (this.ratesUnScribe) {
       this.ratesUnScribe.unsubscribe();
+    }
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
     }
   }
 
@@ -127,7 +141,28 @@ export class HubComponent implements OnInit, OnDestroy {
     });
   }
 
+  clickShowTokenListModal(type: 'from' | 'to'): void {
+    if (!this.commonService.isMobileWidth()) {
+      return;
+    }
+    const drawerRef = this.drawerService.create({
+      nzContent: HubTokenComponent,
+      nzTitle: null,
+      nzClosable: false,
+      nzPlacement: 'bottom',
+      nzWrapClassName: 'custom-drawer',
+    });
+    drawerRef.afterClose.subscribe((token) => {
+      if (token) {
+        this.selectToken(type, token);
+      }
+    });
+  }
+
   showTokenListModal(type: 'from' | 'to'): void {
+    if (this.commonService.isMobileWidth()) {
+      return;
+    }
     if (type === 'from') {
       clearTimeout(this.showFromTokenListModalTimeout);
       this.showFromTokenList = true;
@@ -148,6 +183,7 @@ export class HubComponent implements OnInit, OnDestroy {
       }, 200);
     }
   }
+
   selectToken(type: 'from' | 'to', token: Token): void {
     this.showFromTokenList = false;
     this.showToTokenList = false;
@@ -234,8 +270,7 @@ export class HubComponent implements OnInit, OnDestroy {
     if (!this.fromAddress || !this.toAddress) {
       this.getFromAndToAddress();
     }
-    const swapApi = this.getEthDapiService();
-    if (swapApi.checkNetwork(this.fromToken) === false) {
+    if (this.ethApiService.checkNetwork(this.fromToken) === false) {
       return;
     }
     if (this.checkBalance() === false) {
@@ -250,7 +285,7 @@ export class HubComponent implements OnInit, OnDestroy {
       .shiftedBy(this.toToken.decimals)
       .dp(0)
       .toFixed();
-    swapApi
+    this.ethApiService
       .swapCrossChain(
         this.fromToken,
         this.toToken,
@@ -292,19 +327,34 @@ export class HubComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    this.modal.create({
-      nzContent: ApproveComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzMaskClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        fromToken: this.fromToken,
-        fromAddress: this.fromAddress,
-        walletName,
-      },
-    });
+    if (!this.commonService.isMobileWidth()) {
+      this.modal.create({
+        nzContent: ApproveModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzMaskClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          fromToken: this.fromToken,
+          fromAddress: this.fromAddress,
+          walletName,
+        },
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: ApproveDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer approve',
+        nzContentParams: {
+          fromToken: this.fromToken,
+          fromAddress: this.fromAddress,
+          walletName,
+        },
+      });
+    }
   }
   resetSwapData(): void {
     this.fromToken = JSON.parse(JSON.stringify(USD_TOKENS[0]));
@@ -340,7 +390,7 @@ export class HubComponent implements OnInit, OnDestroy {
       (this.fromToken.chain === 'ETH' || this.toToken.chain === 'ETH') &&
       !this.ethAccountAddress
     ) {
-      this.nzMessage.error('Please connect the ETH wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['ETH']));
       this.showConnectWallet = true;
       this.connectChainType = 'ETH';
       return false;
@@ -349,7 +399,7 @@ export class HubComponent implements OnInit, OnDestroy {
       (this.fromToken.chain === 'BSC' || this.toToken.chain === 'BSC') &&
       !this.bscAccountAddress
     ) {
-      this.nzMessage.error('Please connect the BSC wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['BSC']));
       this.showConnectWallet = true;
       this.connectChainType = 'BSC';
       return false;
@@ -358,7 +408,7 @@ export class HubComponent implements OnInit, OnDestroy {
       (this.fromToken.chain === 'HECO' || this.toToken.chain === 'HECO') &&
       !this.hecoAccountAddress
     ) {
-      this.nzMessage.error('Please connect the HECO wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['HECO']));
       this.showConnectWallet = true;
       this.connectChainType = 'HECO';
       return false;
@@ -389,26 +439,8 @@ export class HubComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  getEthDapiService(): any {
-    let walletName;
-    switch (this.fromToken?.chain) {
-      case 'ETH':
-        walletName = this.ethWalletName;
-        break;
-      case 'BSC':
-        walletName = this.bscWalletName;
-        break;
-      case 'HECO':
-        walletName = this.hecoWalletName;
-        break;
-    }
-    return walletName === 'MetaMask' || !walletName
-      ? this.metaMaskWalletApiService
-      : this.o3EthWalletApiService;
-  }
   async checkShowApprove(): Promise<boolean> {
-    const swapApi = this.getEthDapiService();
-    const balance = await swapApi.getAllowance(
+    const balance = await this.ethApiService.getAllowance(
       this.fromToken,
       this.fromAddress
     );
@@ -427,7 +459,7 @@ export class HubComponent implements OnInit, OnDestroy {
       decimalPart &&
       decimalPart.length > this.fromToken.decimals
     ) {
-      this.inputAmountError = `You've exceeded the decimal limit.`;
+      this.inputAmountError = MESSAGE.decimalLimit[this.lang];
       return false;
     }
     this.inputAmountError = '';
@@ -447,14 +479,15 @@ export class HubComponent implements OnInit, OnDestroy {
       this.inputAmountError = '';
       return;
     }
-    const inputAmountBig = new BigNumber(this.inputAmount);
-    const maxAmountBig = new BigNumber(usdToken.maxAmount);
-    if (inputAmountBig.comparedTo(maxAmountBig) === 1) {
-      this.inputAmountError = `You've exceeded the maximum limit`;
-      return false;
-    } else {
-      return true;
-    }
+    // const inputAmountBig = new BigNumber(this.inputAmount);
+    // const maxAmountBig = new BigNumber(usdToken.maxAmount);
+    // if (inputAmountBig.comparedTo(maxAmountBig) === 1) {
+    //   this.inputAmountError = MESSAGE.maximumLimit[this.lang];
+    //   return false;
+    // } else {
+    //   return true;
+    // }
+    return true;
   }
 
   calcutionInputAmountFiat(): void {
@@ -528,7 +561,7 @@ export class HubComponent implements OnInit, OnDestroy {
         new BigNumber(this.inputAmount)
       ) < 0
     ) {
-      this.nzMessage.error('Insufficient balance');
+      this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return false;
     }
     // 有 poly fee，转非原生资产
@@ -540,7 +573,9 @@ export class HubComponent implements OnInit, OnDestroy {
         ) < 0)
     ) {
       this.nzMessage.error(
-        `Insufficient ${SOURCE_TOKEN_SYMBOL[this.fromToken.chain]} for poly fee`
+        MESSAGE.InsufficientPolyFee[this.lang]([
+          SOURCE_TOKEN_SYMBOL[this.fromToken.chain],
+        ])
       );
       return false;
     }

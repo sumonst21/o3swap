@@ -2,102 +2,159 @@
   <div class="detail">
     <div class="item-container row-1">
       <div class="item-group item-total">
-        <div class="group-title">Available</div>
-        <div class="group-content">9.31673761 O3</div>
-        <div class="group-title">Available</div>
+        <div class="group-title">{{ 'Total' | translate: lang:langPageName }}</div>
+        <div class="group-content"><span>
+            <app-long-balance [balance]="o3Total || '--'">
+            </app-long-balance>
+          </span> O3</div>
+        <div class="group-title">{{ 'Locked' | translate: lang:langPageName }} <app-long-balance
+            [balance]="o3Locked  || '--'">
+          </app-long-balance> O3</div>
       </div>
       <div class="item-group">
-        <div class="group-title">Available</div>
-        <div class="group-content">9.31673761 O3</div>
-        <div class="btn-primary receive-btn">Receive</div>
+        <div class="group-title">{{ 'Available' | translate: lang:langPageName }}</div>
+        <div class="group-content"><span>
+            <app-long-balance [balance]="o3Available || '--'">
+            </app-long-balance>
+          </span> O3</div>
+        <!-- <div class="btn-primary receive-btn">Receive</div> -->
       </div>
       <div class="item-group">
-        <div class="group-title">To be unlocked</div>
-        <div class="group-content">9.31673761 O3</div>
-        <div class="group-icon">
-          <img nz-tooltip nzTooltipTitle="Coming soon..." nzTooltipPlacement="right" src="/assets/images/dashboard/doubt.png" alt="">
-        </div>
+        <div class="group-title">{{ 'TotalProfit' | translate: lang:langPageName }}</div>
+        <div class="group-content"><span>
+            <app-long-balance [balance]="totalProfit || '--'">
+            </app-long-balance>
+          </span> O3</div>
       </div>
     </div>
     <div class="item-container row-2">
       <div class="list-container">
         <div class="list-head">
-          <div class="list-head-title">Unlock zone</div>
-          <div class="list-head-right">
-            <div class="name">Unlocked amount: </div>
-            9.31673761 O3
-            <div class="name">Speed value: </div>
-            8.60
+          <div class="list-head-title">{{ 'Unlock' | translate: lang:langPageName }} O3</div>
+          <div class="group-icon">
+            <img nz-tooltip [nzTooltipTitle]="'unlockO3Tip' | translate: lang:langPageName" nzTooltipPlacement="right"
+              src="/assets/images/dashboard/doubt.png" alt="">
           </div>
+          <!-- <div class="list-head-right">
+            <p>
+              <span class="name">Unlocked amount:</span>
+              &nbsp;
+              <span class="value">{{ o3ClaimableUnlocked || '--' }} O3</span>
+            </p>
+            <p>
+              <span class="name">Speed value: </span>
+              &nbsp;
+              <span class="value">{{ o3UnlockSpeed || '' }}</span>
+            </p>
+          </div> -->
         </div>
         <div class="tran-list">
-          <div class="row-head">
-            <div class="col"></div>
-            <div class="col">Name</div>
-            <div class="col">Staked</div>
-            <div class="col">Remaining</div>
-            <div class="col">Release value</div>
-            <div class="col">APY%</div>
-            <div class="col"></div>
-            <div class="col"></div>
-          </div>
-          <div class="warpper">
-            <div class="row">
-              <div class="col"><img class="token-img" src="" alt=""></div>
-              <div class="col">Name</div>
-              <div class="col">Staked</div>
-              <div class="col">Remaining</div>
-              <div class="col">Release value</div>
-              <div class="col">APY%</div>
-              <div class="col">
-                <div class="btn-primary">
-                  Stake
-                </div>
-              </div>
-              <div class="col">
-                <div class="btn-primary unstake-btn">
-                  Unstake
-                </div>
-              </div>
-            </div>
-          </div>
+          <nz-table class="unlock-zone" nzAlign="center" nzTemplateMode [nzScroll]="{ x: '1200px', y: '500px' }">
+            <thead>
+              <tr>
+                <th *ngIf="!isMobile"></th>
+                <th [nzWidth]="isMobile ? '75px': '100px'">{{ 'Name' | translate: lang:langPageName }}</th>
+                <th>{{ 'Staked' | translate: lang:langPageName }}</th>
+                <th>{{ 'Remaining' | translate: lang:langPageName }}</th>
+                <th>{{ 'Speed' | translate: lang:langPageName }}</th>
+                <th>{{ 'UnlockedAmount' | translate: lang:langPageName }}</th>
+                <th nzRight [nzWidth]="isMobile ? '152px': '350px'"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of stakeUnlockTokenList; let i = index">
+                <td *ngIf="!isMobile"><img class="token-img" [src]="item.logo" alt=""></td>
+                <td><img *ngIf="isMobile" class="token-img" [src]="item.logo"
+                    alt="">{{ stakeUnlockTokenList[i].symbol }}</td>
+                <td>
+                  <app-long-balance [balance]="item.staked  || '--'">
+                  </app-long-balance>
+                </td>
+                <td>
+                  <app-long-balance [balance]="item.remaining || '--'">
+                  </app-long-balance>
+                </td>
+                <td>
+                  <app-long-balance [balance]="item.speed  || '--'">
+                  </app-long-balance>
+                </td>
+                <td>
+                  <app-long-balance [balance]="item.claimable  || '--'">
+                  </app-long-balance>
+                </td>
+                <td nzRight class="unlock-zone-btn-block">
+                  <button class="btn-primary deposit-btn claim-btn" (click)="claimUnlockO3(item)">
+                    {{ 'Claim' | translate: lang:langPageName }}
+                  </button>
+                  <button class="btn-primary deposit-btn get-lp-btn" (click)="claimUnlockO3(item)">
+                    {{ 'GetLP' | translate: lang:langPageName }}
+                  </button>
+                  <div>
+                    <button class="btn-primary stake-btn"
+                      (click)="showUnlockStake(stakeUnlockTokenList[i], item.remaining || '0')">
+                      {{ 'Stake' | translate: lang:langPageName }}
+                    </button>
+                    <button class="btn-primary unstake-btn"
+                      (click)="showUnlockStake(stakeUnlockTokenList[i], item.staked || '0', false)">
+                      {{ 'Unstake' | translate: lang:langPageName }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
         </div>
       </div>
     </div>
-    <div class="item-container row-2">
+
+    <div class="item-container row-3">
       <div class="left">
         <div class="title">
           <div class="name">
-            LP Staking
+            {{ 'StakeLPToEarnO3' | translate: lang:langPageName }}
           </div>
         </div>
         <div class="group-container">
-          <div class="item-group">
+          <div class="item-group" *ngFor="let item of lpstakingTokenList">
             <div class="item-group-title">
-              <div class="token"><img src="" alt="">pnUNI_V2_ETH_WBTC</div>
+              <div class="token"><img [src]="item.logo" alt="">{{ item.symbol }}</div>
               <div class="right">
-                <div class="btn-primary" (click)="showStake()">Stake</div>
-                <div class="btn-primary unstake-btn">Unstake</div>
+                <button class="btn-primary" (click)="showStakingStake(item, item.balance, true)">Stake</button>
+                <button class="btn-primary unstake-btn"
+                  (click)="showStakingStake(item, item.staked, false)">{{ 'Unstake' | translate: lang:langPageName }}</button>
               </div>
             </div>
             <div class="detail-item">
               <div class="col">
-                <div class="value">9.31673761</div>
-                <div class="name">Staked</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.staked  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'Staked' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
-                <div class="value">9.31673761</div>
-                <div class="name">Remaining</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.balance  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'Remaining' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
-                <div class="value">9.31673761</div>
-                <div class="name">Total Staking</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.totalStaking  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'TotalStaking' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
-                <div class="value">9.31673761</div>
+                <div class="value">--</div>
                 <div class="name">APY%</div>
               </div>
             </div>
+            <p class="line"></p>
+            <p class="claimable-box">{{ 'Claimable' | translate: lang:langPageName }} O3: &nbsp;<span
+                class="value">{{ item.profit }}</span><span class="claim-btn"
+                (click)="claimProfit(item)">{{ 'Claim' | translate: lang:langPageName }}</span></p>
           </div>
         </div>
 
@@ -105,28 +162,46 @@
       <div class="right">
         <div class="title">
           <div class="name">
-            O3 Staking
+            {{ 'StakeTokenToEarnO3' | translate: lang:langPageName }}
           </div>
         </div>
         <div class="group-container">
-          <div class="item-group">
+          <div class="item-group" *ngFor="let item of o3StakingTokenList">
             <div class="name">
-              <img src="" alt="" class="token-img">
-              pnUSDT
+              <img [src]="item.logo" alt="" class="token-img">
+              <div>
+                {{ item.symbol }}
+                <p class="claimable-box">{{ 'Claimable' | translate: lang:langPageName }} O3: &nbsp;<span
+                    class="value">{{ item.profit }}</span><span class="claim-btn"
+                    (click)="claimProfit(item)">{{ 'Claim' | translate: lang:langPageName }}</span></p>
+              </div>
+
             </div>
             <div class="detail-container">
               <div class="detail-item">
-                <div class="value">9.31673761</div>
-                <div class="name">Total Staking</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.staked  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'Staked' | translate: lang:langPageName }}</div>
               </div>
               <div class="detail-item">
-                <div class="value">9.31673761</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.totalStaking  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'TotalStaking' | translate: lang:langPageName }}</div>
+              </div>
+              <div class="detail-item">
+                <div class="value">--</div>
                 <div class="name">APY%</div>
               </div>
             </div>
             <div class="stake">
-              <span>Stake</span>
-              <span>Unstake</span>
+              <span
+                (click)="showStakingStake(item, item.balance, true)">{{ 'Stake' | translate: lang:langPageName }}</span>
+              <span
+                (click)="showStakingStake(item, item.staked, false)">{{ 'Unstake' | translate: lang:langPageName }}</span>
             </div>
           </div>
         </div>
@@ -135,3 +210,5 @@
   </div>
 
 </section>
+
+<app-tx-progress [txAtPage]="'vault'"></app-tx-progress>

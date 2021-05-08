@@ -20,9 +20,12 @@ import {
 import { CommonService } from '@core';
 import { Store } from '@ngrx/store';
 import { Observable, Unsubscribable } from 'rxjs';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { AccountComponent } from '@shared/modal/account/account.component';
 
 interface State {
   swap: SwapStateType;
+  language: any;
 }
 
 @Component({
@@ -34,8 +37,8 @@ export class HeaderConnectComponent implements OnInit, OnDestroy {
   connectChainType: ConnectChainType = 'ETH';
   showConnectModal = false; // connect wallet modal
 
-  swap$: Observable<any>;
   swapUnScribe: Unsubscribable;
+  swap$: Observable<any>;
   neoAccountAddress: string;
   ethAccountAddress: string;
   bscAccountAddress: string;
@@ -45,11 +48,23 @@ export class HeaderConnectComponent implements OnInit, OnDestroy {
   bscWalletName: EthWalletName;
   hecoWalletName: EthWalletName;
 
+  langPageName = 'app';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
+
+  isShowMobileModal = false;
+
   constructor(
     private store: Store<State>,
     private commonService: CommonService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private modal: NzModalService
   ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.swap$ = store.select('swap');
   }
 
@@ -71,6 +86,9 @@ export class HeaderConnectComponent implements OnInit, OnDestroy {
     if (this.swapUnScribe) {
       this.swapUnScribe.unsubscribe();
     }
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
+    }
   }
 
   showConnect(): void {
@@ -79,6 +97,52 @@ export class HeaderConnectComponent implements OnInit, OnDestroy {
 
   copy(value: string): void {
     this.commonService.copy(value);
+  }
+
+  showAccountModal(type: ConnectChainType): void {
+    let walletName;
+    let accountAddress;
+    switch (type) {
+      case 'NEO':
+        walletName = this.neoWalletName;
+        accountAddress = this.neoAccountAddress;
+        break;
+      case 'ETH':
+        walletName = this.ethWalletName;
+        accountAddress = this.ethAccountAddress;
+        break;
+      case 'BSC':
+        walletName = this.bscWalletName;
+        accountAddress = this.bscAccountAddress;
+        break;
+      case 'HECO':
+        walletName = this.hecoWalletName;
+        accountAddress = this.hecoAccountAddress;
+        break;
+    }
+    const modal = this.modal.create({
+      nzContent: AccountComponent,
+      nzFooter: null,
+      nzTitle: null,
+      nzClosable: false,
+      nzClassName: 'custom-modal',
+      nzComponentParams: {
+        chain: type,
+        walletName,
+        accountAddress,
+      },
+    });
+    modal.afterClose.subscribe((res) => {
+      if (res === 'change') {
+        this.changeWallet(type);
+      } else if (res === 'disconnect') {
+        this.disConnect(type);
+      }
+    });
+  }
+
+  stopPropagation(e): void {
+    e.stopPropagation();
   }
 
   //#region account modal

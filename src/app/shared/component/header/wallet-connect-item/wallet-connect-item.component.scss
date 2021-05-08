@@ -1,3 +1,4 @@
+@import "src/styles/variable.scss";
 ul.wallets {
   padding-left: 70px;
   li {
@@ -54,5 +55,12 @@ ul.wallets {
         margin-left: 7px;
       }
     }
+  }
+}
+
+@media screen and (max-width: $mobileMinWidth) {
+  ul.wallets {
+    padding-left: 90px;
+    padding-right: 5%;
   }
 }

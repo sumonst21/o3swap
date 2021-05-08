@@ -1,3 +1,4 @@
+@import "src/styles/variable.scss";
 .main {
   width: 100%;
   height: 100%;
@@ -18,14 +19,28 @@
 }
 
 .risk-tip {
+  width: 100%;
   height: 40px;
   line-height: 40px;
   background: #46b0691a;
-  font-family: 'fontRegular';
+  font-family: "fontRegular";
   padding-left: 72px;
   padding-right: 40px;
   position: relative;
-  img {
+
+  .risk-tip-text-box {
+    width: calc(100% - 80px);
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .risk-tip-text {
+    width: auto;
+    display: inline-block;
+    white-space: nowrap;
+    animation: 15s wordsLoop linear infinite normal;
+  }
+  img.risk-icon {
     width: 16px;
     height: 16px;
     margin-right: 8px;
@@ -36,6 +51,28 @@
     position: absolute;
     right: 40px;
     top: 14px;
+  }
+}
+
+@keyframes wordsLoop {
+  0% {
+    transform: translateX(100%);
+    -webkit-transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+  }
+}
+
+@-webkit-keyframes wordsLoop {
+  0% {
+    transform: translateX(100%);
+    -webkit-transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
   }
 }
 
@@ -53,7 +90,13 @@ header {
   }
   .logo {
     height: 30px;
-    line-height: 30px;
+  }
+  img.mobile-menu-icon {
+    display: none;
+  }
+  .right {
+    display: inline-flex;
+    align-items: center;
   }
   ul.menu {
     display: flex;
@@ -152,6 +195,9 @@ header {
       }
     }
   }
+  .right .language {
+    display: inline-block;
+  }
   @media screen and (max-width: 1680px) {
     ul.left-menu {
       left: 20px;
@@ -161,11 +207,138 @@ header {
       }
     }
   }
+
+  @media screen and (max-width: 800px) {
+    ul.left-menu {
+      display: none;
+    }
+  }
 }
 
-footer {
-  width: 1920px;
-  height: 400px;
-  margin-top: -93px;
-  background: #202020;
+@media screen and (max-width: $mobileMinWidth) {
+  .main.home {
+    background: #121212;
+    height: 100%;
+  }
+  header {
+    background: #181818;
+    .container {
+      padding: 0 5%;
+    }
+    .logo {
+      height: 28px;
+    }
+    img.mobile-menu-icon {
+      display: block;
+      height: 10px;
+      margin-left: 20px;
+    }
+    ul.menu,
+    ul.left-menu {
+      display: none;
+    }
+    .right .language {
+      display: none;
+    }
+  }
+  .risk-tip {
+    padding-left: 3%;
+    padding-right: 3%;
+    .risk-tip-text-box {
+      width: calc(100% - 50px);
+    }
+    img.close {
+      right: 3%;
+    }
+    .risk-tip-text {
+      animation: 15s wordsLoop1 linear infinite normal;
+    }
+  }
+  @keyframes wordsLoop1 {
+    0% {
+      transform: translateX(320px);
+      -webkit-transform: translateX(320px);
+    }
+    100% {
+      transform: translateX(-100%);
+      -webkit-transform: translateX(-100%);
+    }
+  }
+
+  @-webkit-keyframes wordsLoop1 {
+    0% {
+      transform: translateX(320px);
+      -webkit-transform: translateX(320px);
+    }
+    100% {
+      transform: translateX(-100%);
+      -webkit-transform: translateX(-100%);
+    }
+  }
+}
+
+ul.mobile-menu {
+  width: 80%;
+  position: absolute;
+  top: 90px;
+  right: 0;
+  bottom: 0;
+  font-size: 17px;
+  font-family: "fontDemiBold";
+  background: #303030;
+  padding: 0;
+  li {
+    height: 10%;
+    max-height: 84px;
+    min-height: 50px;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    a {
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+    &:nth-child(2n) {
+      background: #353535;
+    }
+    &.active {
+      background: linear-gradient(-30deg, #46b069, #00af92);
+    }
+  }
+  li.language {
+    height: 16px;
+    min-height: 16px;
+    line-height: 16px;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: #fff;
+    font-family: "fontMedium";
+    font-size: 16px;
+  }
+}
+
+.language {
+  margin-left: 20px;
+  .line {
+    margin: 0 12px;
+  }
+  span.canClick {
+    cursor: pointer;
+  }
+  span.active {
+    font-family: "fontBold";
+    color: #46b069;
+    background: -webkit-linear-gradient(
+      -30deg,
+      #46b069 0%,
+      #00af92 99.6337890625%
+    );
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }

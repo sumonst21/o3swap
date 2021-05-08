@@ -1,12 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ApiService, MetaMaskWalletApiService } from '@core';
-import { ChainTokens, CHAIN_TOKENS, NNEO_TOKEN, Token, USD_TOKENS } from '@lib';
+import { ApiService } from '@core';
+import { INIT_CHAIN_TOKENS, MESSAGE, Token, USD_TOKENS } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Unsubscribable, Observable } from 'rxjs';
 
 interface State {
   tokens: any;
+  swap: any;
+  language: any;
 }
 
 type PageStatus = 'home' | 'result';
@@ -26,32 +28,73 @@ export class SwapComponent implements OnInit, OnDestroy {
 
   tokensUnScribe: Unsubscribable;
   tokens$: Observable<any>;
-  chainTokens = new ChainTokens();
+  chainTokens = INIT_CHAIN_TOKENS;
+
+  swapUnScribe: Unsubscribable;
+  swap$: Observable<any>;
+  walletName = { ETH: '', BSC: '', HECO: '', NEO: '' };
+
+  langPageName = 'hub';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
+
   constructor(
     private store: Store<State>,
     private apiService: ApiService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
     private nzMessage: NzMessageService
   ) {
-    this.tokens$ = store.select('tokens');
-    this.tokensUnScribe = this.tokens$.subscribe((state) => {
-      this.chainTokens = state.chainTokens;
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
     });
+    this.tokens$ = store.select('tokens');
+    this.swap$ = store.select('swap');
   }
 
   async ngOnInit(): Promise<void> {
-    const chain = this.metaMaskWalletApiService.getChain();
-    if (chain) {
-      await this.apiService.getTokens();
-      this.fromToken = Object.assign({}, this.chainTokens[chain][0]);
-    } else {
-      this.fromToken = USD_TOKENS[0];
-    }
+    this.tokensUnScribe = this.tokens$.subscribe((state) => {
+      this.chainTokens = state.chainTokens;
+      if (this.chainTokens.ETH.length > 0) {
+        this.handleFromToken();
+      }
+    });
+    this.swapUnScribe = this.swap$.subscribe((state) => {
+      this.walletName.ETH = state.ethWalletName;
+      this.walletName.BSC = state.bscWalletName;
+      this.walletName.HECO = state.hecoWalletName;
+      this.walletName.NEO = state.neoWalletName;
+    });
+  }
+
+  handleFromToken(): void {
+    setTimeout(() => {
+      if (this.fromToken) {
+        return;
+      }
+      if (this.walletName.ETH) {
+        this.fromToken = Object.assign({}, this.chainTokens.ETH[0]);
+      } else if (this.walletName.BSC) {
+        this.fromToken = Object.assign({}, this.chainTokens.BSC[0]);
+      } else if (this.walletName.HECO) {
+        this.fromToken = Object.assign({}, this.chainTokens.HECO[0]);
+      } else if (this.walletName.NEO) {
+        this.fromToken = Object.assign({}, this.chainTokens.NEO[0]);
+      } else {
+        this.fromToken = USD_TOKENS[0];
+      }
+    }, 1000);
   }
 
   ngOnDestroy(): void {
     if (this.tokensUnScribe) {
       this.tokensUnScribe.unsubscribe();
+    }
+    if (this.swapUnScribe) {
+      this.swapUnScribe.unsubscribe();
+    }
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
     }
   }
 
@@ -83,7 +126,7 @@ export class SwapComponent implements OnInit, OnDestroy {
   swapFail(): void {
     this.pageStatus = 'home';
     this.initResultData = null;
-    this.nzMessage.error('Did not get the quotation, please get it again');
+    this.nzMessage.error(MESSAGE.quoteAgain[this.lang]);
   }
   //#region
 }

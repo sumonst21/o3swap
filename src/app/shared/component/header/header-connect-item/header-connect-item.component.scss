@@ -1,3 +1,4 @@
+@import "src/styles/variable.scss";
 .wallet {
   position: relative;
   margin-right: 14px;
@@ -74,6 +75,22 @@
       background: #cd42421a;
       border-radius: 10px;
       color: #cd4242;
+    }
+  }
+}
+
+@media screen and (max-width: $mobileMinWidth) {
+  .wallet {
+    margin: 0 10px;
+    .dropdown {
+      width: 260px;
+      right: -50px;
+      padding: 30px 20px;
+      left: auto;
+      &::before {
+        right: 61px;
+        left: auto;
+      }
     }
   }
 }

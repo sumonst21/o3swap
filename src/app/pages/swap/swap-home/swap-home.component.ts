@@ -9,25 +9,32 @@ import {
   ChangeDetectorRef,
   SimpleChanges,
 } from '@angular/core';
-import { NEO_TOKEN, NNEO_TOKEN, SwapStateType, Token } from '@lib';
+import { MESSAGE, NEO_TOKEN, NNEO_TOKEN, SwapStateType, Token } from '@lib';
 import BigNumber from 'bignumber.js';
-import { SwapSettingComponent, SwapTokenComponent } from '@shared';
+import {
+  SwapSettingModalComponent,
+  SwapSettingDrawerComponent,
+  SwapTokenModalComponent,
+  SwapTokenDrawerComponent,
+} from '@shared';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { Store } from '@ngrx/store';
 import { Observable, Unsubscribable } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonService, ApiService } from '@core';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
   setting: any;
   swap: SwapStateType;
   rates: any;
+  language: any;
 }
 
 @Component({
   selector: 'app-swap-home',
   templateUrl: './swap-home.component.html',
-  styleUrls: ['../common.scss', './swap-home.component.scss'],
+  styleUrls: ['../common.scss', './swap-home.component.scss', './mobile.scss'],
 })
 export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   @Input() fromToken: Token;
@@ -63,14 +70,24 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   inputAmountFiat: string; // 支付的 token 美元价值
   inputAmountError: string;
 
+  langPageName = 'swap';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
+
   constructor(
     private modal: NzModalService,
     public store: Store<State>,
     private nzMessage: NzMessageService,
     private commonService: CommonService,
     private apiService: ApiService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private drawerService: NzDrawerService
   ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.setting$ = store.select('setting');
     this.swap$ = store.select('swap');
     this.rates$ = store.select('rates');
@@ -82,7 +99,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       this.deadline = state.deadline;
     });
     this.checkInputAmountDecimal();
-    this.checkInputAmountLimit();
+    // this.checkInputAmountLimit();
     this.calcutionInputAmountFiat();
     this.swapUnScribe = this.swap$.subscribe((state) => {
       this.neoAccountAddress = state.neoAccountAddress;
@@ -122,21 +139,40 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
     if (this.ratesUnScribe) {
       this.ratesUnScribe.unsubscribe();
     }
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
+    }
   }
 
   showTokens(type: 'from' | 'to'): void {
-    const modal = this.modal.create({
-      nzContent: SwapTokenComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        isFrom: type === 'from' ? true : false,
-        fromToken: this.fromToken,
-        toToken: this.toToken,
-      },
-    });
+    let modal;
+    if (!this.commonService.isMobileWidth()) {
+      modal = this.modal.create({
+        nzContent: SwapTokenModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          isFrom: type === 'from' ? true : false,
+          fromToken: this.fromToken,
+          toToken: this.toToken,
+        },
+      });
+    } else {
+      modal = this.drawerService.create({
+        nzContent: SwapTokenDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer swap-token',
+        nzContentParams: {
+          isFrom: type === 'from' ? true : false,
+          fromToken: this.fromToken,
+          toToken: this.toToken,
+        },
+      });
+    }
     modal.afterClose.subscribe((res: Token) => {
       if (res) {
         this.resetSwapData();
@@ -213,13 +249,23 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   showSetting(): void {
-    this.modal.create({
-      nzContent: SwapSettingComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzClassName: 'custom-modal',
-    });
+    if (!this.commonService.isMobileWidth()) {
+      this.modal.create({
+        nzContent: SwapSettingModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzClassName: 'custom-modal',
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: SwapSettingDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer swap-setting',
+      });
+    }
   }
   //#region
   handleTokenAmountBalance(state): void {
@@ -262,38 +308,39 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       (this.fromToken.chain === 'NEO' || this.toToken.chain === 'NEO') &&
       !this.neoAccountAddress
     ) {
-      this.nzMessage.error('Please connect the NEO wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['NEO']));
       return false;
     }
     if (
       (this.fromToken.chain === 'ETH' || this.toToken.chain === 'ETH') &&
       !this.ethAccountAddress
     ) {
-      this.nzMessage.error('Please connect the ETH wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['ETH']));
       return false;
     }
     if (
       (this.fromToken.chain === 'BSC' || this.toToken.chain === 'BSC') &&
       !this.bscAccountAddress
     ) {
-      this.nzMessage.error('Please connect the BSC wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['BSC']));
       return false;
     }
     if (
       (this.fromToken.chain === 'HECO' || this.toToken.chain === 'HECO') &&
       !this.hecoAccountAddress
     ) {
-      this.nzMessage.error('Please connect the HECO wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['HECO']));
       return false;
     }
     return true;
   }
   checkInputAmountLimit(): boolean {
+    return true;
     try {
       const inputAmountBig = new BigNumber(this.inputAmount);
       const maxAmountBig = new BigNumber(this.fromToken.maxAmount);
       if (inputAmountBig.comparedTo(maxAmountBig) === 1) {
-        this.inputAmountError = `You've exceeded the maximum limit`;
+        this.inputAmountError = MESSAGE.maximumLimit[this.lang];
         return false;
       } else {
         return true;
@@ -310,7 +357,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       decimalPart &&
       decimalPart.length > this.fromToken.decimals
     ) {
-      this.inputAmountError = `You've exceeded the decimal limit.`;
+      this.inputAmountError = MESSAGE.decimalLimit[this.lang];
       return false;
     }
     // neo nneo 互换只能整单位
@@ -324,7 +371,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       decimalPart &&
       decimalPart.length > 0
     ) {
-      this.inputAmountError = `You've exceeded the decimal limit.`;
+      this.inputAmountError = MESSAGE.decimalLimit[this.lang];
       return false;
     }
     this.inputAmountError = '';

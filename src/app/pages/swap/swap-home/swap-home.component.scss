@@ -1,4 +1,5 @@
 section.select-token-wrapper {
+  display: block;
   .input-token-error {
     position: absolute;
     top: 91px;
@@ -175,4 +176,8 @@ section.select-token-wrapper {
       margin-top: 10px;
     }
   }
+}
+
+section.mobile-wrapper {
+  display: none;
 }
