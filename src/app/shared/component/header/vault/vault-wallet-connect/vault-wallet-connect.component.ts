@@ -21,6 +21,7 @@ import {
   VaultdMetaMaskWalletApiService,
   NeolineWalletApiService,
   O3NeoWalletApiService,
+  O3EthWalletApiService,
 } from '@core';
 import { Store } from '@ngrx/store';
 import { Observable, Unsubscribable } from 'rxjs';
@@ -64,6 +65,7 @@ export class VaultWalletConnectComponent implements OnInit, OnDestroy {
     private o3NeoWalletApiService: O3NeoWalletApiService,
     private neolineWalletApiService: NeolineWalletApiService,
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
+    private o3EthWalletApiService: O3EthWalletApiService,
     private changeDetectorRef: ChangeDetectorRef
   ) {
     this.language$ = store.select('language');
@@ -138,6 +140,16 @@ export class VaultWalletConnectComponent implements OnInit, OnDestroy {
         );
         break;
       case 'O3':
+        if (this.o3EthWalletApiService.isMobileO3Wallet) {
+          connectRes = await this.vaultdMetaMaskWalletApiService.vaultConnect(
+            this.connectChainType,
+            this.o3EthWalletApiService.isMobileO3Wallet
+          );
+        } else {
+          // connectRes = await this.o3EthWalletApiService.connect(
+          //   this.connectChainType
+          // );
+        }
       // connectRes = await this.o3EthWalletApiService.vaultConnect(
       //   this.connectChainType
       // );

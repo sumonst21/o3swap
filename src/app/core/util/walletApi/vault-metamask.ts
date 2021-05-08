@@ -67,6 +67,11 @@ export class VaultdMetaMaskWalletApiService {
       this.vaultWallet = state.vaultWallet;
       this.vaultTransaction = state.vaultTransaction;
     });
+    if ((window as any).ethereum) {
+      this.myWalletName = (window as any).ethereum.isO3Wallet
+        ? 'O3'
+        : 'MetaMask';
+    }
   }
 
   //#region connect

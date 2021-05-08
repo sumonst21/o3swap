@@ -37,6 +37,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   isMobile = false;
   vault$: Observable<any>;
   vaultUnScribe: Unsubscribable;
+  isCanClick = true;
 
   o3Locked = '--';
   o3Available = '--';
@@ -138,7 +139,10 @@ export class VaultComponent implements OnInit, OnDestroy {
     // o3 Staking
     this.o3StakingTokenList.forEach(async (item: any) => {
       Promise.all([
-        this.swapService.getEthBalancByHash(item) || '--',
+        this.swapService.getEthBalancByHash(
+          item,
+          this.vaultdMetaMaskWalletApiService.vaultWallet.address
+        ) || '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
           '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',
@@ -291,6 +295,14 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimUnlockO3(token: any): Promise<void> {
+    if (this.isCanClick) {
+      this.isCanClick = false;
+      setTimeout(() => {
+        this.isCanClick = true;
+      }, 4000);
+    } else {
+      return;
+    }
     const claimable = new BigNumber(token.claimable);
     if (claimable.isNaN() || claimable.isZero()) {
       return;
@@ -300,6 +312,14 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimProfit(token: any): Promise<void> {
+    if (this.isCanClick) {
+      this.isCanClick = false;
+      setTimeout(() => {
+        this.isCanClick = true;
+      }, 4000);
+    } else {
+      return;
+    }
     const claimable = new BigNumber(token.profit);
     if (claimable.isNaN() || claimable.isZero()) {
       return;
