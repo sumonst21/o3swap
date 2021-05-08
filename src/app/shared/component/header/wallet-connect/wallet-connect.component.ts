@@ -140,9 +140,6 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
 
   async connectEthWallet(wallet: EthWallet): Promise<void> {
     let connectRes;
-    if (environment.testSite === false && wallet.name === 'O3') {
-      return;
-    }
     switch (this.connectChainType) {
       case 'ETH':
         if (this.ethWalletName === wallet.name) {
@@ -175,9 +172,9 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
             this.o3EthWalletApiService.isMobileO3Wallet
           );
         } else {
-          connectRes = await this.o3EthWalletApiService.connect(
-            this.connectChainType
-          );
+          // connectRes = await this.o3EthWalletApiService.connect(
+          //   this.connectChainType
+          // );
         }
         break;
     }

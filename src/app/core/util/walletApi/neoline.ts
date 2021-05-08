@@ -7,28 +7,22 @@ import {
   NeoWalletName,
   UPDATE_NEO_ACCOUNT,
   UPDATE_NEOLINE_NETWORK,
-  SwapStateType,
   MESSAGE,
 } from '@lib';
-import { interval, Observable, Unsubscribable } from 'rxjs';
+import { interval, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 interface State {
-  swap: SwapStateType;
   language: any;
 }
 
 @Injectable()
 export class NeolineWalletApiService {
-  myWalletName: NeoWalletName = 'NeoLine';
-  neolineDapi;
-  blockNumberInterval: Unsubscribable;
+  private myWalletName: NeoWalletName = 'NeoLine';
+  private neolineDapi;
 
-  swap$: Observable<any>;
-  neoWalletName: NeoWalletName;
-
-  language$: Observable<any>;
-  lang: string;
+  private language$: Observable<any>;
+  private lang: string;
 
   constructor(
     private store: Store<State>,
@@ -39,10 +33,6 @@ export class NeolineWalletApiService {
     this.language$ = store.select('language');
     this.language$.subscribe((state) => {
       this.lang = state.language;
-    });
-    this.swap$ = store.select('swap');
-    this.swap$.subscribe((state) => {
-      this.neoWalletName = state.neoWalletName;
     });
     window.addEventListener('NEOLine.NEO.EVENT.READY', () => {
       this.neolineDapi = new (window as any).NEOLine.Init();

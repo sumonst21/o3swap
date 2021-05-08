@@ -7,8 +7,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonService } from '@core';
-import { ConnectChainType } from '@lib';
-import { environment } from '@env/environment';
+import { ConnectChainType, Wallet } from '@lib';
 import { Store } from '@ngrx/store';
 import { Unsubscribable, Observable } from 'rxjs';
 
@@ -28,8 +27,6 @@ export class WalletConnectItemComponent implements OnInit, OnDestroy {
   @Input() walletChain?: ConnectChainType;
   @Input() walletAddress: string;
   @Output() connect = new EventEmitter();
-
-  disableEthO3 = true;
 
   langPageName = 'app';
   langUnScribe: Unsubscribable;
@@ -51,11 +48,7 @@ export class WalletConnectItemComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
-    if (environment.testSite === true) {
-      this.disableEthO3 = false;
-    }
-  }
+  ngOnInit(): void {}
 
   copy(value: string): void {
     this.commonService.copy(value);
@@ -63,5 +56,25 @@ export class WalletConnectItemComponent implements OnInit, OnDestroy {
 
   connectWallet(wallet): void {
     this.connect.emit(wallet);
+  }
+
+  handleWalletDisplay(wallet: Wallet): boolean {
+    if (wallet.name === this.walletName) {
+      return false;
+    }
+    if (
+      this.chain !== 'NEO' &&
+      wallet.name === 'O3' &&
+      this.commonService.isMobileWidth() === false
+    ) {
+      return false;
+    }
+    return true;
+  }
+  handleMobileWalletDisplay(wallet: Wallet): boolean {
+    if (this.walletChain !== this.chain) {
+      return false;
+    }
+    return this.handleWalletDisplay(wallet);
   }
 }

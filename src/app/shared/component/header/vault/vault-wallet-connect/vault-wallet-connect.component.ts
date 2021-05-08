@@ -150,10 +150,6 @@ export class VaultWalletConnectComponent implements OnInit, OnDestroy {
           //   this.connectChainType
           // );
         }
-      // connectRes = await this.o3EthWalletApiService.vaultConnect(
-      //   this.connectChainType
-      // );
-      // break;
     }
     if (connectRes) {
       this.close();

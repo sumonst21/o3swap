@@ -5,22 +5,15 @@ import o3dapi from 'o3-dapi-core';
 import o3dapiNeo from 'o3-dapi-neo';
 import { CommonService } from '../common.service';
 import { SwapService } from '../swap.service';
-import { NeoWalletName, SwapStateType, MESSAGE } from '@lib';
-import { interval, Observable, Unsubscribable } from 'rxjs';
-
+import { NeoWalletName, MESSAGE } from '@lib';
+import { Observable } from 'rxjs';
 interface State {
-  swap: SwapStateType;
   language: any;
 }
-
 @Injectable()
 export class O3NeoWalletApiService {
   private myWalletName: NeoWalletName = 'O3';
   private o3DapiIsReady = false;
-  private blockNumberInterval: Unsubscribable;
-
-  private swap$: Observable<any>;
-  private neoWalletName: string;
 
   private language$: Observable<any>;
   private lang: string;
@@ -38,10 +31,6 @@ export class O3NeoWalletApiService {
     o3dapi.initPlugins([o3dapiNeo]);
     o3dapi.NEO.addEventListener(o3dapi.NEO.Constants.EventName.READY, () => {
       this.o3DapiIsReady = true;
-    });
-    this.swap$ = store.select('swap');
-    this.swap$.subscribe((state) => {
-      this.neoWalletName = state.neoWalletName;
     });
   }
 
