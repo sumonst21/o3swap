@@ -18,7 +18,7 @@ import {
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { interval, Observable, Unsubscribable } from 'rxjs';
+import { interval, Observable } from 'rxjs';
 import { CommonService } from '../common.service';
 import { SwapService } from '../swap.service';
 import { take } from 'rxjs/operators';
@@ -30,7 +30,6 @@ interface State {
 @Injectable()
 export class MetaMaskWalletApiService {
   private myWalletName: EthWalletName = 'MetaMask';
-  private blockNumberInterval: Unsubscribable;
   private ethereum;
 
   private swap$: Observable<any>;
@@ -122,7 +121,7 @@ export class MetaMaskWalletApiService {
         if (showMessage) {
           this.nzMessage.success(MESSAGE.ConnectionSucceeded[this.lang]);
         }
-        this.listenBlockNumber();
+        this.swapService.listenEthBlockNumber();
         this.swapService.getEthBalance(chain as CHAINS, false, address);
         this.swapService.updateAccount(chain, address, this.myWalletName);
         this.addListener();
@@ -159,24 +158,6 @@ export class MetaMaskWalletApiService {
   }
 
   //#region private function
-  private listenBlockNumber(): void {
-    if (this.blockNumberInterval) {
-      return;
-    }
-    this.blockNumberInterval = interval(15000).subscribe(() => {
-      this.swapService.getEthBalance('ETH');
-      this.swapService.getEthBalance('BSC');
-      this.swapService.getEthBalance('HECO');
-      // 没有连接时不获取 balances
-      if (
-        this.walletName.ETH !== 'MetaMask' &&
-        this.walletName.BSC !== 'MetaMask' &&
-        this.walletName.HECO !== 'MetaMask'
-      ) {
-        this.blockNumberInterval.unsubscribe();
-      }
-    });
-  }
   private addListener(): void {
     this.ethereum
       .request({ method: 'net_version' })

@@ -63,7 +63,7 @@ export class O3NeoWalletApiService {
           this.myWalletName
         );
         this.swapService.getNeoBalances(this.myWalletName);
-        this.listenBlockNumber();
+        this.swapService.listenNeoBlockNumber();
         return result.address;
       })
       .catch((error) => {
@@ -82,19 +82,4 @@ export class O3NeoWalletApiService {
         this.swapService.handleNeoDapiError(error, this.myWalletName);
       });
   }
-
-  //#region private function
-  private listenBlockNumber(): void {
-    if (this.blockNumberInterval) {
-      return;
-    }
-    this.blockNumberInterval = interval(15000).subscribe(() => {
-      this.swapService.getNeoBalances(this.myWalletName);
-      // 没有连接时不获取 balances
-      if (this.neoWalletName !== this.myWalletName) {
-        this.blockNumberInterval.unsubscribe();
-      }
-    });
-  }
-  //#endregion
 }

@@ -24,7 +24,7 @@ import {
 } from '@lib';
 import { CommonService } from './common.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { Observable, of } from 'rxjs';
+import { interval, Observable, of, Unsubscribable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { getMessageFromCode } from 'eth-rpc-errors';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -42,6 +42,8 @@ interface State {
 @Injectable()
 export class SwapService {
   private web3 = new Web3();
+  private ethBlockNumberInterval: Unsubscribable;
+  private neoBlockNumberInterval: Unsubscribable;
 
   private swap$: Observable<any>;
   private walletName = { ETH: '', BSC: '', HECO: '', NEO: '' };
@@ -315,6 +317,41 @@ export class SwapService {
     this.store.dispatch({
       type: dispatchWalletNameType,
       data: walletName,
+    });
+  }
+  //#endregion
+
+  //#region block number listen
+  listenEthBlockNumber(): void {
+    if (this.ethBlockNumberInterval) {
+      return;
+    }
+    this.ethBlockNumberInterval = interval(15000).subscribe(() => {
+      if (
+        // 没有连接时不获取 balances
+        !this.walletName.ETH &&
+        !this.walletName.BSC &&
+        !this.walletName.HECO
+      ) {
+        this.ethBlockNumberInterval.unsubscribe();
+      } else {
+        this.getEthBalance('ETH');
+        this.getEthBalance('BSC');
+        this.getEthBalance('HECO');
+      }
+    });
+  }
+  listenNeoBlockNumber(): void {
+    if (this.neoBlockNumberInterval) {
+      return;
+    }
+    this.neoBlockNumberInterval = interval(15000).subscribe(() => {
+      if (!this.walletName.NEO) {
+        // 没有连接时不获取 balances
+        this.neoBlockNumberInterval.unsubscribe();
+      } else {
+        this.getNeoBalances(this.walletName.NEO as NeoWalletName);
+      }
     });
   }
   //#endregion

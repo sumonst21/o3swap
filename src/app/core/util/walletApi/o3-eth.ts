@@ -6,7 +6,7 @@ import { ETH, BSC, HECO } from 'o3-dapi-eth';
 import { CommonService } from '../common.service';
 import { SwapService } from '../swap.service';
 import { SwapStateType, EthWalletName, CHAINS, MESSAGE } from '@lib';
-import { Unsubscribable, Observable, interval } from 'rxjs';
+import { Observable } from 'rxjs';
 
 interface State {
   swap: SwapStateType;
@@ -16,7 +16,6 @@ interface State {
 @Injectable()
 export class O3EthWalletApiService {
   private myWalletName: EthWalletName = 'O3';
-  private blockNumberInterval: Unsubscribable;
   public isMobileO3Wallet = false;
 
   private swap$: Observable<any>;
@@ -68,7 +67,7 @@ export class O3EthWalletApiService {
         }
         this.nzMessage.success(MESSAGE.ConnectionSucceeded[this.lang]);
         this.walletName[chain] = this.myWalletName;
-        this.listenBlockNumber();
+        this.swapService.listenEthBlockNumber();
         this.swapService.getEthBalance(chain as CHAINS, false, address);
         this.swapService.updateAccount(chain, address, this.myWalletName);
         return address;
@@ -93,25 +92,4 @@ export class O3EthWalletApiService {
         this.swapService.handleEthDapiError(error, this.myWalletName);
       });
   }
-
-  //#region private function
-  private listenBlockNumber(): void {
-    if (this.blockNumberInterval) {
-      return;
-    }
-    this.blockNumberInterval = interval(15000).subscribe(() => {
-      this.swapService.getEthBalance('ETH');
-      this.swapService.getEthBalance('BSC');
-      this.swapService.getEthBalance('HECO');
-      // 没有连接时不获取 balances
-      if (
-        this.walletName.ETH !== 'O3' &&
-        this.walletName.BSC !== 'O3' &&
-        this.walletName.HECO !== 'O3'
-      ) {
-        this.blockNumberInterval.unsubscribe();
-      }
-    });
-  }
-  //#endregion
 }

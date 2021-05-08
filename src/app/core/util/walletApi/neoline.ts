@@ -86,7 +86,7 @@ export class NeolineWalletApiService {
         );
         this.addListener();
         this.swapService.getNeoBalances(this.myWalletName);
-        this.listenBlockNumber();
+        this.swapService.listenNeoBlockNumber();
         return result.address;
       })
       .catch((error) => {
@@ -108,18 +108,6 @@ export class NeolineWalletApiService {
   }
 
   //#region private function
-  private listenBlockNumber(): void {
-    if (this.blockNumberInterval) {
-      return;
-    }
-    this.blockNumberInterval = interval(15000).subscribe(() => {
-      this.swapService.getNeoBalances(this.myWalletName);
-      // 没有连接时不获取 balances
-      if (this.neoWalletName !== this.myWalletName) {
-        this.blockNumberInterval.unsubscribe();
-      }
-    });
-  }
   private addListener(): void {
     window.addEventListener(
       'NEOLine.NEO.EVENT.ACCOUNT_CHANGED',
