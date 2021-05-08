@@ -1,59 +1,59 @@
 const liquidity = {
   BALANCE: {
     en: 'BALANCE',
-    zh: '',
+    zh: '余额',
   },
   STAKED: {
     en: 'STAKED',
-    zh: '',
+    zh: '已质押',
   },
   STAKE: {
     en: 'STAKE',
-    zh: '',
+    zh: '质押',
   },
   EARNED: {
     en: 'EARNED',
-    zh: '',
+    zh: '已获得',
   },
   CLAIM: {
     en: 'CLAIM',
-    zh: '',
+    zh: '领取',
   },
   AddLiquidity: {
     en: 'Add Liquidity',
-    zh: '',
+    zh: '添加流动性',
   },
   RemoveLiquidity: {
     en: 'Remove Liquidity',
-    zh: '',
+    zh: '移除流动性',
   },
   MAX: {
     en: 'MAX',
-    zh: '',
+    zh: '全部',
   },
   Balance: {
     en: 'Balance',
-    zh: '',
+    zh: '余额',
   },
   Deposit: {
     en: 'Deposit',
-    zh: '',
+    zh: '存入',
   },
   ReceiveLP: {
     en: 'Receive LP',
-    zh: '',
+    zh: '获得LP',
   },
   Withdraw: {
     en: 'Withdraw',
-    zh: '',
+    zh: '提取',
   },
   PayLP: {
     en: 'Pay LP',
-    zh: '',
+    zh: '支付LP',
   },
   MaxSlippage: {
     en: 'Max slippage',
-    zh: '',
+    zh: '最大滑点',
   },
 };
 

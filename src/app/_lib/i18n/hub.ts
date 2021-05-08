@@ -1,63 +1,63 @@
 const hub = {
   YouPay: {
     en: 'You pay',
-    zh: '',
+    zh: '支付金额',
   },
   ExchangeRate: {
     en: 'Exchange Rate',
-    zh: '',
+    zh: '交易费率',
   },
   includingFees: {
     en: 'including fees',
-    zh: '',
+    zh: '包含费用',
   },
   MaxSlippage: {
     en: 'Max slippage',
-    zh: '',
+    zh: '最大滑点',
   },
   CrossChainPool: {
     en: 'Cross-chain Pool',
-    zh: '',
+    zh: '跨链池',
   },
   TVL: {
     en: 'TVL',
-    zh: '',
+    zh: 'TVL',
   },
   VOL: {
     en: 'VOL',
-    zh: '',
+    zh: 'VOL',
   },
   APR: {
     en: 'APR',
-    zh: '',
+    zh: 'APR',
   },
   REWARDS: {
     en: 'REWARDS',
-    zh: '',
+    zh: 'REWARDS',
   },
   Deposit: {
     en: 'Deposit',
-    zh: '',
+    zh: '存入',
   },
   Withdraw: {
     en: 'Withdraw',
-    zh: '',
+    zh: '提取',
   },
   O3Pool: {
     en: 'O3Pool',
-    zh: '',
+    zh: 'O3Pool',
   },
   TotalPoolDepositsDailyVolume: {
     en: 'Total Pool Deposits & Daily Volume',
-    zh: '',
+    zh: '跨链池总存款 & 每日交易量',
   },
   TotalPoolDeposit: {
     en: 'Total pool deposit',
-    zh: '',
+    zh: '跨链池总存款',
   },
   DailyVolume: {
     en: 'Daily volume',
-    zh: '',
+    zh: '每日交易量',
   },
 };
 

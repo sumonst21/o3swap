@@ -16,7 +16,7 @@
       </ul>
       <input type="number" title="slippage" [ngClass]="{focus: isCustomSlip}" (input)="checkSlipValue()"
         (click)="clickCustomSlipValue()" [ngModel]="isCustomSlip && slipValue" (input)="inputSlipValue($event)"
-        (blur)="updateSlipValue()" placeholder="Custom">
+        (blur)="updateSlipValue()" [placeholder]="'Custom' | translate: lang:langPageName">
       <span class="tail" *ngIf="isCustomSlip">%</span>
       <p class="slip-error">{{ slipValueError }}</p>
     </div>

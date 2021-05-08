@@ -9,7 +9,8 @@
   </div>
   <div class="search">
     <input type="text" (focus)="isfocusSearchInput=true" (blur)="isfocusSearchInput=false"
-      [ngClass]="{focus: isfocusSearchInput}" (input)="search($event)" placeholder="Search token name" tabindex="-1">
+      [ngClass]="{focus: isfocusSearchInput}" (input)="search($event)"
+      [placeholder]="'SearchTokenName' | translate: lang:langPageName" tabindex="-1">
   </div>
   <div class="chains">
     <!-- <span (click)="changeChain('ALL')" [ngClass]="{active: chain==='ALL'}" class="all"></span> -->

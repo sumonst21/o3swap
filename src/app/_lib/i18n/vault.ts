@@ -1,19 +1,19 @@
 const vault = {
   Stake: {
     en: 'Stake',
-    zh: '',
+    zh: '质押',
   },
   Unstake: {
     en: 'Unstake',
-    zh: '',
+    zh: '取消',
   },
   Claim: {
     en: 'Claim',
-    zh: '',
+    zh: '领取',
   },
   Cancel: {
     en: 'Cancel',
-    zh: '',
+    zh: '取消',
   },
 };
 

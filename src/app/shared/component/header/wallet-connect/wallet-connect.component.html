@@ -12,7 +12,7 @@
         <span class="heco" [ngClass]="{active: connectChainType==='HECO'}" (click)="connectChainType='HECO'"></span>
         <span class="neo" [ngClass]="{active: connectChainType==='NEO'}" (click)="connectChainType='NEO'"></span>
       </div>
-      <p class="wallet-type">{{ connectChainType }} Wallet</p>
+      <p class="wallet-type">{{ connectChainType }} {{ 'Wallet' | translate: lang:langPageName }}</p>
       <app-wallet-connect-item *ngIf="connectChainType==='NEO'" [chain]="connectChainType" [walletList]="NEO_WALLETS"
         [walletAddress]="neoAccountAddress" [walletName]="neoWalletName" (connect)="connectNeoWallet($event)">
       </app-wallet-connect-item>
@@ -43,7 +43,7 @@
         <span class="heco" [ngClass]="{active: connectChainType==='HECO'}" (click)="connectChainType='HECO'"></span>
         <span class="neo" [ngClass]="{active: connectChainType==='NEO'}" (click)="connectChainType='NEO'"></span>
       </div>
-      <p class="wallet-type">{{ connectChainType }} Wallet</p>
+      <p class="wallet-type">{{ connectChainType }} {{ 'Wallet' | translate: lang:langPageName }}</p>
       <app-wallet-connect-item *ngIf="connectChainType==='NEO'" [chain]="connectChainType" [walletList]="NEO_WALLETS"
         [walletAddress]="neoAccountAddress" [walletName]="neoWalletName" (connect)="connectNeoWallet($event)">
       </app-wallet-connect-item>

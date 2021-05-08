@@ -1,71 +1,71 @@
 const swap = {
   Swap: {
     en: 'Swap',
-    zh: '',
+    zh: '兑换',
   },
   From: {
     en: 'From',
-    zh: '',
+    zh: '来自',
   },
   To: {
     en: 'To',
-    zh: '',
+    zh: '发给',
   },
   Balance: {
     en: 'Balance',
-    zh: '',
+    zh: '余额',
   },
   Max: {
     en: 'Max',
-    zh: '',
+    zh: '全部',
   },
   SELECT: {
     en: 'SELECT',
-    zh: '',
+    zh: '选择',
   },
   YouWillReceive: {
     en: 'You will receive',
-    zh: '',
+    zh: '收到金额',
   },
   RFQ: {
     en: 'RFQ',
-    zh: '',
+    zh: '询价',
   },
   RequestingQuote: {
     en: 'Requesting quote...',
-    zh: '',
+    zh: '查询报价',
   },
   Receive: {
     en: 'Receive',
-    zh: '',
+    zh: '收到',
   },
   Optimal: {
     en: 'Optimal',
-    zh: '',
+    zh: '最佳',
   },
   MoreTradingPrice: {
     en: 'More Trading Price',
-    zh: '',
+    zh: '更多价格',
   },
   Routing: {
     en: 'Routing',
-    zh: '',
+    zh: '路径',
   },
   Rate: {
     en: 'Rate',
-    zh: '',
+    zh: '费率',
   },
   lnverseRate: {
     en: 'lnverse Rate',
-    zh: '',
+    zh: '反费率',
   },
   PolyFee: {
     en: 'Poly Fee',
-    zh: '',
+    zh: 'Poly Fee',
   },
   Confirm: {
     en: 'Confirm',
-    zh: '',
+    zh: '确认',
   },
   After: {
     en: 'After',
@@ -73,60 +73,68 @@ const swap = {
   },
   O3Swapfee: {
     en: (params: string[]) => `Quote includes a ${params[0]}% O3Swap fee`,
-    zh: '',
+    zh: (params: string[]) => `价格包含 ${params[0]}％ O3 Swap 手续费`,
   },
   Pending: {
     en: 'Pending',
-    zh: '',
+    zh: '发送中',
   },
   Success: {
     en: 'Success',
-    zh: '',
+    zh: '成功',
   },
   Failed: {
     en: 'Failed',
-    zh: '',
+    zh: '失败',
   },
   Hash: {
     en: 'Hash',
-    zh: '',
+    zh: 'Hash',
   },
   InProgress: {
     en: 'In progress',
-    zh: '',
+    zh: '处理中',
   },
   Waiting: {
     en: 'Waiting',
-    zh: '',
+    zh: '等待中',
   },
   Cancel: {
     en: 'Cancel',
-    zh: '',
+    zh: '取消',
   },
   ChooseQuotes: {
     en: 'Choose Quotes',
-    zh: '',
+    zh: '选择报价',
   },
   Settings: {
     en: 'Settings',
-    zh: '',
+    zh: '设置',
   },
   SlippageTolerance: {
     en: 'Slippage tolerance',
-    zh: '',
+    zh: '滑点',
   },
   TransactionTimeLimit: {
     en: 'Transaction time limit',
-    zh: '',
+    zh: '交易时限',
   },
   min: {
     en: 'min',
-    zh: '',
+    zh: '分',
   },
   Choose: {
     en: 'Choose',
-    zh: '',
+    zh: '选择',
   },
+  Custom: {
+    en: 'Custom',
+    zh: '自定义'
+  },
+  SearchTokenName: {
+    en: 'Search token name',
+    zh: '搜索代币名字'
+  }
 };
 
 export default swap;

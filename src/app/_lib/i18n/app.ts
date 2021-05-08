@@ -1,86 +1,86 @@
 const app = {
   Home: {
     en: 'Home',
-    zh: '',
+    zh: 'Home',
   },
   Swap: {
     en: 'Swap',
-    zh: '',
+    zh: 'Swap',
   },
   Hub: {
     en: 'Hub',
-    zh: '',
+    zh: 'Hub',
   },
   Vault: {
     en: 'Vault',
-    zh: '',
+    zh: 'Vault',
   },
   Dashboard: {
     en: 'Dashboard',
-    zh: '',
+    zh: 'Dashboard',
   },
   Blog: {
     en: 'Blog',
-    zh: '',
+    zh: 'Blog',
   },
   Governance: {
     en: 'Governance',
-    zh: '',
+    zh: 'Governance',
   },
   Doc: {
     en: 'Doc',
-    zh: '',
+    zh: 'Doc',
   },
   riskTip: {
     en:
       'O3 Swap is currently in the testing phase. The testing amount is limited to below $20 in USD. Back up your private keys securely and trade at your own risk.',
-    zh: '',
+    zh: 'O3 Swap目前处于测试阶段，金额限制低于$20美元，请自行承担风险。',
   },
   ConnectWallet: {
     en: 'Connect Wallet',
-    zh: '',
+    zh: '连接钱包',
   },
   Wallet: {
     en: 'Wallet',
-    zh: '',
+    zh: '钱包',
   },
   Account: {
     en: 'Account',
-    zh: '',
+    zh: '账号',
   },
   Change: {
     en: 'Change',
-    zh: '',
+    zh: '切换',
   },
   Disconnect: {
     en: 'Disconnect',
-    zh: '',
+    zh: '断开',
   },
   Connect: {
     en: 'Connect',
-    zh: '',
+    zh: '连接',
   },
   Approve: {
     en: 'Approve',
-    zh: '',
+    zh: '授权',
   },
   ApproveDesc: {
     en:
       'Approval is required for the transaction with a first-time contract call and a new address.',
-    zh: '',
+    zh: '首次合约调用和新地址交易需要授权',
   },
   riskDesc: {
     en:
       'O3 Swap is currently in the testing phase. We are limiting the transaction amount to below $20. Please back up your private keys securely and trade at your own risk!',
-    zh: '',
+    zh: 'O3 Swap目前处于测试阶段，金额限制低于$20美元，请自行承担风险。',
   },
   IUnderstand: {
     en: 'I understand',
-    zh: '',
+    zh: '了解',
   },
   Cancel: {
     en: 'Cancel',
-    zh: '',
+    zh: '取消',
   },
 };
 
