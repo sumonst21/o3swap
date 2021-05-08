@@ -376,7 +376,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   checkBalance(balance: string, input: string): boolean {
     const balanceNumber = new BigNumber(balance);
     const inputNumber = new BigNumber(input);
-    if (balanceNumber.comparedTo(input) < 0) {
+    if (balanceNumber.comparedTo(input) < 0 || balanceNumber.isNaN()) {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return false;
     }

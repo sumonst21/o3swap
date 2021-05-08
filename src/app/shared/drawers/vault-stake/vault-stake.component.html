@@ -1,1 +1,2 @@
-<app-vault-stake [balance]="balance" [isStake]="isStake" [token]="token" (closeThis)="close($event)"></app-vault-stake>
+<app-vault-stake [balance]="balance || '0'" [isStake]="isStake" [token]="token" (closeThis)="close($event)">
+</app-vault-stake>
