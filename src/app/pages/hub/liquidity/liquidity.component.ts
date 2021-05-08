@@ -207,10 +207,10 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     }
     const inputAmount = new BigNumber(this.addLiquidityInputAmount[index]);
     if (!inputAmount.isNaN() && inputAmount.comparedTo(0) > 0) {
-      if (inputAmount.comparedTo(50) === 1) {
-        this.nzMessage.error(MESSAGE.maximumLimit[this.lang]);
-        return;
-      }
+      // if (inputAmount.comparedTo(50) === 1) {
+      //   this.nzMessage.error(MESSAGE.maximumLimit[this.lang]);
+      //   return;
+      // }
       this.receiveAmount[index] = await this.apiService.getPoolOutGivenSingleIn(
         token,
         this.addLiquidityInputAmount[index]
@@ -235,10 +235,10 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     }
     const inputAmount = new BigNumber(this.removeLiquidityInputAmount[index]);
     if (!inputAmount.isNaN() && inputAmount.comparedTo(0) > 0) {
-      if (inputAmount.comparedTo(50) === 1) {
-        this.nzMessage.error(MESSAGE.maximumLimit[this.lang]);
-        return;
-      }
+      // if (inputAmount.comparedTo(50) === 1) {
+      //   this.nzMessage.error(MESSAGE.maximumLimit[this.lang]);
+      //   return;
+      // }
       this.payAmount[index] = await this.apiService.getPoolInGivenSingleOut(
         token,
         this.removeLiquidityInputAmount[index]

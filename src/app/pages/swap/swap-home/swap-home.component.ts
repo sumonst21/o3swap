@@ -99,7 +99,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       this.deadline = state.deadline;
     });
     this.checkInputAmountDecimal();
-    this.checkInputAmountLimit();
+    // this.checkInputAmountLimit();
     this.calcutionInputAmountFiat();
     this.swapUnScribe = this.swap$.subscribe((state) => {
       this.neoAccountAddress = state.neoAccountAddress;

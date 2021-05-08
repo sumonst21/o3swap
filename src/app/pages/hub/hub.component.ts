@@ -479,14 +479,15 @@ export class HubComponent implements OnInit, OnDestroy {
       this.inputAmountError = '';
       return;
     }
-    const inputAmountBig = new BigNumber(this.inputAmount);
-    const maxAmountBig = new BigNumber(usdToken.maxAmount);
-    if (inputAmountBig.comparedTo(maxAmountBig) === 1) {
-      this.inputAmountError = MESSAGE.maximumLimit[this.lang];
-      return false;
-    } else {
-      return true;
-    }
+    // const inputAmountBig = new BigNumber(this.inputAmount);
+    // const maxAmountBig = new BigNumber(usdToken.maxAmount);
+    // if (inputAmountBig.comparedTo(maxAmountBig) === 1) {
+    //   this.inputAmountError = MESSAGE.maximumLimit[this.lang];
+    //   return false;
+    // } else {
+    //   return true;
+    // }
+    return true;
   }
 
   calcutionInputAmountFiat(): void {
