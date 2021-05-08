@@ -313,14 +313,15 @@
           display: flex;
           margin-top: 15px;
           .col {
-            width: 120px;
+            width: 25%;
             .value {
-              line-height: 40px;
+              line-height: 20px;
               font-size: 18px;
               word-break: break-all;
             }
             & > .name {
               color: #8aa1a1;
+              margin-top: 12px;
             }
           }
         }

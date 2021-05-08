@@ -2,24 +2,35 @@
   <div class="detail">
     <div class="item-container row-1">
       <div class="item-group item-total">
-        <div class="group-title">Total</div>
-        <div class="group-content"><span>{{ o3Total }}</span> O3</div>
-        <div class="group-title">Locked {{ o3Locked }} O3</div>
+        <div class="group-title">{{ 'Total' | translate: lang:langPageName }}</div>
+        <div class="group-content"><span>
+            <app-long-balance [balance]="o3Total || '--'">
+            </app-long-balance>
+          </span> O3</div>
+        <div class="group-title">{{ 'Locked' | translate: lang:langPageName }} <app-long-balance
+            [balance]="o3Locked  || '--'">
+          </app-long-balance> O3</div>
       </div>
       <div class="item-group">
-        <div class="group-title">Available</div>
-        <div class="group-content"><span>{{ o3Available }}</span> O3</div>
+        <div class="group-title">{{ 'Available' | translate: lang:langPageName }}</div>
+        <div class="group-content"><span>
+            <app-long-balance [balance]="o3Available || '--'">
+            </app-long-balance>
+          </span> O3</div>
         <!-- <div class="btn-primary receive-btn">Receive</div> -->
       </div>
       <div class="item-group">
-        <div class="group-title">Total Profit</div>
-        <div class="group-content"><span>{{ totalProfit }}</span> O3</div>
+        <div class="group-title">{{ 'TotalProfit' | translate: lang:langPageName }}</div>
+        <div class="group-content"><span>
+            <app-long-balance [balance]="totalProfit || '--'">
+            </app-long-balance>
+          </span> O3</div>
       </div>
     </div>
     <div class="item-container row-2">
       <div class="list-container">
         <div class="list-head">
-          <div class="list-head-title">Unlock O3</div>
+          <div class="list-head-title">{{ 'Unlock' | translate: lang:langPageName }} O3</div>
           <div class="group-icon">
             <img nz-tooltip nzTooltipTitle="Provide O3 liquidity on DEX to unlock your O3" nzTooltipPlacement="right"
               src="/assets/images/dashboard/doubt.png" alt="">
@@ -42,11 +53,11 @@
             <thead>
               <tr>
                 <th *ngIf="!isMobile"></th>
-                <th [nzWidth]="isMobile ? '75px': '100px'">Name</th>
-                <th>Staked</th>
-                <th>Remaining</th>
-                <th>Speed</th>
-                <th>Unlocked amount</th>
+                <th [nzWidth]="isMobile ? '75px': '100px'">{{ 'Name' | translate: lang:langPageName }}</th>
+                <th>{{ 'Staked' | translate: lang:langPageName }}</th>
+                <th>{{ 'Remaining' | translate: lang:langPageName }}</th>
+                <th>{{ 'Speed' | translate: lang:langPageName }}</th>
+                <th>{{ 'UnlockedAmount' | translate: lang:langPageName }}</th>
                 <th nzRight [nzWidth]="isMobile ? '150px': '350px'"></th>
               </tr>
             </thead>
@@ -55,25 +66,37 @@
                 <td *ngIf="!isMobile"><img class="token-img" [src]="item.logo" alt=""></td>
                 <td><img *ngIf="isMobile" class="token-img" [src]="item.logo"
                     alt="">{{ stakeUnlockTokenList[i].symbol }}</td>
-                <td>{{ item.staked || '--' }}</td>
-                <td>{{ item.remaining || '--' }}</td>
-                <td>{{ item.speed || '--' }}</td>
-                <td>{{ item.claimable || '--' }}</td>
+                <td>
+                  <app-long-balance [balance]="item.staked  || '--'">
+                  </app-long-balance>
+                </td>
+                <td>
+                  <app-long-balance [balance]="item.remaining || '--'">
+                  </app-long-balance>
+                </td>
+                <td>
+                  <app-long-balance [balance]="item.speed  || '--'">
+                  </app-long-balance>
+                </td>
+                <td>
+                  <app-long-balance [balance]="item.claimable  || '--'">
+                  </app-long-balance>
+                </td>
                 <td nzRight class="unlock-zone-btn-block">
                   <button class="btn-primary deposit-btn claim-btn" (click)="claimUnlockO3(item)">
-                    Claim
+                    {{ 'Claim' | translate: lang:langPageName }}
                   </button>
                   <button class="btn-primary deposit-btn get-lp-btn" (click)="claimUnlockO3(item)">
-                    Get LP
+                    {{ 'GetLP' | translate: lang:langPageName }}
                   </button>
                   <div>
                     <button class="btn-primary stake-btn"
                       (click)="showUnlockStake(stakeUnlockTokenList[i], item.remaining || '0')">
-                      Stake
+                      {{ 'Stake' | translate: lang:langPageName }}
                     </button>
                     <button class="btn-primary unstake-btn"
                       (click)="showUnlockStake(stakeUnlockTokenList[i], item.staked || '0', false)">
-                      Unstake
+                      {{ 'Unstake' | translate: lang:langPageName }}
                     </button>
                   </div>
                 </td>
@@ -88,7 +111,7 @@
       <div class="left">
         <div class="title">
           <div class="name">
-            Stake LP to Earn O3
+            {{ 'StakeLPToEarnO3' | translate: lang:langPageName }}
           </div>
         </div>
         <div class="group-container">
@@ -98,21 +121,30 @@
               <div class="right">
                 <button class="btn-primary" (click)="showStakingStake(item, item.balance, true)">Stake</button>
                 <button class="btn-primary unstake-btn"
-                  (click)="showStakingStake(item, item.staked, false)">Unstake</button>
+                  (click)="showStakingStake(item, item.staked, false)">{{ 'Unstake' | translate: lang:langPageName }}</button>
               </div>
             </div>
             <div class="detail-item">
               <div class="col">
-                <div class="value">{{ item.staked || '--' }}</div>
-                <div class="name">Staked</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.staked  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'Staked' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
-                <div class="value">{{ item.balance || '--' }}</div>
-                <div class="name">Remaining</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.balance  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'Remaining' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
-                <div class="value">{{ item.totalStaking || '--' }}</div>
-                <div class="name">Total Staking</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.totalStaking  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'TotalStaking' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
                 <div class="value">--</div>
@@ -120,8 +152,9 @@
               </div>
             </div>
             <p class="line"></p>
-            <p class="claimable-box">Claimable O3: &nbsp;<span class="value">{{ item.profit }}</span><span
-                class="claim-btn" (click)="claimProfit(item)">Claim</span></p>
+            <p class="claimable-box">{{ 'Claimable' | translate: lang:langPageName }} O3: &nbsp;<span
+                class="value">{{ item.profit }}</span><span class="claim-btn"
+                (click)="claimProfit(item)">{{ 'Claim' | translate: lang:langPageName }}</span></p>
           </div>
         </div>
 
@@ -129,7 +162,7 @@
       <div class="right">
         <div class="title">
           <div class="name">
-            Stake Token to Earn O3
+            {{ 'StakeTokenToEarnO3' | translate: lang:langPageName }}
           </div>
         </div>
         <div class="group-container">
@@ -138,19 +171,26 @@
               <img [src]="item.logo" alt="" class="token-img">
               <div>
                 {{ item.symbol }}
-                <p class="claimable-box">Claimable O3: &nbsp;<span class="value">{{ item.profit }}</span><span
-                    class="claim-btn" (click)="claimProfit(item)">Claim</span></p>
+                <p class="claimable-box">{{ 'Claimable' | translate: lang:langPageName }} O3: &nbsp;<span
+                    class="value">{{ item.profit }}</span><span class="claim-btn"
+                    (click)="claimProfit(item)">Claim</span></p>
               </div>
 
             </div>
             <div class="detail-container">
               <div class="detail-item">
-                <div class="value">{{ item.staked || '--' }}</div>
-                <div class="name">Staked</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.staked  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'Staked' | translate: lang:langPageName }}</div>
               </div>
               <div class="detail-item">
-                <div class="value">{{ item.totalStaking || '--' }}</div>
-                <div class="name">Total Staking</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.totalStaking  || '--'">
+                  </app-long-balance>
+                </div>
+                <div class="name">{{ 'TotalStaking' | translate: lang:langPageName }}</div>
               </div>
               <div class="detail-item">
                 <div class="value">--</div>
@@ -158,8 +198,10 @@
               </div>
             </div>
             <div class="stake">
-              <span (click)="showStakingStake(item, item.balance, true)">Stake</span>
-              <span (click)="showStakingStake(item, item.staked, false)">Unstake</span>
+              <span
+                (click)="showStakingStake(item, item.balance, true)">{{ 'Stake' | translate: lang:langPageName }}</span>
+              <span
+                (click)="showStakingStake(item, item.staked, false)">{{ 'Unstake' | translate: lang:langPageName }}</span>
             </div>
           </div>
         </div>
