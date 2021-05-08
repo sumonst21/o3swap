@@ -80,7 +80,7 @@ export class NeoApiService {
     if (localTx.isPending === false) {
       return;
     }
-    this.listenTxReceipt(localTx);
+    this.listenTxReceipt();
   }
 
   //#region NEO nNEO swap
@@ -429,15 +429,22 @@ export class NeoApiService {
         step3: { hash: '', status: 0 },
       };
     }
+    this.transaction = pendingTx;
     this.store.dispatch({ type: UPDATE_PENDING_TX, data: pendingTx });
     if (addLister) {
-      this.listenTxReceipt(pendingTx);
+      this.listenTxReceipt();
     }
   }
-  private listenTxReceipt(tx: SwapTransaction): void {
+  private listenTxReceipt(): void {
     const getTx = () => {
+      if (JSON.stringify(this.transaction) === '{}') {
+        if (this.listenTxinterval) {
+          this.listenTxinterval.unsubscribe();
+        }
+        return;
+      }
       this.rpcApiService
-        .getNeoTxByHash(tx.txid, tx.walletName)
+        .getNeoTxByHash(this.transaction.txid, this.transaction.walletName)
         .then((txid) => {
           if (
             txid &&
@@ -452,7 +459,7 @@ export class NeoApiService {
               type: UPDATE_PENDING_TX,
               data: this.transaction,
             });
-            this.swapService.getNeoBalances(tx.walletName as NeoWalletName);
+            this.swapService.getNeoBalances(this.transaction.walletName as NeoWalletName);
           }
         })
         .catch((error) => {

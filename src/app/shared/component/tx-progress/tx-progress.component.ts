@@ -242,6 +242,11 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     this.commonService.copy(hash);
   }
 
+  closeTx(): void {
+    this.transaction = null;
+    this.store.dispatch({ type: this.dispatchType, data: null });
+  }
+
   //#region private function
   getMinMessage(): void {
     let message = 'Swap';
@@ -264,8 +269,8 @@ export class TxProgressComponent implements OnInit, OnDestroy {
         }
         message += ` ${this.transaction?.amount} ${this.transaction?.fromToken?.symbol} for ${this.transaction?.receiveAmount} ${this.transaction?.toToken?.symbol}`;
     }
-    if (message.length > 21) {
-      message = message.slice(0, 19) + '...';
+    if (message.length > 18) {
+      message = message.slice(0, 15) + '...';
     }
     this.minMessage = message;
   }

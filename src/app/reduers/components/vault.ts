@@ -30,10 +30,18 @@ export default function vault(state = initialState, action): any {
   }
 }
 
-function setSessionStorage(key: string, value: string): void {
-  sessionStorage.setItem(key, JSON.stringify(value));
+function setSessionStorage(key: string, value: any): void {
+  if (value === null) {
+    sessionStorage.removeItem(key);
+  } else {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  }
 }
 
-function setlocalStorage(key: string, value: string): void {
-  localStorage.setItem(key, JSON.stringify(value));
+function setlocalStorage(key: string, value: any): void {
+  if (value === null) {
+    localStorage.removeItem(key);
+  } else {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 }

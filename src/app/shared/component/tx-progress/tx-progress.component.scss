@@ -12,6 +12,7 @@ section.min-tx {
   border-radius: 25px;
   font-family: "fontRegular";
   cursor: pointer;
+  padding-right: 26px;
   img {
     width: 20px;
     margin-right: 5px;
@@ -25,6 +26,16 @@ section.min-tx {
   }
   &.failed {
     background: #cd424280;
+  }
+  .close {
+    font-size: 15px;
+    width: 16px;
+    position: absolute;
+    right: 10px;
+    color: #ffffff80;
+    &:hover {
+      font-size: 18px;
+    }
   }
 }
 

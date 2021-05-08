@@ -992,7 +992,7 @@ export class EthApiService {
     hasCrossChain = true,
     txAtPage: TxAtPage
   ): void {
-    let myInterval;
+    let myInterval: Unsubscribable;
     switch (txAtPage) {
       case 'swap':
         myInterval = this.requestTxStatusInterval;
@@ -1019,6 +1019,10 @@ export class EthApiService {
         case 'liquidity':
           currentTx = this.liquidityTransaction;
           break;
+      }
+      if (JSON.stringify(currentTx) === '{}') {
+        myInterval.unsubscribe();
+        return;
       }
       this.rpcApiService
         .getEthTxReceipt(txHash, currentTx.fromToken.chain)

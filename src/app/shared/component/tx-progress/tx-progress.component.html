@@ -468,6 +468,7 @@
     alt="">
   <img *ngIf="transaction?.isFailed" src="/assets/images/swap-result/failed-icon.png" alt="">
   {{ minMessage }}
+  <span class="close" (click)="closeTx()">X</span>
 </section>
 
 <section class="min-tx" *ngIf="hasTransaction && vaultTransaction?.min===true && txAtPage==='vault'"
@@ -478,4 +479,5 @@
     src="/assets/images/swap-result/success-icon.png" alt="">
   <img *ngIf="vaultTransaction?.isFailed" src="/assets/images/swap-result/failed-icon.png" alt="">
   {{ minMessage }}
+  <span class="close" (click)="closeTx()">X</span>
 </section>
