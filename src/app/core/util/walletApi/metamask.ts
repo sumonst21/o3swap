@@ -146,6 +146,7 @@ export class MetaMaskWalletApiService {
   }
 
   sendTransaction(data, chain: CHAINS): Promise<any> {
+    this.ethereum = (window as any).ethereum;
     return this.ethereum
       .request(data)
       .then((hash) => {
