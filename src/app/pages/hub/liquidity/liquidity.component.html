@@ -53,6 +53,11 @@
         </div>
       </div>
       <div class="tab-content">
+        <div class="legacy-lp">
+          <img nz-tooltip nzTooltipTitle="Please go to Legacy LP to remove your BUSD_LP and HUSD_LP"
+            nzTooltipPlacement="top" class="question" src="/assets/images/question.png" alt="">
+          <a routerLink="/hub/legacy-liquidity/remove">Legacy LP</a>
+        </div>
         <ul class="list-wrap">
           <ng-container *ngIf="liquidityType === 'add'">
             <li *ngFor="let tokenItem  of addLiquidityTokens; let i = index ">
@@ -254,7 +259,6 @@
       </ul>
     </div>
     <div class="right">
-      <a routerLink="/hub/legacy-liquidity/remove">Legacy LP</a>
       <!-- <div class="item-list">
         <span class="name">{{ liquidityType == 'add' ? 'Receive' : 'PayAmount' }}</span>
         <span class="value">{{ (liquidityType == 'add' ? receiveAmount : payAmount) | transNumber }}</span>
@@ -525,9 +529,6 @@
           </div>
         </li>
       </ul>
-    </div>
-    <div class="right">
-      <a routerLink="/hub/legacy-liquidity/remove">Legacy LP</a>
     </div>
   </div>
 </section>
