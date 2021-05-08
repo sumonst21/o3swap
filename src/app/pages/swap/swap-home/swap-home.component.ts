@@ -335,6 +335,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
     return true;
   }
   checkInputAmountLimit(): boolean {
+    return true;
     try {
       const inputAmountBig = new BigNumber(this.inputAmount);
       const maxAmountBig = new BigNumber(this.fromToken.maxAmount);

@@ -169,24 +169,35 @@
           margin-right: 7px;
         }
       }
-      &.route {
-        flex-direction: column;
-        align-items: initial;
-        ul.routes {
-          margin-top: 10px;
-        }
-      }
       ul.routes {
-        display: flex;
-        justify-content: flex-end;
+        display: block;
         li {
-          display: inline-flex;
+          display: flex;
           align-items: center;
-        }
-        img {
-          max-width: 20px;
-          max-height: 20px;
-          margin: 0 4px;
+          font-size: 15px;
+          position: relative;
+          &:not(:first-child) {
+            margin-top: 20px;
+            &::before {
+              content: "";
+              height: 34px;
+              width: 1px;
+              background: #353535;
+              position: absolute;
+              left: 5px;
+              top: -27px;
+            }
+          }
+          img.route-icon {
+            width: 12px;
+            height: 12px;
+            margin-right: 16px;
+          }
+          img.logo {
+            width: 25px;
+            max-height: 25px;
+            margin-right: 6px;
+          }
         }
       }
     }

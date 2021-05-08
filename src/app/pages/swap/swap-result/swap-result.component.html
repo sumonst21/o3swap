@@ -144,15 +144,6 @@
           {{ toAddress | shortAddress: 10 }}
         </p>
       </div>
-      <div class="fee-item" [ngClass]="{route: chooseSwapPath?.swapPath.length > 4}">
-        <p class="label">{{ 'Routing' | translate: lang:langPageName }}</p>
-        <ul class="value routes">
-          <li *ngFor="let name of chooseSwapPath?.swapPath; index as index">
-            <span *ngIf="index!==0">></span>
-            <img [src]="chooseSwapPath?.swapPathLogo[index]" alt="">{{ name }}
-          </li>
-        </ul>
-      </div>
       <div class="fee-item">
         <p class="label">{{ 'Rate' | translate: lang:langPageName }}</p>
         <p class="value">
@@ -171,6 +162,17 @@
       </div>
       <div class="fee-item" *ngIf="showO3SwapFee">
         <p class="label">{{ 'O3Swapfee' | translate: lang:langPageName:[O3_AGGREGATOR_FEE] }}</p>
+      </div>
+      <div class="fee-item">
+        <p class="label">{{ 'Routing' | translate: lang:langPageName }}</p>
+      </div>
+      <div class="fee-item">
+        <ul class="value routes">
+          <li *ngFor="let name of chooseSwapPath?.swapPath; index as index">
+            <img src="/assets/mobile-images/swap/route-item.png" class="route-icon" alt="">
+            <img class="logo" [src]="chooseSwapPath?.swapPathLogo[index]" alt="">{{ name }}
+          </li>
+        </ul>
       </div>
     </div>
     <button class="confirm" (click)="swap()"
