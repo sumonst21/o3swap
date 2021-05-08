@@ -78,15 +78,6 @@
     }
   }
 }
-.cover {
-  z-index: 999;
-  position: fixed;
-  right: 0;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background: #0a0a0a66;
-}
 
 @media screen and (max-width: $mobileMinWidth) {
   .wallet {

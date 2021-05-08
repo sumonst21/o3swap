@@ -273,7 +273,7 @@ header {
 ul.mobile-menu {
   width: 80%;
   position: absolute;
-  top: 0;
+  top: 90px;
   right: 0;
   bottom: 0;
   font-size: 17px;
@@ -281,11 +281,15 @@ ul.mobile-menu {
   background: #303030;
   padding: 0;
   li {
-    height: 84px;
-    line-height: 84px;
+    height: 10%;
+    max-height: 84px;
+    min-height: 50px;
     text-align: center;
     margin: 0;
     padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     a {
       margin: 0;
       padding: 0;
@@ -300,6 +304,7 @@ ul.mobile-menu {
   }
   li.language {
     height: 16px;
+    min-height: 16px;
     line-height: 16px;
     position: absolute;
     bottom: 20px;
@@ -320,12 +325,6 @@ ul.mobile-menu {
       );
       background-clip: text;
       -webkit-text-fill-color: transparent;
-    }
-  }
-  @media screen and (max-height: 762px) {
-    li {
-      height: 60px;
-      line-height: 60px;
     }
   }
 }

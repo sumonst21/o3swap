@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
   currentPage = this.router.url;
   isHome = true;
   showRisk = false;
+  showMobileMenu = false;
 
   updateRatesInterval: Unsubscribable;
 
@@ -136,6 +137,7 @@ export class AppComponent implements OnInit {
     if (lang === this.lang) {
       return;
     }
+    this.showMobileMenu = false;
     this.lang = lang;
     this.store.dispatch({ type: UPDATE_LANGUAGE, data: lang });
     window.scrollTo({
@@ -143,5 +145,18 @@ export class AppComponent implements OnInit {
       top: 0,
       behavior: 'smooth',
     });
+  }
+
+  stopPropagation(e): void {
+    e.stopPropagation();
+  }
+
+  toUrl(url: string): void {
+    this.showMobileMenu = false;
+    if (url.startsWith('http')) {
+      window.open(url);
+    } else {
+      this.router.navigateByUrl(url);
+    }
   }
 }
