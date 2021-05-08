@@ -55,14 +55,14 @@ export class HeaderConnectItemComponent implements OnInit, OnDestroy {
   }
 
   showCover(): void {
-    if (this.commonService.isMobileWidth()) {
+    if (!this.commonService.isMobileWidth()) {
       return;
     }
     this.isShowCover = true;
   }
 
   showModal(): void {
-    if (!this.commonService.isMobileWidth()) {
+    if (this.commonService.isMobileWidth()) {
       return;
     }
     clearTimeout(this.showModalTimeOut);
