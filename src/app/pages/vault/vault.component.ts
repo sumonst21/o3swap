@@ -16,7 +16,13 @@ import {
 } from '@shared';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
-import { O3STAKING_CONTRACT, O3TOKEN_CONTRACT, O3_TOKEN, Token } from '@lib';
+import {
+  MESSAGE,
+  O3STAKING_CONTRACT,
+  O3TOKEN_CONTRACT,
+  O3_TOKEN,
+  Token,
+} from '@lib';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 interface State {
   language: any;
@@ -191,6 +197,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     isStake: boolean = true
   ): Promise<void> {
     let modal;
+    if (!this.checkWalletConnect()) {
+      return;
+    }
     if (!this.commonService.isMobileWidth()) {
       modal = this.modal.create({
         nzContent: VaultStakeModalComponent,
@@ -220,6 +229,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     modal.afterClose.subscribe(async (res) => {
       if (res) {
+        if (!this.checkBalance(balance, res)) {
+          return;
+        }
         const showApprove = await this.checkShowApprove(
           token,
           this.vaultdMetaMaskWalletApiService.vaultWallet.address,
@@ -244,6 +256,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     balance: string,
     isStake: boolean = true
   ): Promise<void> {
+    if (!this.checkWalletConnect()) {
+      return;
+    }
     const contractHash = O3STAKING_CONTRACT[token.assetID];
     let modal;
     if (!this.commonService.isMobileWidth()) {
@@ -275,6 +290,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     modal.afterClose.subscribe(async (res) => {
       if (res) {
+        if (!this.checkBalance(balance, res)) {
+          return;
+        }
         const showApprove = await this.checkShowApprove(
           token,
           this.vaultdMetaMaskWalletApiService.vaultWallet.address,
@@ -295,6 +313,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimUnlockO3(token: any): Promise<void> {
+    if (!this.checkWalletConnect()) {
+      return;
+    }
     if (this.isCanClick) {
       this.isCanClick = false;
       setTimeout(() => {
@@ -312,6 +333,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimProfit(token: any): Promise<void> {
+    if (!this.checkWalletConnect()) {
+      return;
+    }
     if (this.isCanClick) {
       this.isCanClick = false;
       setTimeout(() => {
@@ -348,6 +372,22 @@ export class VaultComponent implements OnInit, OnDestroy {
     } else {
       return true;
     }
+  }
+  checkBalance(balance: string, input: string): boolean {
+    const balanceNumber = new BigNumber(balance);
+    const inputNumber = new BigNumber(input);
+    if (balanceNumber.comparedTo(input) < 0) {
+      this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
+      return false;
+    }
+    return true;
+  }
+  checkWalletConnect(): boolean {
+    if (!this.vaultdMetaMaskWalletApiService.vaultWallet) {
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['ETH']));
+      return false;
+    }
+    return true;
   }
   showApproveModal(token: Token, spender: string): void {
     const walletName = this.vaultdMetaMaskWalletApiService.vaultWallet
