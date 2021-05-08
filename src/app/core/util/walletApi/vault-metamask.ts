@@ -5,7 +5,6 @@ import {
   O3_TOKEN,
   MESSAGE,
   RESET_VAULT_WALLET,
-  StakeTransaction,
   Token,
   UPDATE_VAULT_STAKE_PENDING_TX,
   UPDATE_VAULT_WALLET,
@@ -18,7 +17,11 @@ import { interval, Observable, of, Unsubscribable } from 'rxjs';
 import { CommonService } from '../common.service';
 import { SwapService } from '../swap.service';
 import Web3 from 'web3';
-import { VaultWallet } from 'src/app/_lib/vault';
+import {
+  VaultTransaction,
+  VaultTransactionType,
+  VaultWallet,
+} from 'src/app/_lib/vault';
 import { HttpClient } from '@angular/common/http';
 import { map, take } from 'rxjs/operators';
 import BigNumber from 'bignumber.js';
@@ -36,7 +39,7 @@ export class VaultdMetaMaskWalletApiService {
 
   vault$: Observable<any>;
   vaultWallet: VaultWallet;
-  vaultTransaction: StakeTransaction;
+  vaultTransaction: VaultTransaction;
 
   ethereum;
   web3: Web3;
@@ -158,7 +161,7 @@ export class VaultdMetaMaskWalletApiService {
       })
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(token, inputAmount, hash, true);
+        this.handleTx(token, inputAmount, hash, VaultTransactionType.stake);
         return hash;
       })
       .catch((error) => {
@@ -191,7 +194,7 @@ export class VaultdMetaMaskWalletApiService {
       })
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(token, inputAmount, hash, false);
+        this.handleTx(token, inputAmount, hash, VaultTransactionType.unstake);
         return hash;
       })
       .catch((error) => {
@@ -220,7 +223,7 @@ export class VaultdMetaMaskWalletApiService {
       })
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(O3_TOKEN, profit, hash, false, true);
+        this.handleTx(O3_TOKEN, profit, hash, VaultTransactionType.claim);
         return hash;
       })
       .catch((error) => {
@@ -326,7 +329,7 @@ export class VaultdMetaMaskWalletApiService {
       })
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(token, inputAmount, hash, true);
+        this.handleTx(token, inputAmount, hash, VaultTransactionType.stake);
         return hash;
       })
       .catch((error) => {
@@ -356,7 +359,7 @@ export class VaultdMetaMaskWalletApiService {
       })
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(token, inputAmount, hash, false);
+        this.handleTx(token, inputAmount, hash, VaultTransactionType.unstake);
         return hash;
       })
       .catch((error) => {
@@ -381,7 +384,7 @@ export class VaultdMetaMaskWalletApiService {
       })
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(O3_TOKEN, unlocked, hash, false, true);
+        this.handleTx(O3_TOKEN, unlocked, hash, VaultTransactionType.claim);
         return hash;
       })
       .catch((error) => {
@@ -549,7 +552,7 @@ export class VaultdMetaMaskWalletApiService {
     if (localTxString === null || localTxString === undefined) {
       return;
     }
-    const localTx: StakeTransaction = JSON.parse(localTxString);
+    const localTx: VaultTransaction = JSON.parse(localTxString);
     console.log(localTx);
     if (
       localTx.fromToken.chain === 'NEO' ||
@@ -569,16 +572,15 @@ export class VaultdMetaMaskWalletApiService {
     fromToken: Token,
     inputAmount: string,
     txHash: string,
-    isStake: boolean,
-    isClaim: boolean = false
+    transactionType: number
   ): void {
-    const pendingTx: StakeTransaction = {
+    const pendingTx: VaultTransaction = {
       txid: this.commonService.remove0xHash(txHash),
       isPending: true,
       isFailed: false,
       fromToken,
       amount: inputAmount,
-      transactionType: isClaim ? 2 : isStake ? 1 : 0,
+      transactionType,
       min: false,
       walletName: 'MetaMask',
     };
@@ -596,7 +598,7 @@ export class VaultdMetaMaskWalletApiService {
       myInterval.unsubscribe();
     }
     myInterval = interval(5000).subscribe(() => {
-      const currentTx: StakeTransaction = this.vaultTransaction;
+      const currentTx: VaultTransaction = this.vaultTransaction;
       this.rpcApiService
         .getEthTxReceipt(txHash, currentTx.fromToken.chain)
         .subscribe(

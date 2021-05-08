@@ -12,12 +12,12 @@ import {
   TxAtPage,
   EthWalletName,
   UPDATE_VAULT_STAKE_PENDING_TX,
-  StakeTransaction as VaultTransaction,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AnimationOptions } from 'ngx-lottie';
 import { interval, Observable, Unsubscribable } from 'rxjs';
+import { VaultTransaction, VaultTransactionType } from 'src/app/_lib/vault';
 
 interface State {
   vault: any;
@@ -63,6 +63,7 @@ export class TxProgressComponent implements OnInit, OnDestroy {
   vault$: Observable<any>;
   vaultUnScribe: Unsubscribable;
   vaultTransaction: VaultTransaction;
+  vaultTransactionType = VaultTransactionType;
 
   ethWalletName: EthWalletName;
   bscWalletName: EthWalletName;

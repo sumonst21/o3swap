@@ -189,7 +189,7 @@
           {{ 'Success' | translate: lang:langPageName }}</p>
         <p class="status" *ngIf='vaultTransaction?.isFailed'>{{ 'Failed' | translate: lang:langPageName }}</p>
         <div class="desc">
-          <span>{{ (vaultTransaction.transactionType === 2 ? 'Claim' : (vaultTransaction.transactionType === 1 ? 'Stake' : 'Unstake')) | translate: lang:'vault' }}</span>
+          <span>{{ (vaultTransaction.transactionType === vaultTransactionType.claim ? 'Claim' : (vaultTransaction.transactionType === vaultTransactionType.stake ? 'Stake' : 'Unstake')) | translate: lang:'vault' }}</span>
           {{ vaultTransaction?.amount }} {{ vaultTransaction?.fromToken?.symbol }}
         </div>
         <nz-progress [nzPercent]="swapProgress" [nzShowInfo]="false" nzStrokeWidth="6"
@@ -420,7 +420,7 @@
           {{ 'Success' | translate: lang:langPageName }}</p>
         <p class="status" *ngIf='vaultTransaction?.isFailed'>{{ 'Failed' | translate: lang:langPageName }}</p>
         <div class="desc">
-          <span>{{ (vaultTransaction.transactionType === 2 ? 'Claim' : (vaultTransaction.transactionType === 1 ? 'Stake' : 'Unstake')) | translate: lang:'vault' }}</span>
+          <span>{{ (vaultTransaction.transactionType === vaultTransactionType.claim ? 'Claim' : (vaultTransaction.transactionType === vaultTransactionType.stake ? 'Stake' : 'Unstake')) | translate: lang:'vault' }}</span>
           {{ vaultTransaction?.amount }} {{ vaultTransaction?.fromToken?.symbol }}
         </div>
         <nz-progress [nzPercent]="swapProgress" [nzShowInfo]="false" nzStrokeWidth="6"
