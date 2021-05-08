@@ -12,7 +12,6 @@ import {
   ETH_PUSDT_ASSET,
   ConnectChainType,
   EthWalletName,
-  METAMASK_CHAIN,
   SOURCE_TOKEN_SYMBOL,
   MESSAGE,
 } from '@lib';
@@ -35,59 +34,57 @@ interface State {
   styleUrls: ['./liquidity.component.scss', './mobile.scss'],
 })
 export class LiquidityComponent implements OnInit, OnDestroy {
-  SOURCE_TOKEN_SYMBOL = SOURCE_TOKEN_SYMBOL;
-  BRIDGE_SLIPVALUE = BRIDGE_SLIPVALUE;
-  swapProgress = 20;
-  addLiquidityTokens: Token[] = JSON.parse(JSON.stringify(USD_TOKENS));
-  USDTToken: Token = this.addLiquidityTokens.find(
+  public SOURCE_TOKEN_SYMBOL = SOURCE_TOKEN_SYMBOL;
+  public BRIDGE_SLIPVALUE = BRIDGE_SLIPVALUE;
+  public addLiquidityTokens: Token[] = JSON.parse(JSON.stringify(USD_TOKENS));
+  public USDTToken: Token = this.addLiquidityTokens.find(
     (item) => item.symbol.indexOf('USDT') >= 0
   );
-  BUSDToken: Token = this.addLiquidityTokens.find(
+  public BUSDToken: Token = this.addLiquidityTokens.find(
     (item) => item.symbol.indexOf('BUSD') >= 0
   );
-  HUSDToken: Token = this.addLiquidityTokens.find(
+  public HUSDToken: Token = this.addLiquidityTokens.find(
     (item) => item.symbol.indexOf('HUSD') >= 0
   );
-  liquidityType: LiquidityType = 'add';
+  public liquidityType: LiquidityType = 'add';
 
-  LPToken: Token = LP_TOKENS.find((item) => item.chain === 'ETH');
-  addLiquidityInputAmount = [];
-  removeLiquidityInputAmount = [];
-  receiveAmount: string[] = [];
-  payAmount: string[] = [];
-  showConnectWallet = false;
-  connectChainType: ConnectChainType;
-  addPolyFee: string[] = [];
-  removePolyFee: string[] = [];
-  showAddPolyFee: boolean[] = [false, false, false];
-  showRemovePolyFee: boolean[] = [false, false, false];
+  public LPToken: Token = LP_TOKENS.find((item) => item.chain === 'ETH');
+  public addLiquidityInputAmount = [];
+  public removeLiquidityInputAmount = [];
+  public receiveAmount: string[] = [];
+  public payAmount: string[] = [];
+  public showConnectWallet = false;
+  public connectChainType: ConnectChainType;
+  public addPolyFee: string[] = [];
+  public removePolyFee: string[] = [];
+  public showAddPolyFee: boolean[] = [false, false, false];
+  public showRemovePolyFee: boolean[] = [false, false, false];
 
-  swapUnScribe: Unsubscribable;
-  swap$: Observable<any>;
-  ethAccountAddress: string;
-  bscAccountAddress: string;
-  hecoAccountAddress: string;
-  ethWalletName: EthWalletName;
-  bscWalletName: EthWalletName;
-  hecoWalletName: EthWalletName;
-  metamaskNetworkId: number;
-  tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
+  private swapUnScribe: Unsubscribable;
+  private swap$: Observable<any>;
+  public ethAccountAddress: string;
+  public bscAccountAddress: string;
+  public hecoAccountAddress: string;
+  private ethWalletName: EthWalletName;
+  private bscWalletName: EthWalletName;
+  private hecoWalletName: EthWalletName;
+  private tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
 
-  ratesUnScribe: Unsubscribable;
-  rates$: Observable<any>;
-  rates = {};
-  isSwapCanClick = true;
-  pusdtBalance = {
+  private ratesUnScribe: Unsubscribable;
+  private rates$: Observable<any>;
+  private rates = {};
+  private isSwapCanClick = true;
+  public pusdtBalance = {
     ALL: '',
     ETH: { value: '', percentage: '0' },
     BSC: { value: '', percentage: '0' },
     HECO: { value: '', percentage: '0' },
   };
 
-  langPageName = 'liquidity';
-  langUnScribe: Unsubscribable;
-  language$: Observable<any>;
-  lang: string;
+  public langPageName = 'liquidity';
+  private langUnScribe: Unsubscribable;
+  private language$: Observable<any>;
+  public lang: string;
 
   constructor(
     private apiService: ApiService,
@@ -133,7 +130,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.ethWalletName = state.ethWalletName;
       this.bscWalletName = state.bscWalletName;
       this.hecoWalletName = state.hecoWalletName;
-      this.metamaskNetworkId = state.metamaskNetworkId;
       this.handleAccountBalance(state);
       this.getLPBalance();
       this.changeDetectorRef.detectChanges();
@@ -508,13 +504,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.LPToken.amount = '--';
       return;
     }
-    if (
-      this.ethWalletName === 'MetaMask' &&
-      METAMASK_CHAIN[this.metamaskNetworkId] !== 'ETH'
-    ) {
-      this.LPToken.amount = '--';
-      return;
-    }
     this.swapService.getEthBalancByHash(this.LPToken).then((res) => {
       if (this.LPToken.amount !== res) {
         this.getPusdtBalance();
@@ -541,27 +530,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         } else {
           this.addLiquidityTokens[index].amount = '--';
         }
-      }
-      if (
-        item.chain === 'ETH' &&
-        this.ethWalletName === 'MetaMask' &&
-        METAMASK_CHAIN[this.metamaskNetworkId] !== 'ETH'
-      ) {
-        this.addLiquidityTokens[index].amount = '--';
-      }
-      if (
-        item.chain === 'BSC' &&
-        this.bscWalletName === 'MetaMask' &&
-        METAMASK_CHAIN[this.metamaskNetworkId] !== 'BSC'
-      ) {
-        this.addLiquidityTokens[index].amount = '--';
-      }
-      if (
-        item.chain === 'HECO' &&
-        this.hecoWalletName === 'MetaMask' &&
-        METAMASK_CHAIN[this.metamaskNetworkId] !== 'HECO'
-      ) {
-        this.addLiquidityTokens[index].amount = '--';
       }
     });
   }

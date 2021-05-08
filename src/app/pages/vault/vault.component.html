@@ -32,7 +32,7 @@
         <div class="list-head">
           <div class="list-head-title">{{ 'Unlock' | translate: lang:langPageName }} O3</div>
           <div class="group-icon">
-            <img nz-tooltip nzTooltipTitle="Provide O3 liquidity on DEX to unlock your O3" nzTooltipPlacement="right"
+            <img nz-tooltip [nzTooltipTitle]="'unlockO3Tip' | translate: lang:langPageName" nzTooltipPlacement="right"
               src="/assets/images/dashboard/doubt.png" alt="">
           </div>
           <!-- <div class="list-head-right">

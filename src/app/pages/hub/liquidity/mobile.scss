@@ -25,6 +25,13 @@
           span {
             color: #8aa1a1;
           }
+          img.question {
+            width: 14px;
+            height: 14px;
+            margin-left: 5px;
+            cursor: pointer;
+            vertical-align: bottom;
+          }
         }
         .content {
           display: flex;

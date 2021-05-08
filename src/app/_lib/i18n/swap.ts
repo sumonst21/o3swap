@@ -129,12 +129,12 @@ const swap = {
   },
   Custom: {
     en: 'Custom',
-    zh: '自定义'
+    zh: '自定义',
   },
   SearchTokenName: {
     en: 'Search token name',
-    zh: '搜索代币名字'
-  }
+    zh: '搜索代币名字',
+  },
 };
 
 export default swap;

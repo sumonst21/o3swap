@@ -41,7 +41,7 @@ const liquidity = {
   },
   ReceiveLP: {
     en: 'Receive LP',
-    zh: '获得LP',
+    zh: '获得 LP',
   },
   Withdraw: {
     en: 'Withdraw',
@@ -49,11 +49,23 @@ const liquidity = {
   },
   PayLP: {
     en: 'Pay LP',
-    zh: '支付LP',
+    zh: '支付 LP',
   },
   MaxSlippage: {
     en: 'Max slippage',
     zh: '最大滑点',
+  },
+  lpBalanceTip: {
+    en: 'Please connect ETH wallet to view the Balance',
+    zh: '请连接ETH钱包查看余额',
+  },
+  LegacyLPTip: {
+    en: 'Please go to Legacy LP to remove your BUSD_LP and HUSD_LP',
+    zh: '',
+  },
+  LegacyLP: {
+    en: 'Legacy LP',
+    zh: ''
   },
 };
 

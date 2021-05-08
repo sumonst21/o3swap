@@ -82,6 +82,10 @@ const app = {
     en: 'Cancel',
     zh: '取消',
   },
+  ComingSoon: {
+    en: 'Coming soon...',
+    zh: '即将开放...',
+  },
 };
 
 export default app;

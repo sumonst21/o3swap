@@ -75,6 +75,10 @@ const vault = {
     en: 'Cancel',
     zh: '取消',
   },
+  unlockO3Tip: {
+    en: 'Provide O3 liquidity on DEX to unlock your O3',
+    zh: '',
+  },
 };
 
 export default vault;
