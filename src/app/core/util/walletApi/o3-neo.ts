@@ -39,6 +39,11 @@ export class O3NeoWalletApiService {
     o3dapi.NEO.addEventListener(o3dapi.NEO.Constants.EventName.READY, () => {
       this.o3DapiIsReady = true;
     });
+    o3dapi.NEO.getProvider().then((res) => {
+      if (res) {
+        this.o3DapiIsReady = true;
+      }
+    });
     this.swap$ = store.select('swap');
     this.swap$.subscribe((state) => {
       this.neoWalletName = state.neoWalletName;
