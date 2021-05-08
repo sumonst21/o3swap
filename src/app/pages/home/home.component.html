@@ -270,9 +270,9 @@
     <img src="/assets/images/home/footer-logo.png" alt="">
     <p class="copyright">© {{ copyRightYear }} O3 Labs Inc.</p>
     <p class="language">
-      <span [ngClass]="{active: lang==='en'}" (click)="changeLang('en')">EN</span>
+      <span class="canClick" [ngClass]="{active: lang==='en'}" (click)="changeLang('en')">EN</span>
       <span class="line">|</span>
-      <span [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">中文</span>
+      <span class="canClick" [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">中文</span>
     </p>
     <a href="https://docs.o3swap.com/" target="_blank">
       <p class="doc">{{ 'Doc' | translate: lang:langPageName }}</p>

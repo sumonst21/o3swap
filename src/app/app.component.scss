@@ -194,6 +194,9 @@ header {
       }
     }
   }
+  .right .language {
+    display: inline-block;
+  }
   @media screen and (max-width: 1680px) {
     ul.left-menu {
       left: 20px;
@@ -231,6 +234,9 @@ header {
     }
     ul.menu,
     ul.left-menu {
+      display: none;
+    }
+    .right .language {
       display: none;
     }
   }
@@ -312,19 +318,26 @@ ul.mobile-menu {
     color: #fff;
     font-family: "fontMedium";
     font-size: 16px;
-    .line {
-      margin: 0 12px;
-    }
-    span.active {
-      font-family: "fontBold";
-      color: #46b069;
-      background: -webkit-linear-gradient(
-        -30deg,
-        #46b069 0%,
-        #00af92 99.6337890625%
-      );
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+  }
+}
+
+.language {
+  margin-left: 20px;
+  .line {
+    margin: 0 12px;
+  }
+  span.canClick {
+    cursor: pointer;
+  }
+  span.active {
+    font-family: "fontBold";
+    color: #46b069;
+    background: -webkit-linear-gradient(
+      -30deg,
+      #46b069 0%,
+      #00af92 99.6337890625%
+    );
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }

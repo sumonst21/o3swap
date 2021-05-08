@@ -72,6 +72,11 @@
         <app-vault-header-connect *ngIf="isHome===false && currentPage==='/vault'"></app-vault-header-connect>
         <img class="mobile-menu-icon" (click)="showMobileMenu=!showMobileMenu" src="/assets/mobile-images/menu.png"
           alt="">
+        <div class="language" *ngIf="!isHome">
+          <span class="canClick" [ngClass]="{active: lang==='en'}" (click)="changeLang('en')">EN</span>
+          <span class="line">|</span>
+          <span class="canClick" [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">中文</span>
+        </div>
       </div>
     </div>
   </header>
