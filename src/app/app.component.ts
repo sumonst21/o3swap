@@ -26,7 +26,7 @@ interface State {
 export class AppComponent implements OnInit {
   currentPage = this.router.url;
   isHome = true;
-  showRisk = true;
+  showRisk = false;
 
   updateRatesInterval: Unsubscribable;
 
@@ -54,14 +54,14 @@ export class AppComponent implements OnInit {
       if (res instanceof NavigationEnd) {
         this.currentPage = res.urlAfterRedirects || res.url;
         this.isHome = this.isHomePage();
-        if (
-          sessionStorage.getItem(`${this.currentPage}WarningDialog`) !==
-            'true' &&
-          location.pathname !== '/' &&
-          location.pathname !== '/home'
-        ) {
-          this.riskWarning();
-        }
+        // if (
+        //   sessionStorage.getItem(`${this.currentPage}WarningDialog`) !==
+        //     'true' &&
+        //   location.pathname !== '/' &&
+        //   location.pathname !== '/home'
+        // ) {
+        //   this.riskWarning();
+        // }
         this.updateRates();
       }
     });
@@ -70,10 +70,10 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.initLanguage();
     this.apiService.getRates();
-    const sessionShowRisk = sessionStorage.getItem('showRisk');
-    if (sessionShowRisk !== undefined) {
-      this.showRisk = sessionShowRisk === 'false' ? false : true;
-    }
+    // const sessionShowRisk = sessionStorage.getItem('showRisk');
+    // if (sessionShowRisk !== undefined) {
+    //   this.showRisk = sessionShowRisk === 'false' ? false : true;
+    // }
     if (location.pathname !== '/' && location.pathname !== '/home') {
       this.neolineWalletApiService.init();
       this.metaMaskWalletApiService.init();
