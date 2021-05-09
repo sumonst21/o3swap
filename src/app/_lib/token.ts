@@ -8,6 +8,8 @@ export interface Token {
   chain: CHAINS;
   type?: string;
   maxAmount?: string;
+  pairTokens?: string[];
+  pairLogos?: string[];
 }
 export type CHAINS = 'ALL' | 'NEO' | 'ETH' | 'BSC' | 'HECO';
 
@@ -106,6 +108,45 @@ export const O3_TOKEN: Token = {
   logo: '/assets/images/logo-O3.png',
 };
 //#endregion
+
+export const UNLOCK_LP_TOKENS: Token[] = [
+  {
+    assetID: '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
+    symbol: 'LP',
+    decimals: 18,
+    amount: '0',
+    chain: 'ETH',
+    logo: '/assets/images/tokens/lp-eth.png',
+    pairTokens: [
+      '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+      '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    ],
+    pairLogos: [
+      '/assets/images/tokens/lp-eth.png',
+      '/assets/images/tokens/lp-eth.png',
+    ],
+  },
+];
+export const TOKEN_STAKING_TOKENS: Token[] = [O3_TOKEN];
+
+export const LP_STAKING_TOKENS: Token[] = [
+  {
+    assetID: '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
+    symbol: 'LP',
+    decimals: 18,
+    amount: '0',
+    chain: 'ETH',
+    logo: '/assets/images/tokens/lp-eth.png',
+    pairTokens: [
+      '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+      '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    ],
+    pairLogos: [
+      '/assets/images/tokens/lp-eth.png',
+      '/assets/images/tokens/lp-eth.png',
+    ],
+  },
+];
 
 export const CONST_BRIDGE_TOKENS: Token[] = [
   {

@@ -53,7 +53,7 @@
             <thead>
               <tr>
                 <th *ngIf="!isMobile"></th>
-                <th [nzWidth]="isMobile ? '75px': '100px'">{{ 'Name' | translate: lang:langPageName }}</th>
+                <th [nzWidth]="isMobile ? '100px': '100px'">{{ 'Name' | translate: lang:langPageName }}</th>
                 <th>{{ 'Staked' | translate: lang:langPageName }}</th>
                 <th>{{ 'Remaining' | translate: lang:langPageName }}</th>
                 <th>{{ 'Speed' | translate: lang:langPageName }}</th>
@@ -63,9 +63,15 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of stakeUnlockTokenList; let i = index">
-                <td *ngIf="!isMobile"><img class="token-img" [src]="item.logo" alt=""></td>
-                <td><img *ngIf="isMobile" class="token-img" [src]="item.logo"
-                    alt="">{{ stakeUnlockTokenList[i].symbol }}</td>
+                <td *ngIf="!isMobile">
+                  <div class="logo-box"><img class="token-img" [src]="item.pairLogos[0]" alt=""><img class="token-img"
+                      [src]="item.pairLogos[1]" alt=""></div>
+                </td>
+                <td>
+                  <div class="logo-box" *ngIf="isMobile"><img *ngIf="isMobile" class="token-img"
+                      [src]="item.pairLogos[0]" alt=""><img class="token-img" [src]="item.pairLogos[1]" alt=""></div>
+                  {{ stakeUnlockTokenList[i].symbol }}
+                </td>
                 <td>
                   <app-long-balance [balance]="item.staked  || '--'">
                   </app-long-balance>
@@ -86,7 +92,7 @@
                   <button class="btn-primary deposit-btn claim-btn" (click)="claimUnlockO3(item)">
                     {{ 'Claim' | translate: lang:langPageName }}
                   </button>
-                  <button class="btn-primary deposit-btn get-lp-btn" (click)="claimUnlockO3(item)">
+                  <button class="btn-primary deposit-btn get-lp-btn" (click)="getLP(item)">
                     {{ 'GetLP' | translate: lang:langPageName }}
                   </button>
                   <div>
@@ -171,9 +177,8 @@
               <img [src]="item.logo" alt="" class="token-img">
               <div>
                 {{ item.symbol }}
-                <p class="claimable-box">{{ 'Claimable' | translate: lang:langPageName }} O3: &nbsp;<span
-                    class="value"></span>
-                  <span>
+                <p class="claimable-box">{{ 'Claimable' | translate: lang:langPageName }} O3: &nbsp;
+                  <span class="value">
                     <app-long-balance [balance]="item.profit  || '--'">
                     </app-long-balance>
                   </span><span class="claim-btn"
