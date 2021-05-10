@@ -2,17 +2,21 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { LiquiditySource } from './liquidity-source';
 import { ApiService } from '@core';
-import { CommonHttpResponse } from '@lib';
-import { interval, Unsubscribable } from 'rxjs';
+import { CommonHttpResponse, MESSAGE, UPDATE_LANGUAGE } from '@lib';
+import { interval, Observable, Unsubscribable } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+interface State {
+  language: any;
+}
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  styleUrls: ['./home.component.scss', './mobile.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   liquiditySource = LiquiditySource;
-  lang = 'en';
   copyRightYear = new Date().getFullYear();
   roadmapIndex = 0;
   roadmapLen = 4;
@@ -28,21 +32,33 @@ export class HomeComponent implements OnInit, OnDestroy {
   priceOptions = {
     path: '/assets/json/price/data.json',
   };
-
   swapOptions = {
     path: '/assets/json/swap/data.json',
   };
-
   exchangeOptions = {
     path: '/assets/json/exchange.json',
   };
 
+  langPageName = 'home';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
+
+  totalData = { pool_tvl: '', total_addresses: '', total_tx_count: '' };
+
   constructor(
+    private store: Store<State>,
     private nzMessage: NzMessageService,
     private apiService: ApiService
-  ) {}
+  ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
+  }
 
   ngOnInit(): void {
+    this.getTotalData();
     this.roadmapIntervalFun();
   }
 
@@ -50,6 +66,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.roadmapInterval) {
       this.roadmapInterval.unsubscribe();
     }
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
+    }
+  }
+
+  getTotalData(): void {
+    this.apiService.getTotalData().subscribe((res: CommonHttpResponse) => {
+      if (res.status === 'success') {
+        this.totalData = res.data;
+      }
+    });
   }
 
   roadmapIntervalFun(): void {
@@ -75,7 +102,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
     if (this.checkEmail() === false) {
-      this.nzMessage.error('please enter your vaild email');
+      this.nzMessage.error(MESSAGE.EnterVaildEmail[this.lang]);
       return;
     }
     this.isLoadingEmail = true;
@@ -101,7 +128,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   changeLang(lang: 'en' | 'zh'): void {
+    if (lang === this.lang) {
+      return;
+    }
     this.lang = lang;
+    this.store.dispatch({ type: UPDATE_LANGUAGE, data: lang });
     window.scrollTo({
       left: 0,
       top: 0,

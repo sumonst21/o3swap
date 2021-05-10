@@ -1,13 +1,26 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  OnDestroy,
+} from '@angular/core';
 import { CHAINS } from '@lib';
 import { CommonService } from '@core';
+import { Store } from '@ngrx/store';
+import { Unsubscribable, Observable } from 'rxjs';
+
+interface State {
+  language: any;
+}
 
 @Component({
   selector: 'app-header-connect-item',
   templateUrl: './header-connect-item.component.html',
   styleUrls: ['./header-connect-item.component.scss'],
 })
-export class HeaderConnectItemComponent implements OnInit {
+export class HeaderConnectItemComponent implements OnInit, OnDestroy {
   @Input() chain: CHAINS;
   @Input() walletName: string;
   @Input() accountAddress: string;
@@ -16,12 +29,42 @@ export class HeaderConnectItemComponent implements OnInit {
 
   isShowModal = false;
   showModalTimeOut;
+  isShowCover = false;
 
-  constructor(private commonService: CommonService) {}
+  langPageName = 'app';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
+
+  constructor(
+    private commonService: CommonService,
+    private store: Store<State>
+  ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
+  }
 
   ngOnInit(): void {}
 
+  ngOnDestroy(): void {
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
+    }
+  }
+
+  showCover(): void {
+    if (!this.commonService.isMobileWidth()) {
+      return;
+    }
+    this.isShowCover = true;
+  }
+
   showModal(): void {
+    if (this.commonService.isMobileWidth()) {
+      return;
+    }
     clearTimeout(this.showModalTimeOut);
     this.isShowModal = true;
   }

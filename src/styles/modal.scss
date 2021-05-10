@@ -1,3 +1,4 @@
+@import "src/styles/variable.scss";
 .custom-modal {
   width: 400px !important;
   transform-origin: center !important;
@@ -18,21 +19,26 @@
     border-radius: 40px;
   }
   .modal-content {
-    & > .title {
-      font-size: 20px;
-      font-family: "fontDemiBold";
-    }
-    .close-group {
-      position: absolute;
-      right: 20px;
-      top: 15px;
-      .link {
-        margin-right: 10px;
-        img {
-          width: 21px;
+    .header {
+      position: relative;
+      height: 50px;
+      line-height: 50px;
+      margin-top: -10px;
+      &.padding {
+        padding: 15px 20px 15px 30px;
+        img.close {
+          top: 15px;
+          right: 20px;
         }
       }
+      .title {
+        font-size: 20px;
+        font-family: "fontDemiBold";
+      }
       img.close {
+        position: absolute;
+        right: -10px;
+        top: 0;
         width: 50px;
         height: 50px;
         cursor: pointer;
@@ -44,5 +50,16 @@
   width: 420px !important;
 }
 .progress-container .ant-progress-inner {
-  background-color: #2A2A2A!important;
+  background-color: #2a2a2a !important;
+}
+
+@media screen and (max-width: $mobileMinWidth) {
+  .custom-modal {
+    width: 80% !important;
+    top: 98px;
+    .ant-modal-content,
+    .ant-modal-body {
+      border-radius: 22px;
+    }
+  }
 }

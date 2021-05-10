@@ -1,10 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import {
-  ApiService,
-  CommonService,
-  MetaMaskWalletApiService,
-  O3EthWalletApiService,
-} from '@core';
+import { ApiService, CommonService, SwapService } from '@core';
 import {
   SwapStateType,
   SwapTransaction,
@@ -16,14 +11,18 @@ import {
   TxProgress,
   TxAtPage,
   EthWalletName,
+  UPDATE_VAULT_STAKE_PENDING_TX,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AnimationOptions } from 'ngx-lottie';
 import { interval, Observable, Unsubscribable } from 'rxjs';
+import { VaultTransaction, VaultTransactionType } from 'src/app/_lib/vault';
 
 interface State {
+  vault: any;
   swap: SwapStateType;
+  language: any;
 }
 @Component({
   selector: 'app-tx-progress',
@@ -60,6 +59,12 @@ export class TxProgressComponent implements OnInit, OnDestroy {
   swap$: Observable<any>;
   swapUnScribe: Unsubscribable;
   transaction: SwapTransaction;
+
+  vault$: Observable<any>;
+  vaultUnScribe: Unsubscribable;
+  vaultTransaction: VaultTransaction;
+  vaultTransactionType = VaultTransactionType;
+
   ethWalletName: EthWalletName;
   bscWalletName: EthWalletName;
   hecoWalletName: EthWalletName;
@@ -68,18 +73,32 @@ export class TxProgressComponent implements OnInit, OnDestroy {
   swapProgress = 20;
   minMessage: string;
 
+  langPageName = 'swap';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
+
+  showModal = true;
+
   constructor(
     public store: Store<State>,
     private apiService: ApiService,
     private nzMessage: NzMessageService,
     private commonService: CommonService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private o3EthWalletApiService: O3EthWalletApiService
+    private swapService: SwapService
   ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.swap$ = store.select('swap');
+    this.vault$ = store.select('vault');
   }
 
   ngOnInit(): void {
+    if (this.commonService.isMobileWidth()) {
+      this.showModal = false;
+    }
     switch (this.txAtPage) {
       case 'swap':
         this.dispatchType = UPDATE_PENDING_TX;
@@ -89,6 +108,9 @@ export class TxProgressComponent implements OnInit, OnDestroy {
         break;
       case 'liquidity':
         this.dispatchType = UPDATE_LIQUIDITY_PENDING_TX;
+        break;
+      case 'vault':
+        this.dispatchType = UPDATE_VAULT_STAKE_PENDING_TX;
         break;
     }
     this.swapUnScribe = this.swap$.subscribe((state) => {
@@ -122,6 +144,17 @@ export class TxProgressComponent implements OnInit, OnDestroy {
         this.requestCrossInterval.unsubscribe();
       }
     });
+    this.vaultUnScribe = this.vault$.subscribe((state) => {
+      if (!state.vaultWallet || this.txAtPage !== 'vault') {
+        return;
+      }
+      this.ethWalletName = state.vaultWallet.walletName;
+      this.hasTransaction = state.vaultTransaction ? true : false;
+      if (this.hasTransaction) {
+        this.handleVaultTransacction(state.vaultTransaction);
+        this.getMinMessage();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -130,6 +163,9 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     }
     if (this.swapUnScribe) {
       this.swapUnScribe.unsubscribe();
+    }
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
     }
   }
 
@@ -144,9 +180,8 @@ export class TxProgressComponent implements OnInit, OnDestroy {
         .subscribe((res: TxProgress) => {
           this.commonService.log(res);
           this.transaction.progress = res;
-          const swapApi = this.getEthDapiService();
           if (res.step1.status === 2 && hasGetBalance1 === false) {
-            swapApi.getBalance(this.transaction.fromToken.chain);
+            this.swapService.getEthBalance(this.transaction.fromToken.chain);
             hasGetBalance1 = true;
           }
           if (
@@ -156,8 +191,8 @@ export class TxProgressComponent implements OnInit, OnDestroy {
           ) {
             this.transaction.isPending = false;
             this.requestCrossInterval.unsubscribe();
-            swapApi.getBalance(this.transaction.fromToken.chain);
-            swapApi.getBalance(this.transaction.toToken.chain);
+            this.swapService.getEthBalance(this.transaction.fromToken.chain);
+            this.swapService.getEthBalance(this.transaction.toToken.chain);
           }
           this.store.dispatch({
             type: this.dispatchType,
@@ -168,29 +203,74 @@ export class TxProgressComponent implements OnInit, OnDestroy {
   }
 
   minTxHashModal(): void {
-    this.transaction.min = true;
-    this.store.dispatch({ type: this.dispatchType, data: this.transaction });
+    switch (this.txAtPage) {
+      case 'vault':
+        this.vaultTransaction.min = true;
+        this.store.dispatch({
+          type: this.dispatchType,
+          data: this.vaultTransaction,
+        });
+        break;
+      default:
+        this.transaction.min = true;
+        this.store.dispatch({
+          type: this.dispatchType,
+          data: this.transaction,
+        });
+    }
   }
 
   maxTxHashModal(): void {
-    this.transaction.min = false;
-    this.store.dispatch({ type: this.dispatchType, data: this.transaction });
+    switch (this.txAtPage) {
+      case 'vault':
+        this.vaultTransaction.min = false;
+        this.store.dispatch({
+          type: this.dispatchType,
+          data: this.vaultTransaction,
+        });
+        break;
+      default:
+        this.transaction.min = false;
+        this.store.dispatch({
+          type: this.dispatchType,
+          data: this.transaction,
+        });
+    }
   }
 
   copy(hash: string): void {
     this.commonService.copy(hash);
   }
 
+  closeTx(): void {
+    this.transaction = null;
+    this.store.dispatch({ type: this.dispatchType, data: null });
+  }
+
   //#region private function
   getMinMessage(): void {
     let message = 'Swap';
-    if (this.txAtPage === 'liquidity') {
-      message =
-        this.transaction?.fromToken.symbol === 'LP' ? 'Withdraw' : 'Deposit';
+    switch (this.txAtPage) {
+      case 'vault':
+        message =
+          this.vaultTransaction.transactionType === 2
+            ? 'Claim'
+            : this.vaultTransaction.transactionType === 1
+            ? 'Unstake'
+            : 'Stake';
+        message += ` ${this.vaultTransaction?.amount} ${this.vaultTransaction?.fromToken?.symbol}`;
+        break;
+      default:
+        if (this.txAtPage === 'liquidity') {
+          message =
+            this.transaction?.fromToken.symbol === 'LP'
+              ? 'Withdraw'
+              : 'Deposit';
+        }
+        message += ` ${this.transaction?.amount} ${this.transaction?.fromToken?.symbol} for ${this.transaction?.receiveAmount} ${this.transaction?.toToken?.symbol}`;
     }
-    message += ` ${this.transaction?.amount} ${this.transaction?.fromToken?.symbol} for ${this.transaction?.receiveAmount} ${this.transaction?.toToken?.symbol}`;
-    if (message.length > 21) {
-      message = message.slice(0, 19) + '...';
+    if (message.length > 18) {
+      message = message.slice(0, 15) + '...';
     }
     this.minMessage = message;
   }
@@ -228,20 +308,13 @@ export class TxProgressComponent implements OnInit, OnDestroy {
       }
     }
   }
-  getEthDapiService(): any {
-    switch (this.transaction?.fromToken.chain) {
-      case 'ETH':
-        return this.ethWalletName === 'MetaMask'
-          ? this.metaMaskWalletApiService
-          : this.o3EthWalletApiService;
-      case 'BSC':
-        return this.bscWalletName === 'MetaMask'
-          ? this.metaMaskWalletApiService
-          : this.o3EthWalletApiService;
-      case 'HECO':
-        return this.hecoWalletName === 'MetaMask'
-          ? this.metaMaskWalletApiService
-          : this.o3EthWalletApiService;
+  handleVaultTransacction(stateTx: VaultTransaction): void {
+    this.vaultTransaction = Object.assign({}, stateTx);
+    this.showTxModal = this.vaultTransaction.min === false ? true : false;
+    if (this.vaultTransaction.isPending === false) {
+      this.swapProgress = 100;
+    } else {
+      this.swapProgress = 20;
     }
   }
   //#endregion

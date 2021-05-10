@@ -1,0 +1,19 @@
+.tabs-add {
+  cursor: not-allowed !important;
+  &:hover {
+    background: url("/assets/images/bridge-liquidity/defult.png") no-repeat !important;
+  }
+}
+
+.page-container .tab-container .tab-wrap .tab-content .list-wrap li {
+  .detail {
+    flex: 1;
+  }
+  .receive {
+    margin-left: 10px;
+  }
+  .btn-liquidity {
+    height: 60px;
+    margin-left: 10px;
+  }
+}

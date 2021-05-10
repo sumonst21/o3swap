@@ -1,0 +1,25 @@
+<section class="wrapper modal-content">
+  <div class="header padding">
+    <span class="title">{{ 'ChooseQuotes' | translate: lang:langPageName }}</span>
+    <img (click)="close()" class="close" src="/assets/images/swap/close.png" alt="">
+  </div>
+  <div class="mobile-header">
+    <span class="title">{{ 'ChooseQuotes' | translate: lang:langPageName }}</span>
+    <span class="close" (click)="close()">{{ 'Cancel' | translate: lang:langPageName }}</span>
+  </div>
+  <ul class="exchanges scroll">
+    <li class="exchange-item" *ngFor="let swapItem of receiveSwapPathArray; index as index"
+      (click)="changeSwapPath(index)" [ngClass]="{active: chooseSwapPathIndex===index}">
+      <div class="left">
+        <p class="name">{{ swapItem.receiveAmount | transNumber }} {{ toTokenSymbol }}</p>
+        <p class="fiat">≈＄{{ swapItem.fiat }}<span *ngIf="swapItem.aggregator ">({{ swapItem.aggregator }})</span></p>
+      </div>
+      <ul class="routes">
+        <li *ngFor="let name of swapItem.swapPath; index as index">
+          <img [src]="swapItem.swapPathLogo[index]" alt="">{{ name }}<span
+            *ngIf="index!==swapItem.swapPath.length-1">></span>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</section>

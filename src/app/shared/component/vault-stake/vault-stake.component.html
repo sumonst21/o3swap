@@ -1,0 +1,28 @@
+<section class="wrapper modal-content">
+  <div class="header padding">
+    <span class="title">{{ isStake ? 'Stake' : 'Unstake' }}</span>
+    <img (click)="close()" class="close" src="/assets/images/swap/close.png" alt="">
+  </div>
+  <div class="mobile-header">
+    <span class="title">{{ isStake ? 'Stake' : 'Unstake' }}</span>
+    <span class="close" (click)="close()">{{ 'Cancel' | translate: lang:langPageName }}</span>
+  </div>
+  <div class="token-amount-container">
+    <div class="content">
+      <div class="top">Amount</div>
+      <div class="asset">
+        <img [src]="token.logo" alt="" class="asset-img">
+        <div class="asset-name">
+          {{ token.symbol }}
+        </div>
+        <div class="amount">
+          <input type="number" (input)="changeInputAmount($event)" [ngModel]="inputAmount" placeholder="0">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="balance">
+    {{ isStake ? 'Balance' : 'Staked' }}: {{ balance }} {{ token.symbol }}
+  </div>
+  <div class="btn" (click)="confirm()">Confirm</div>
+</section>

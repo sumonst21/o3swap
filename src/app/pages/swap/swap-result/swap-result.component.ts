@@ -21,34 +21,38 @@ import {
   ETH_SOURCE_ASSET_HASH,
   NEO_TOKEN,
   NNEO_TOKEN,
+  MESSAGE,
 } from '@lib';
-import {
-  ApiService,
-  CommonService,
-  SwapService,
-  NeolineWalletApiService,
-  O3NeoWalletApiService,
-  MetaMaskWalletApiService,
-  O3EthWalletApiService,
-} from '@core';
+import { ApiService, CommonService, EthApiService, NeoApiService } from '@core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import BigNumber from 'bignumber.js';
 import { interval, Observable, timer, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { ApproveComponent, SwapExchangeComponent } from '@shared';
+import {
+  ApproveModalComponent,
+  ApproveDrawerComponent,
+  SwapExchangeDrawerComponent,
+  SwapExchangeModalComponent,
+} from '@shared';
 import { take } from 'rxjs/operators';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
   swap: SwapStateType;
   setting: any;
   rates: any;
+  language: any;
 }
 
 @Component({
   selector: 'app-swap-result',
   templateUrl: './swap-result.component.html',
-  styleUrls: ['../common.scss', './swap-result.component.scss'],
+  styleUrls: [
+    '../common.scss',
+    './swap-result.component.scss',
+    './mobile.scss',
+  ],
 })
 export class SwapResultComponent implements OnInit, OnDestroy {
   SOURCE_TOKEN_SYMBOL = SOURCE_TOKEN_SYMBOL;
@@ -105,19 +109,27 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   toAddress: string;
   showConnectWallet = false;
   connectChainType: ConnectChainType;
+  isSwapCanClick = true;
+
+  langPageName = 'swap';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
 
   constructor(
     public store: Store<State>,
     private apiService: ApiService,
     private nzMessage: NzMessageService,
     private commonService: CommonService,
-    private swapService: SwapService,
-    private neolineWalletApiService: NeolineWalletApiService,
-    private o3NeoWalletApiService: O3NeoWalletApiService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private o3EthWalletApiService: O3EthWalletApiService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private drawerService: NzDrawerService,
+    private ethApiService: EthApiService,
+    private neoApiService: NeoApiService
   ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.swap$ = store.select('swap');
     this.setting$ = store.select('setting');
     this.rates$ = store.select('rates');
@@ -166,6 +178,9 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     }
     if (this.ratesUnScribe) {
       this.ratesUnScribe.unsubscribe();
+    }
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
     }
   }
 
@@ -218,17 +233,32 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   showRoutingModal(): void {
-    const modal = this.modal.create({
-      nzContent: SwapExchangeComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        chooseSwapPathIndex: this.chooseSwapPathIndex,
-        receiveSwapPathArray: this.receiveSwapPathArray,
-      },
-    });
+    let modal;
+    if (!this.commonService.isMobileWidth()) {
+      modal = this.modal.create({
+        nzContent: SwapExchangeModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          chooseSwapPathIndex: this.chooseSwapPathIndex,
+          receiveSwapPathArray: this.receiveSwapPathArray,
+        },
+      });
+    } else {
+      modal = this.drawerService.create({
+        nzContent: SwapExchangeDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer swap-exchange',
+        nzContentParams: {
+          chooseSwapPathIndex: this.chooseSwapPathIndex,
+          receiveSwapPathArray: this.receiveSwapPathArray,
+        },
+      });
+    }
     modal.afterClose.subscribe((index) => {
       if (index >= 0) {
         this.chooseSwapPathIndex = index;
@@ -247,7 +277,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     }
     if (
       this.fromToken.chain !== 'NEO' &&
-      this.getEthDapiService().checkNetwork(this.fromToken) === false
+      this.ethApiService.checkNetwork(this.fromToken) === false
     ) {
       return;
     }
@@ -262,6 +292,14 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     }
     if (this.inquiryInterval) {
       this.inquiryInterval.unsubscribe();
+    }
+    if (this.isSwapCanClick) {
+      this.isSwapCanClick = false;
+      setTimeout(() => {
+        this.isSwapCanClick = true;
+      }, 4000);
+    } else {
+      return;
     }
     // neo 同链
     if (this.fromToken.chain === 'NEO' && this.toToken.chain === 'NEO') {
@@ -292,14 +330,16 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         this.fromToken.assetID === ETH_SOURCE_ASSET_HASH &&
         this.toToken.assetID === WETH_ASSET_HASH[this.toToken.chain].assetID
       ) {
-        return this.depositWEth();
+        this.depositWEth();
+        return;
       }
       if (
         this.fromToken.assetID ===
           WETH_ASSET_HASH[this.fromToken.chain].assetID &&
         this.toToken.assetID === ETH_SOURCE_ASSET_HASH
       ) {
-        return this.withdrawalWeth();
+        this.withdrawalWeth();
+        return;
       }
       if (this.toToken.assetID === ETH_SOURCE_ASSET_HASH) {
         this.swapExactTokensForETH();
@@ -349,7 +389,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
   //#region 合约调用
   depositWEth(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .depositWEth(
         this.fromToken,
         this.toToken,
@@ -364,7 +404,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   withdrawalWeth(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .withdrawalWeth(
         this.fromToken,
         this.toToken,
@@ -379,11 +419,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapNeoCrossChainEth(): void {
-    const swapApi =
-      this.neoWalletName === 'NeoLine'
-        ? this.neolineWalletApiService
-        : this.o3NeoWalletApiService;
-    swapApi
+    this.neoApiService
       .swapCrossChain(
         this.fromToken,
         this.toToken,
@@ -402,11 +438,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapNeo(): void {
-    const swapApi =
-      this.neoWalletName === 'NeoLine'
-        ? this.neolineWalletApiService
-        : this.o3NeoWalletApiService;
-    swapApi
+    this.neoApiService
       .swap(
         this.fromToken,
         this.toToken,
@@ -424,11 +456,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   mintNNeo(): void {
-    const swapApi =
-      this.neoWalletName === 'NeoLine'
-        ? this.neolineWalletApiService
-        : this.o3NeoWalletApiService;
-    swapApi
+    this.neoApiService
       .mintNNeo(this.fromToken, this.toToken, this.inputAmount)
       .then((res) => {
         this.commonService.log(res);
@@ -439,11 +467,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   releaseNeo(): void {
-    const swapApi =
-      this.neoWalletName === 'NeoLine'
-        ? this.neolineWalletApiService
-        : this.o3NeoWalletApiService;
-    swapApi
+    this.neoApiService
       .releaseNeo(
         this.fromToken,
         this.toToken,
@@ -459,7 +483,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapExactTokensForETH(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactTokensForETH(
         this.fromToken,
         this.toToken,
@@ -478,7 +502,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapExactETHForTokens(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactETHForTokens(
         this.fromToken,
         this.toToken,
@@ -497,7 +521,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapExactTokensForTokens(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactTokensForTokens(
         this.fromToken,
         this.toToken,
@@ -516,7 +540,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapExactETHForTokensCrossChain(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactETHForTokensCrossChain(
         this.fromToken,
         this.toToken,
@@ -535,7 +559,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       });
   }
   swapExactTokensForTokensCrossChain(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapExactTokensForTokensCrossChain(
         this.fromToken,
         this.toToken,
@@ -555,7 +579,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   }
 
   swapCrossChainEth(): void {
-    this.getEthDapiService()
+    this.ethApiService
       .swapCrossChain(
         this.fromToken,
         this.toToken,
@@ -589,35 +613,35 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
-    this.modal.create({
-      nzContent: ApproveComponent,
-      nzFooter: null,
-      nzTitle: null,
-      nzClosable: false,
-      nzMaskClosable: false,
-      nzClassName: 'custom-modal',
-      nzComponentParams: {
-        fromToken: this.fromToken,
-        fromAddress: this.fromAddress,
-        aggregator: this.chooseSwapPath.aggregator,
-        walletName,
-      },
-    });
-  }
-  getEthDapiService(): any {
-    switch (this.fromToken.chain) {
-      case 'ETH':
-        return this.ethWalletName === 'MetaMask'
-          ? this.metaMaskWalletApiService
-          : this.o3EthWalletApiService;
-      case 'BSC':
-        return this.bscWalletName === 'MetaMask'
-          ? this.metaMaskWalletApiService
-          : this.o3EthWalletApiService;
-      case 'HECO':
-        return this.hecoWalletName === 'MetaMask'
-          ? this.metaMaskWalletApiService
-          : this.o3EthWalletApiService;
+    if (!this.commonService.isMobileWidth()) {
+      this.modal.create({
+        nzContent: ApproveModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzMaskClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          fromToken: this.fromToken,
+          fromAddress: this.fromAddress,
+          aggregator: this.chooseSwapPath.aggregator,
+          walletName,
+        },
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: ApproveDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer approve',
+        nzContentParams: {
+          fromToken: this.fromToken,
+          fromAddress: this.fromAddress,
+          aggregator: this.chooseSwapPath.aggregator,
+          walletName,
+        },
+      });
     }
   }
   async checkShowApprove(): Promise<boolean> {
@@ -636,7 +660,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.commonService.log('check show approve return');
       return false;
     }
-    const balance = await this.getEthDapiService().getAllowance(
+    const balance = await this.ethApiService.getAllowance(
       this.fromToken,
       this.fromAddress,
       this.chooseSwapPath.aggregator
@@ -809,7 +833,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       (this.fromToken.chain === 'NEO' || this.toToken.chain === 'NEO') &&
       !this.neoAccountAddress
     ) {
-      this.nzMessage.error('Please connect the NEO wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['NEO']));
       this.showConnectWallet = true;
       this.connectChainType = 'NEO';
       return false;
@@ -818,7 +842,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       (this.fromToken.chain === 'ETH' || this.toToken.chain === 'ETH') &&
       !this.ethAccountAddress
     ) {
-      this.nzMessage.error('Please connect the ETH wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['ETH']));
       this.showConnectWallet = true;
       this.connectChainType = 'ETH';
       return false;
@@ -827,7 +851,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       (this.fromToken.chain === 'BSC' || this.toToken.chain === 'BSC') &&
       !this.bscAccountAddress
     ) {
-      this.nzMessage.error('Please connect the BSC wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['BSC']));
       this.showConnectWallet = true;
       this.connectChainType = 'BSC';
       return false;
@@ -836,7 +860,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       (this.fromToken.chain === 'HECO' || this.toToken.chain === 'HECO') &&
       !this.hecoAccountAddress
     ) {
-      this.nzMessage.error('Please connect the HECO wallet first');
+      this.nzMessage.error(MESSAGE.ConnectWalletFirst[this.lang](['HECO']));
       this.showConnectWallet = true;
       this.connectChainType = 'HECO';
       return false;
@@ -854,7 +878,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         new BigNumber(this.inputAmount)
       ) < 0
     ) {
-      this.nzMessage.error('Insufficient balance');
+      this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return false;
     }
     // 有 poly fee，转非原生资产
@@ -870,9 +894,9 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         ) < 0
       ) {
         this.nzMessage.error(
-          `Insufficient ${
-            SOURCE_TOKEN_SYMBOL[this.fromToken.chain]
-          } for poly fee`
+          MESSAGE.InsufficientPolyFee[this.lang]([
+            SOURCE_TOKEN_SYMBOL[this.fromToken.chain],
+          ])
         );
         return false;
       }
@@ -893,9 +917,9 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         ) < 0
       ) {
         this.nzMessage.error(
-          `Insufficient ${
-            SOURCE_TOKEN_SYMBOL[this.fromToken.chain]
-          } for transfer amount and poly fee`
+          MESSAGE.InsufficientAmountAndPolyFee[this.lang]([
+            SOURCE_TOKEN_SYMBOL[this.fromToken.chain],
+          ])
         );
         return false;
       }

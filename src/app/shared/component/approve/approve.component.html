@@ -1,0 +1,21 @@
+<section class="wrapper modal-content">
+  <div class="header padding">
+    <span class="title">{{ 'Approve' | translate: lang:langPageName }}</span>
+    <img (click)="close()" class="close" src="/assets/images/swap/close.png" alt="">
+  </div>
+  <div class="mobile-header">
+    <span class="title">{{ 'Approve' | translate: lang:langPageName }}</span>
+    <span class="close" (click)="close()">{{ 'Cancel' | translate: lang:langPageName }}</span>
+  </div>
+  <div class="content">
+    <div class="approve-content">
+      <img [src]="fromToken?.logo" alt="">
+      <p class="title">{{ 'Approve' | translate: lang:langPageName }} {{ fromToken?.symbol }}</p>
+      <div class="desc">
+        {{ 'ApproveDesc' | translate: lang:langPageName }}
+      </div>
+    </div>
+    <button class="approve" nz-button [nzLoading]="isApproveLoading"
+      (click)="approve()">{{ 'Approve' | translate: lang:langPageName }}</button>
+  </div>
+</section>

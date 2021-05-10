@@ -1,26 +1,29 @@
 <div class="wallet">
-  <img *ngIf="chain==='NEO'" (mouseenter)="showModal()" (mouseleave)="hideModal()"
+  <img *ngIf="chain==='NEO'" (click)="showCover()" (mouseenter)="showModal()" (mouseleave)="hideModal()"
     src="/assets/images/chains/neo-active.png" alt="">
-  <img *ngIf="chain==='ETH'" (mouseenter)="showModal()" (mouseleave)="hideModal()"
+  <img *ngIf="chain==='ETH'" (click)="showCover()" (mouseenter)="showModal()" (mouseleave)="hideModal()"
     src="/assets/images/chains/eth-active.png" alt="">
-  <img *ngIf="chain==='BSC'" (mouseenter)="showModal()" (mouseleave)="hideModal()"
+  <img *ngIf="chain==='BSC'" (click)="showCover()" (mouseenter)="showModal()" (mouseleave)="hideModal()"
     src="/assets/images/chains/bsc-active.png" alt="">
-  <img *ngIf="chain==='HECO'" (mouseenter)="showModal()" (mouseleave)="hideModal()"
+  <img *ngIf="chain==='HECO'" (click)="showCover()" (mouseenter)="showModal()" (mouseleave)="hideModal()"
     src="/assets/images/chains/heco-active.png" alt="">
-  <div class="dropdown" *ngIf="isShowModal" (mouseenter)="showModal()" (mouseleave)="hideModal()">
+  <div class="dropdown" *ngIf="isShowModal||isShowCover" (mouseenter)="showModal()" (mouseleave)="hideModal()">
     <div class="title">
-      <span>Account</span>
+      <span>{{ 'Account' | translate: lang:langPageName }}</span>
       <button class="change-btn" (click)="toChangeWallet()">
-        <img class="change" src="/assets/images/swap/account-change.png" alt="">Change
+        <img class="change" src="/assets/images/swap/account-change.png"
+          alt="">{{ 'Change' | translate: lang:langPageName }}
       </button>
     </div>
     <div class="account">
-      <p class="name">{{ walletName }} Wallet</p>
+      <p class="name">{{ walletName }} {{ 'Wallet' | translate: lang:langPageName }}</p>
       <p class="address">
         {{ accountAddress | shortAddress: 6 }}
         <img class="copy" (click)="copy(accountAddress)" src="/assets/images/swap/copy.png" alt="">
       </p>
     </div>
-    <button class="disconnect" (click)="toDisConnect()">Disconnect</button>
+    <button class="disconnect" (click)="toDisConnect()">{{ 'Disconnect' | translate: lang:langPageName }}</button>
   </div>
 </div>
+
+<div class="cover" *ngIf="isShowCover" (click)="isShowCover=false"></div>

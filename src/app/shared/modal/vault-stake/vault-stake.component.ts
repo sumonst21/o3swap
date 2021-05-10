@@ -1,45 +1,20 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  ChangeDetectorRef,
-  OnDestroy,
-} from '@angular/core';
-import { SwapStateType } from '@lib';
-import { Store } from '@ngrx/store';
+import { Component, Input, OnInit } from '@angular/core';
+import { Token } from '@lib';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { CommonService } from '@core';
-
-interface State {
-  swap: SwapStateType;
-}
 
 @Component({
   templateUrl: './vault-stake.component.html',
-  styleUrls: ['./vault-stake.component.scss'],
 })
-export class VaultStakeComponent implements OnInit, OnDestroy {
-  @Input() inputAmount: number = 0;
+export class VaultStakeModalComponent implements OnInit {
+  @Input() balance = '0';
+  @Input() isStake = true;
+  @Input() token: Token;
 
-  constructor(
-    private store: Store<State>,
-    private changeDetectorRef: ChangeDetectorRef,
-    private modal: NzModalRef,
-    private commonService: CommonService
-  ) {
-  }
-  ngOnDestroy(): void {
-  }
+  constructor(private modal: NzModalRef) {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
 
-  }
-
-  changeInputAmount($event): void {
-    this.inputAmount = $event.target.value;
-  }
-
-  close(): void {
-    this.modal.close();
+  close($event): void {
+    this.modal.close($event);
   }
 }

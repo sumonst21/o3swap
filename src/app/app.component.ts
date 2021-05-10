@@ -4,12 +4,19 @@ import {
   NeolineWalletApiService,
   MetaMaskWalletApiService,
   VaultdMetaMaskWalletApiService,
-  O3NeoWalletApiService,
   ApiService,
+  EthApiService,
+  NeoApiService,
 } from '@core';
+import { Store } from '@ngrx/store';
 import { RiskWarningComponent } from '@shared';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { interval, Unsubscribable } from 'rxjs';
+import { interval, Observable, Unsubscribable } from 'rxjs';
+import { UPDATE_LANGUAGE } from './_lib/actions';
+
+interface State {
+  language: any;
+}
 
 @Component({
   selector: 'app-root',
@@ -19,47 +26,69 @@ import { interval, Unsubscribable } from 'rxjs';
 export class AppComponent implements OnInit {
   currentPage = this.router.url;
   isHome = true;
-  showRisk = true;
+  showRisk = false;
+  showMobileMenu = false;
 
   updateRatesInterval: Unsubscribable;
 
+  langPageName = 'app';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
+
   constructor(
+    private store: Store<State>,
     private router: Router,
     private metaMaskWalletApiService: MetaMaskWalletApiService,
     private neolineWalletApiService: NeolineWalletApiService,
-    private o3NeoWalletApiService: O3NeoWalletApiService,
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
     private modal: NzModalService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private ethApiService: EthApiService,
+    private neoApiService: NeoApiService
   ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.router.events.subscribe((res: RouterEvent) => {
       if (res instanceof NavigationEnd) {
         this.currentPage = res.urlAfterRedirects || res.url;
         this.isHome = this.isHomePage();
-        if (
-          sessionStorage.getItem(`${this.currentPage}WarningDialog`) !==
-            'true' &&
-          location.pathname !== '/' &&
-          location.pathname !== '/home'
-        ) {
-          this.riskWarning();
-        }
+        // if (
+        //   sessionStorage.getItem(`${this.currentPage}WarningDialog`) !==
+        //     'true' &&
+        //   location.pathname !== '/' &&
+        //   location.pathname !== '/home'
+        // ) {
+        //   this.riskWarning();
+        // }
         this.updateRates();
       }
     });
   }
 
   ngOnInit(): void {
+    this.initLanguage();
     this.apiService.getRates();
-    const sessionShowRisk = sessionStorage.getItem('showRisk');
-    if (sessionShowRisk !== undefined) {
-      this.showRisk = sessionShowRisk === 'false' ? false : true;
-    }
+    // const sessionShowRisk = sessionStorage.getItem('showRisk');
+    // if (sessionShowRisk !== undefined) {
+    //   this.showRisk = sessionShowRisk === 'false' ? false : true;
+    // }
     if (location.pathname !== '/' && location.pathname !== '/home') {
       this.neolineWalletApiService.init();
       this.metaMaskWalletApiService.init();
       this.vaultdMetaMaskWalletApiService.init();
-      this.o3NeoWalletApiService.init();
+      this.ethApiService.initTxs();
+      this.neoApiService.initTx();
+    }
+  }
+
+  initLanguage(): void {
+    const localLang = localStorage.getItem('language');
+    if (localLang) {
+      this.lang = localLang;
+      this.store.dispatch({ type: UPDATE_LANGUAGE, data: localLang });
     }
   }
 
@@ -102,5 +131,32 @@ export class AppComponent implements OnInit {
     modal.afterClose.subscribe(() => {
       sessionStorage.setItem(`${this.currentPage}WarningDialog`, 'true');
     });
+  }
+
+  changeLang(lang: 'en' | 'zh'): void {
+    if (lang === this.lang) {
+      return;
+    }
+    this.showMobileMenu = false;
+    this.lang = lang;
+    this.store.dispatch({ type: UPDATE_LANGUAGE, data: lang });
+    window.scrollTo({
+      left: 0,
+      top: 0,
+      behavior: 'smooth',
+    });
+  }
+
+  stopPropagation(e): void {
+    e.stopPropagation();
+  }
+
+  toUrl(url: string): void {
+    this.showMobileMenu = false;
+    if (url.startsWith('http')) {
+      window.open(url);
+    } else {
+      this.router.navigateByUrl(url);
+    }
   }
 }

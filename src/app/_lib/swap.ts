@@ -18,7 +18,7 @@ export interface SwapTransaction {
   receiveAmount: string;
   progress?: TxProgress;
   isFailed?: boolean;
-  walletName: WalletName;
+  walletName?: WalletName;
 }
 
 export interface SwapStateType {
@@ -41,12 +41,12 @@ export interface SwapStateType {
   liquidityTransaction: SwapTransaction;
 }
 
-export type TxAtPage = 'swap' | 'bridge' | 'liquidity';
+export type TxAtPage = 'swap' | 'bridge' | 'liquidity' | 'vault';
 
-export class ChainTokens {
-  ETH: [];
-  NEO: [];
-  BSC: [];
-  HECO: [];
-  ALL: [];
-}
+export const INIT_CHAIN_TOKENS = {
+  ETH: [],
+  NEO: [],
+  BSC: [],
+  HECO: [],
+  ALL: [],
+};

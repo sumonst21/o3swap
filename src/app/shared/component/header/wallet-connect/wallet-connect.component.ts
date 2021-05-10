@@ -33,6 +33,7 @@ import { environment } from '@env/environment';
 export type ConnectChainType = 'ETH' | 'NEO' | 'BSC' | 'HECO';
 interface State {
   swap: SwapStateType;
+  language: any;
 }
 
 @Component({
@@ -61,6 +62,13 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
   bscWalletName: EthWalletName;
   hecoWalletName: EthWalletName;
 
+  langPageName = 'app';
+  langUnScribe: Unsubscribable;
+  language$: Observable<any>;
+  lang: string;
+
+  showModal = true;
+
   constructor(
     store: Store<State>,
     private commonService: CommonService,
@@ -71,15 +79,25 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
     private metaMaskWalletApiService: MetaMaskWalletApiService,
     private changeDetectorRef: ChangeDetectorRef
   ) {
+    this.language$ = store.select('language');
+    this.langUnScribe = this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.swap$ = store.select('swap');
   }
   ngOnDestroy(): void {
     if (this.swapUnScribe) {
       this.swapUnScribe.unsubscribe();
     }
+    if (this.langUnScribe) {
+      this.langUnScribe.unsubscribe();
+    }
   }
 
   ngOnInit(): void {
+    if (this.commonService.isMobileWidth()) {
+      this.showModal = false;
+    }
     this.swapUnScribe = this.swap$.subscribe((state) => {
       this.neoAccountAddress = state.neoAccountAddress;
       this.ethAccountAddress = state.ethAccountAddress;
@@ -122,9 +140,6 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
 
   async connectEthWallet(wallet: EthWallet): Promise<void> {
     let connectRes;
-    if (environment.testSite === false && wallet.name === 'O3') {
-      return;
-    }
     switch (this.connectChainType) {
       case 'ETH':
         if (this.ethWalletName === wallet.name) {
@@ -151,9 +166,16 @@ export class WalletConnectComponent implements OnInit, OnDestroy {
         );
         break;
       case 'O3':
-        connectRes = await this.o3EthWalletApiService.connect(
-          this.connectChainType
-        );
+        if (this.o3EthWalletApiService.isMobileO3Wallet) {
+          connectRes = await this.metaMaskWalletApiService.connect(
+            this.connectChainType,
+            this.o3EthWalletApiService.isMobileO3Wallet
+          );
+        } else {
+          // connectRes = await this.o3EthWalletApiService.connect(
+          //   this.connectChainType
+          // );
+        }
         break;
     }
     if (this.connectOne && connectRes) {

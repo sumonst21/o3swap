@@ -1,16 +1,16 @@
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 @Directive({
-    selector: '[appErrorSrc]'
+  selector: '[appErrorSrc]',
 })
 export class ErrSrcDirective {
-    defaultSrc = '/assets/images/default-logo.png';
+  defaultSrc = '/assets/images/default-logo.png';
 
-    constructor(private el: ElementRef) {}
+  constructor(private el: ElementRef) {}
 
-    @Input('appErrorSrc') errorSrc: string;
+  @Input('appErrorSrc') errorSrc: string;
 
-    @HostListener('error') onError(e): void {
-        this.el.nativeElement.src = this.errorSrc || this.defaultSrc;
-    }
+  @HostListener('error') onError(e): void {
+    this.el.nativeElement.src = this.errorSrc || this.defaultSrc;
+  }
 }

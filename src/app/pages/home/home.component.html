@@ -1,16 +1,30 @@
 <section class="content home">
   <div class="wrapper">
-    <p class="title">Cross-chain</p>
-    <p class="desc1">Aggregation Protocol</p>
-    <p class="desc2">Access multi-chain liquidity sources on one platform</p>
+    <p class="title">{{ 'homeTitle' | translate: lang:langPageName }}</p>
+    <p class="desc1">{{ 'homeDesc1' | translate: lang:langPageName }}</p>
+    <p class="desc2">{{ 'homeDesc2' | translate: lang:langPageName }}</p>
     <!-- <ng-lottie class="price-json" [options]="priceOptions"></ng-lottie> -->
     <img class="price-json" src="/assets/images/home/price.png" alt="">
+  </div>
+  <div class="total-data">
+    <div class="data-item">
+      <p class="name">{{ 'Transactions' | translate: lang:langPageName }}</p>
+      <p class="data">{{ totalData?.total_tx_count | number }}</p>
+    </div>
+    <div class="data-item">
+      <p class="name">{{ 'Addresses' | translate: lang:langPageName }}</p>
+      <p class="data">{{ totalData?.total_addresses | number }}</p>
+    </div>
+    <div class="data-item">
+      <p class="name">{{ 'LiquidityAmount' | translate: lang:langPageName }}</p>
+      <p class="data">{{ totalData?.pool_tvl | number: '1.0-8' }}</p>
+    </div>
   </div>
 </section>
 <section class="content exchanges">
   <div class="wrapper">
     <img src="/assets/images/home/exchanges/class-bg.png" class="bg" alt="">
-    <p class="sub-title">Liquidity Sources</p>
+    <p class="sub-title">{{ 'LiquiditySource' | translate: lang:langPageName }}</p>
     <div class="exchanges-group">
       <ul class="col col1">
         <li *ngFor="let item of liquiditySource.eth">
@@ -39,10 +53,13 @@
 <section class="content price">
   <div class="wrapper">
     <div class="desc">
-      <p class="desc-title">{{ "feature1Title" | translate: lang }}</p>
-      <p><img class="dot" src="/assets/images/home/dot.png" alt="">{{ "feature1Detail1" | translate: lang }}</p>
-      <p><img class="dot" src="/assets/images/home/dot.png" alt="">{{ "feature1Detail2" | translate: lang }}</p>
-      <p><img class="dot" src="/assets/images/home/dot.png" alt="">{{ "feature1Detail3" | translate: lang }}</p>
+      <p class="desc-title">{{ "feature1Title" | translate: lang:langPageName }}</p>
+      <p><img class="dot" src="/assets/images/home/dot.png"
+          alt="">{{ "feature1Detail1" | translate: lang:langPageName }}</p>
+      <p><img class="dot" src="/assets/images/home/dot.png"
+          alt="">{{ "feature1Detail2" | translate: lang:langPageName }}</p>
+      <p><img class="dot" src="/assets/images/home/dot.png"
+          alt="">{{ "feature1Detail3" | translate: lang:langPageName }}</p>
     </div>
     <ng-lottie class="swap-json" [options]="swapOptions"></ng-lottie>
   </div>
@@ -52,16 +69,20 @@
     <!-- <ng-lottie class="exchange-json" [options]="exchangeOptions"></ng-lottie> -->
     <img class="exchange-json" src="/assets/images/home/exchange.png" alt="">
     <div class="desc">
-      <p class="desc-title">{{ "feature2Title" | translate: lang }}</p>
-      <p><img class="dot" src="/assets/images/home/dot.png" alt="">{{ "feature2Detail1" | translate: lang }}</p>
-      <p><img class="dot" src="/assets/images/home/dot.png" alt="">{{ "feature2Detail2" | translate: lang }}</p>
-      <p><img class="dot" src="/assets/images/home/dot.png" alt="">{{ "feature2Detail3" | translate: lang }}</p>
+      <p class="desc-title">{{ "feature2Title" | translate: lang:langPageName }}</p>
+      <p><img class="dot" src="/assets/images/home/dot.png"
+          alt="">{{ "feature2Detail1" | translate: lang:langPageName }}</p>
+      <p><img class="dot" src="/assets/images/home/dot.png"
+          alt="">{{ "feature2Detail2" | translate: lang:langPageName }}</p>
+      <p><img class="dot" src="/assets/images/home/dot.png"
+          alt="">{{ "feature2Detail3" | translate: lang:langPageName }}</p>
     </div>
+    <img class="exchange-json-mobile" src="/assets/images/home/exchange.png" alt="">
   </div>
 </section>
 <section class="content roadmap">
   <div class="wrapper">
-    <p class="sub-title">Roadmap</p>
+    <p class="sub-title">{{ 'Roadmap' | translate: lang:langPageName }}</p>
     <div class="roadmap-bg">
       <div class="roadmap-content">
         <div class="time time1" (mouseenter)="enterRoadmap(0)" (mouseleave)="leaveRoadmap()"
@@ -69,9 +90,9 @@
           <img src="/assets/images/home/roadmap-dot.png" alt="">
           <p class="name">2021 Q1</p>
           <div class="desc">
-            <p>1. {{ "roadmapQ1Detail1" | translate: lang }}</p>
-            <p>2. {{ "roadmapQ1Detail2" | translate: lang }}</p>
-            <p>3. {{ "roadmapQ1Detail3" | translate: lang }}</p>
+            <p>1. {{ "roadmapQ1Detail1" | translate: lang:langPageName }}</p>
+            <p>2. {{ "roadmapQ1Detail2" | translate: lang:langPageName }}</p>
+            <p>3. {{ "roadmapQ1Detail3" | translate: lang:langPageName }}</p>
           </div>
         </div>
         <div class="time time2" (mouseenter)="enterRoadmap(1)" (mouseleave)="leaveRoadmap()"
@@ -79,9 +100,9 @@
           <img src="/assets/images/home/roadmap-dot.png" alt="">
           <p class="name">2021 Q2-Q3</p>
           <div class="desc">
-            <p>1. {{ "roadmapQ2Q3Detail1" | translate: lang }}</p>
-            <p>2. {{ "roadmapQ2Q3Detail2" | translate: lang }}</p>
-            <p>3. {{ "roadmapQ2Q3Detail3" | translate: lang }}</p>
+            <p>1. {{ "roadmapQ2Q3Detail1" | translate: lang:langPageName }}</p>
+            <p>2. {{ "roadmapQ2Q3Detail2" | translate: lang:langPageName }}</p>
+            <p>3. {{ "roadmapQ2Q3Detail3" | translate: lang:langPageName }}</p>
           </div>
         </div>
         <div class="time time3" (mouseenter)="enterRoadmap(2)" (mouseleave)="leaveRoadmap()"
@@ -89,9 +110,9 @@
           <img src="/assets/images/home/roadmap-dot.png" alt="">
           <p class="name">2021 Q4</p>
           <div class="desc">
-            <p>1. {{ "roadmapQ4Detail1" | translate: lang }}</p>
-            <p>2. {{ "roadmapQ4Detail2" | translate: lang }}</p>
-            <p>2. {{ "roadmapQ4Detail3" | translate: lang }}</p>
+            <p>1. {{ "roadmapQ4Detail1" | translate: lang:langPageName }}</p>
+            <p>2. {{ "roadmapQ4Detail2" | translate: lang:langPageName }}</p>
+            <p>2. {{ "roadmapQ4Detail3" | translate: lang:langPageName }}</p>
           </div>
         </div>
         <div class="time time4" (mouseenter)="enterRoadmap(3)" (mouseleave)="leaveRoadmap()"
@@ -99,9 +120,9 @@
           <img src="/assets/images/home/roadmap-dot.png" alt="">
           <p class="name">2022</p>
           <div class="desc">
-            <p>1. {{ "roadmap2022Detail1" | translate: lang }}</p>
-            <p>2. {{ "roadmap2022Detail2" | translate: lang }}</p>
-            <p>3. {{ "roadmap2022Detail3" | translate: lang }}</p>
+            <p>1. {{ "roadmap2022Detail1" | translate: lang:langPageName }}</p>
+            <p>2. {{ "roadmap2022Detail2" | translate: lang:langPageName }}</p>
+            <p>3. {{ "roadmap2022Detail3" | translate: lang:langPageName }}</p>
           </div>
         </div>
       </div>
@@ -153,16 +174,17 @@
   <div class="wrapper">
     <img class="logo" src="/assets/images/home/o3wallet-logo.png" alt="">
     <div class="left">
-      <p class="title">O3 Wallet</p>
-      <p class="desc">A multi-chain crypto wallet. Manage your assets simply and safely</p>
+      <p class="title">{{ 'O3Wallet' | translate: lang:langPageName }}</p>
+      <p class="desc">{{ 'o3WalletDesc' | translate: lang:langPageName }}</p>
     </div>
-    <a target="_blank" href="https://o3.network/#download"><button class="download">Download</button></a>
+    <a target="_blank" href="https://o3.network/#download"><button
+        class="download">{{ 'Download' | translate: lang:langPageName }}</button></a>
     <img class="screenshot" src="/assets/images/home/o3wallet-screenshot.png" alt="">
   </div>
 </section>
 <section class="content partners">
   <div class="wrapper">
-    <p class="sub-title center">Partners & Investors</p>
+    <p class="sub-title center">{{ 'PartnersInvestors' | translate: lang:langPageName }}</p>
     <img src="/assets/images/home/partners/title-partners.png" class="title" alt="">
     <div class="partners-group">
       <a target="_blank" href="https://www.binance.org/en/smartChain">
@@ -176,6 +198,12 @@
       </a>
       <a target="_blank" href="https://www.poly.network/">
         <img src="/assets/images/home/partners/p-poly.png" alt="">
+      </a>
+      <a target="_blank" href="https://twitter.com/top7ico">
+        <img class="low-h" src="/assets/images/home/partners/p-top7ico.svg" alt="">
+      </a>
+      <a target="_blank" href="https://cryptodiffer.com/">
+        <img src="/assets/images/home/partners/p-cryptodiffer.jpg" alt="">
       </a>
     </div>
     <img src="/assets/images/home/partners/title-investors.png" class="title" alt="">
@@ -192,8 +220,6 @@
       <a target="_blank" href="https://www.fbg.capital/">
         <img src="/assets/images/home/partners/fbg.png" alt="">
       </a>
-    </div>
-    <div class="partners-group investors">
       <a target="_blank" href="https://neo.org/">
         <img src="/assets/images/home/partners/neo.png" alt="">
       </a>
@@ -214,13 +240,14 @@
 </section>
 <footer>
   <div class="subscript">
-    <p class="title">Receive our Newsletter</p>
+    <p class="title">{{ 'ReceiveOurNewsletter' | translate: lang:langPageName }}</p>
     <div class="email" *ngIf="canSubscribe" [ngClass]="{focus: isFocus}">
       <input type="email" (focus)="isFocus=true" (blur)="isFocus=false" [(ngModel)]="email"
-        placeholder="Please fill in your email address">
-      <button nz-button [nzLoading]="isLoadingEmail" (click)="subscriptNews()" class="submit">Subscribe</button>
+        [placeholder]="'emailAddressPlaceholder' | translate: lang:langPageName">
+      <button nz-button [nzLoading]="isLoadingEmail" (click)="subscriptNews()"
+        class="submit">{{ 'Subscribe' | translate: lang:langPageName }}</button>
     </div>
-    <button *ngIf="!canSubscribe" class="success">Successfully subscribed</button>
+    <button *ngIf="!canSubscribe" class="success">{{ 'SuccessfullySubscribed' | translate: lang:langPageName }}</button>
   </div>
   <div class="contacts">
     <a target="_blank" href="https://github.com/O3Labs">
@@ -242,13 +269,13 @@
   <div class="bottom">
     <img src="/assets/images/home/footer-logo.png" alt="">
     <p class="copyright">© {{ copyRightYear }} O3 Labs Inc.</p>
-    <!-- <p class="language">
-        <span [ngClass]="{active: lang==='en'}" (click)="changeLang('en')">EN</span>
-        <span class="line">|</span>
-        <span [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">CN</span>
-      </p> -->
+    <p class="language">
+      <span class="canClick" [ngClass]="{active: lang==='en'}" (click)="changeLang('en')">EN</span>
+      <span class="line">|</span>
+      <span class="canClick" [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">中文</span>
+    </p>
     <a href="https://docs.o3swap.com/" target="_blank">
-      <p class="doc">Doc</p>
+      <p class="doc">{{ 'Doc' | translate: lang:langPageName }}</p>
     </a>
   </div>
 </footer>

@@ -26,7 +26,7 @@ import {
   WETH_ASSET_HASH,
   LP_TOKENS,
   UPDATE_CHAIN_TOKENS,
-  ChainTokens,
+  INIT_CHAIN_TOKENS,
   NEO_TOKEN,
   CHAINS,
   UPDATE_RATES,
@@ -45,9 +45,10 @@ interface State {
 export class ApiService {
   apiDo = environment.apiDomain;
   RATE_HOST = 'https://hub.o3.network/v1';
+  TOTAL_DATA_HOST = 'https://monitor.api.o3swap.com';
 
   tokens$: Observable<any>;
-  chainTokens = new ChainTokens();
+  chainTokens = INIT_CHAIN_TOKENS;
 
   constructor(
     private http: HttpClient,
@@ -61,6 +62,9 @@ export class ApiService {
   //#region home
   postEmail(email: string): Observable<any> {
     return this.http.post(`https://subscribe.o3swap.com/subscribe`, { email });
+  }
+  getTotalData(): Observable<any> {
+    return this.http.get(`${this.TOTAL_DATA_HOST}/v1/statistics`);
   }
   //#endregion
 
@@ -167,7 +171,7 @@ export class ApiService {
         toToken,
         inputAmount
       );
-      return this.handleReceiveSwapPathFiat(res, true);
+      return this.handleSwapPathReceiveAmount(res, true);
     }
     this.commonService.log(2);
     const fromUsd = USD_TOKENS.find((item) => item.chain === fromToken.chain);
@@ -181,7 +185,7 @@ export class ApiService {
         toToken,
         inputAmount
       );
-      return this.handleReceiveSwapPathFiat(res);
+      return this.handleSwapPathReceiveAmount(res);
     }
     this.commonService.log(toUsd.assetID);
     this.commonService.log(toToken.assetID);
@@ -196,7 +200,7 @@ export class ApiService {
         inputAmount,
         fromUsd
       );
-      return this.handleReceiveSwapPathFiat(res);
+      return this.handleSwapPathReceiveAmount(res);
     }
     this.commonService.log(4);
     return of([]).toPromise();
@@ -228,7 +232,7 @@ export class ApiService {
   }
   //#endregion
 
-  //#region neo nneo swap
+  //#region neo nneo swap utxo
   getUtxo(address: string, amount: string): Promise<any> {
     return this.http
       .post(`${UTXO_HOST}/utxo`, {
@@ -283,19 +287,6 @@ export class ApiService {
       .toPromise();
   }
 
-  // getFromEthPoolFeeRate(): Promise<string> {
-  //   return this.http
-  //     .get(`${POLY_HOST}/swapFee/${POLY_HOST_ADDRESS}`)
-  //     .pipe(
-  //       map((res: any) => {
-  //         if (res.code === 200) {
-  //           return new BigNumber(res.fee).shiftedBy(-10).toFixed();
-  //         }
-  //       })
-  //     )
-  //     .toPromise();
-  // }
-
   getCrossChainSwapDetail(hash: string): Observable<TxProgress> {
     hash = this.commonService.remove0xHash(hash);
     return this.http
@@ -303,7 +294,7 @@ export class ApiService {
       .pipe(
         map((res: any) => {
           const target: TxProgress = {
-            step1: { hash: '', status: 1 },
+            step1: { hash, status: 1 },
             step2: { hash: '', status: 0 },
             step3: { hash: '', status: 0 },
           };
@@ -360,7 +351,7 @@ export class ApiService {
    */
   getPoolOutGivenSingleIn(fromToken: Token, amount: string): Promise<string> {
     const poolPUsdtHash = ETH_PUSDT_ASSET[fromToken.chain].assetID;
-    const lpToken = LP_TOKENS.find((item) => item.chain === fromToken.chain);
+    const usdtLpToken = LP_TOKENS.find((item) => item.chain === 'ETH');
     amount = new BigNumber(amount).shiftedBy(fromToken.decimals).toFixed();
     return this.http
       .get(
@@ -370,7 +361,7 @@ export class ApiService {
         map((res: any) => {
           if (res.code === 200) {
             return new BigNumber(res.pool_amount_out)
-              .shiftedBy(-lpToken.decimals)
+              .shiftedBy(-usdtLpToken.decimals)
               .toFixed();
           }
         })
@@ -386,7 +377,7 @@ export class ApiService {
    */
   getPoolInGivenSingleOut(fromToken: Token, amount: string): Promise<string> {
     const poolPUsdtHash = ETH_PUSDT_ASSET[fromToken.chain].assetID;
-    const lpToken = LP_TOKENS.find((item) => item.chain === fromToken.chain);
+    const usdtLpToken = LP_TOKENS.find((item) => item.chain === 'ETH');
     amount = new BigNumber(amount).shiftedBy(fromToken.decimals).toFixed();
     return this.http
       .get(
@@ -396,7 +387,7 @@ export class ApiService {
         map((res: any) => {
           if (res.code === 200) {
             return new BigNumber(res.pool_amount_out)
-              .shiftedBy(-lpToken.decimals)
+              .shiftedBy(-usdtLpToken.decimals)
               .toFixed();
           }
         })
@@ -410,8 +401,15 @@ export class ApiService {
    * @param amount LP amount
    * @return promise
    */
-  getSingleOutGivenPoolIn(fromToken: Token, amount: string): Promise<string> {
-    const poolPUsdtHash = ETH_PUSDT_ASSET[fromToken.chain].assetID;
+  getSingleOutGivenPoolIn(
+    fromToken: Token,
+    amount: string,
+    isUsdtLp = true
+  ): Promise<string> {
+    let poolPUsdtHash = ETH_PUSDT_ASSET.ETH.assetID;
+    if (isUsdtLp === false) {
+      poolPUsdtHash = ETH_PUSDT_ASSET[fromToken.chain].assetID;
+    }
     const usdtToken = USD_TOKENS.find((item) => item.chain === fromToken.chain);
     amount = new BigNumber(amount).shiftedBy(18).toFixed();
     return this.http
@@ -491,7 +489,7 @@ export class ApiService {
     }
     this.commonService.log(result);
     if (result) {
-      return of(this.handleReceiveSwapPathFiat(result)).toPromise();
+      return of(this.handleSwapPathReceiveAmount(result)).toPromise();
     }
   }
 
@@ -527,7 +525,7 @@ export class ApiService {
               };
               target.push(temp);
             });
-            return this.handleReceiveSwapPathFiat(target);
+            return this.handleSwapPathReceiveAmount(target);
           }
         })
       )
@@ -554,7 +552,7 @@ export class ApiService {
       },
     ];
     this.commonService.log(result);
-    return of(this.handleReceiveSwapPathFiat(result)).toPromise();
+    return of(this.handleSwapPathReceiveAmount(result)).toPromise();
   }
 
   private getFromEthSwapPath(
@@ -734,7 +732,7 @@ export class ApiService {
     return token && token.logo;
   }
 
-  private handleReceiveSwapPathFiat(
+  private handleSwapPathReceiveAmount(
     swapPathArr: AssetQueryResponse,
     hasAggregator = false
   ): AssetQueryResponse {
