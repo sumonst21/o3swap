@@ -259,6 +259,29 @@ export class VaultdMetaMaskWalletApiService {
       }
     });
   }
+  async getO3StakingSharePerBlock(token: Token): Promise<string> {
+    if (!this.vaultWallet) {
+      return;
+    }
+    let params;
+    const contractHash = O3STAKING_CONTRACT[token.assetID];
+    const json = await this.getO3StakingJson();
+    const o3Contract = new this.web3.eth.Contract(json, contractHash);
+    const data = await o3Contract.methods.getSharePerBlock().encodeABI();
+    params = [
+      this.getSendTransactionParams(
+        this.vaultWallet.address,
+        contractHash,
+        data
+      ),
+      'latest',
+    ];
+    return this.rpcApiService.getEthCall(params, token).then((res) => {
+      if (res) {
+        return res;
+      }
+    });
+  }
   async getO3StakingTotalProfit(token: Token): Promise<string> {
     if (!this.vaultWallet) {
       return;

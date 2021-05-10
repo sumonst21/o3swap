@@ -202,7 +202,10 @@
                 <div class="name">{{ 'TotalStaking' | translate: lang:langPageName }}</div>
               </div>
               <div class="detail-item">
-                <div class="value">--</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.apy || '--'">
+                  </app-long-balance>
+                </div>
                 <div class="name">APY%</div>
               </div>
             </div>

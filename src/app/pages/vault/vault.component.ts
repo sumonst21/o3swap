@@ -136,8 +136,17 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
           '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',
+        this.vaultdMetaMaskWalletApiService.getO3StakingSharePerBlock(item) ||
+          '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked] = res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
+        item.apy = this.getStakingAYP(item);
+        console.log(item);
       });
     });
     // lp staking
@@ -349,6 +358,16 @@ export class VaultComponent implements OnInit, OnDestroy {
       token,
       token.profit
     );
+  }
+
+  getStakingAYP(token: any): string {
+    const yearSecond = new BigNumber('31536000');
+    const blockTime = new BigNumber('15');
+    const yearBlock = yearSecond.div(blockTime);
+    const sharePerBlock = new BigNumber(token.sharePerBlock);
+    const totalStaked = token.totalStaking;
+    const result = yearBlock.times(sharePerBlock).div(totalStaked).times(100);
+    return result.toFixed();
   }
 
   getLP(token: Token): void {
