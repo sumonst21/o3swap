@@ -256,8 +256,8 @@ export class TxProgressComponent implements OnInit, OnDestroy {
           this.vaultTransaction.transactionType === 2
             ? 'Claim'
             : this.vaultTransaction.transactionType === 1
-            ? 'Stake'
-            : 'Unstake';
+            ? 'Unstake'
+            : 'Stake';
         message += ` ${this.vaultTransaction?.amount} ${this.vaultTransaction?.fromToken?.symbol}`;
         break;
       default:
