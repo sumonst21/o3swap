@@ -17,11 +17,13 @@ import {
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
 import {
+  LP_STAKING_TOKENS,
   MESSAGE,
   O3STAKING_CONTRACT,
   O3TOKEN_CONTRACT,
-  O3_TOKEN,
   Token,
+  TOKEN_STAKING_TOKENS,
+  UNLOCK_LP_TOKENS,
 } from '@lib';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 interface State {
@@ -50,27 +52,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   o3Total = '--';
 
   totalProfit = '--';
-  stakeUnlockTokenList: any[] = [
-    {
-      assetID: '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
-      symbol: 'LP',
-      decimals: 18,
-      amount: '0',
-      chain: 'ETH',
-      logo: '/assets/images/tokens/lp-eth.png',
-    },
-  ];
-  o3StakingTokenList: any[] = [O3_TOKEN];
-  lpstakingTokenList: any[] = [
-    {
-      assetID: '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
-      symbol: 'LP',
-      decimals: 18,
-      amount: '0',
-      chain: 'ETH',
-      logo: '/assets/images/tokens/lp-eth.png',
-    },
-  ];
+  stakeUnlockTokenList: any[] = UNLOCK_LP_TOKENS;
+  o3StakingTokenList: any[] = TOKEN_STAKING_TOKENS;
+  lpstakingTokenList: any[] = LP_STAKING_TOKENS;
   constructor(
     private store: Store<State>,
     private modal: NzModalService,
@@ -200,6 +184,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (!this.checkWalletConnect()) {
       return;
     }
+    if (this.ethApiService.checkNetwork(token) === false) {
+      return;
+    }
     if (!this.commonService.isMobileWidth()) {
       modal = this.modal.create({
         nzContent: VaultStakeModalComponent,
@@ -259,6 +246,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (!this.checkWalletConnect()) {
       return;
     }
+    if (this.ethApiService.checkNetwork(token) === false) {
+      return;
+    }
     const contractHash = O3STAKING_CONTRACT[token.assetID];
     let modal;
     if (!this.commonService.isMobileWidth()) {
@@ -316,6 +306,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (!this.checkWalletConnect()) {
       return;
     }
+    if (this.ethApiService.checkNetwork(token) === false) {
+      return;
+    }
     if (this.isCanClick) {
       this.isCanClick = false;
       setTimeout(() => {
@@ -336,6 +329,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (!this.checkWalletConnect()) {
       return;
     }
+    if (this.ethApiService.checkNetwork(token) === false) {
+      return;
+    }
     if (this.isCanClick) {
       this.isCanClick = false;
       setTimeout(() => {
@@ -352,6 +348,13 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.vaultdMetaMaskWalletApiService.o3StakingClaimProfit(
       token,
       token.profit
+    );
+  }
+
+  getLP(token: Token): void {
+    console.log(token);
+    window.open(
+      `https://app.uniswap.org/#/add/v2/${token.pairTokens[0]}/${token.pairTokens[1]}`
     );
   }
 

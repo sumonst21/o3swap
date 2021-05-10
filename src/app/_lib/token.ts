@@ -8,6 +8,8 @@ export interface Token {
   chain: CHAINS;
   type?: string;
   maxAmount?: string;
+  pairTokens?: string[];
+  pairLogos?: string[];
 }
 export type CHAINS = 'ALL' | 'NEO' | 'ETH' | 'BSC' | 'HECO';
 
@@ -98,7 +100,9 @@ export const NEO_TOKEN: Token = {
 };
 export const O3_TOKEN: Token = {
   assetID:
-    NETWORK === 'MainNet' ? '' : '0xF8d653130a460b4a41e2B2271dD091A9Bb910775',
+    NETWORK === 'MainNet'
+      ? '0x899239a9a3f10d5333a512801a4c1b1c3bef10bb'
+      : '0xF8d653130a460b4a41e2B2271dD091A9Bb910775',
   symbol: 'O3',
   decimals: 18,
   amount: '0',
@@ -106,6 +110,48 @@ export const O3_TOKEN: Token = {
   logo: '/assets/images/logo-O3.png',
 };
 //#endregion
+
+export const UNLOCK_LP_TOKENS: Token[] = [
+  {
+    assetID:
+      NETWORK === 'MainNet'
+        ? '0xAFf61AE683aCD66033973c816D4D8e94e2538880'
+        : '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
+    symbol: 'LP',
+    decimals: 18,
+    amount: '0',
+    chain: 'ETH',
+    logo: '/assets/images/tokens/lp-eth.png',
+    pairTokens: [
+      '0xdac17f958d2ee523a2206206994597c13d831ec7',
+      '0x899239a9a3f10d5333a512801a4c1b1c3bef10bb',
+    ],
+    pairLogos: [
+      '/assets/images/logo-O3.png',
+      'https://img.o3.network/logo/eth/0xdac17f958d2ee523a2206206994597c13d831ec7.png',
+    ],
+  },
+];
+export const TOKEN_STAKING_TOKENS: Token[] = [O3_TOKEN];
+
+export const LP_STAKING_TOKENS: Token[] = [
+  {
+    assetID: '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
+    symbol: 'LP',
+    decimals: 18,
+    amount: '0',
+    chain: 'ETH',
+    logo: '/assets/images/tokens/lp-eth.png',
+    pairTokens: [
+      '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+      '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    ],
+    pairLogos: [
+      '/assets/images/tokens/lp-eth.png',
+      '/assets/images/tokens/lp-eth.png',
+    ],
+  },
+];
 
 export const CONST_BRIDGE_TOKENS: Token[] = [
   {
