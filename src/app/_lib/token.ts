@@ -107,7 +107,7 @@ export const O3_TOKEN: Token = {
   decimals: 18,
   amount: '0',
   chain: 'ETH',
-  logo: '/assets/images/logo-O3.png',
+  logo: '/assets/images/tokens/o3.png',
 };
 //#endregion
 
@@ -127,7 +127,7 @@ export const UNLOCK_LP_TOKENS: Token[] = [
       '0x899239a9a3f10d5333a512801a4c1b1c3bef10bb',
     ],
     pairLogos: [
-      '/assets/images/logo-O3.png',
+      '/assets/images/tokens/o3.png',
       'https://img.o3.network/logo/eth/0xdac17f958d2ee523a2206206994597c13d831ec7.png',
     ],
   },
