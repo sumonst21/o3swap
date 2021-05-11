@@ -35,6 +35,7 @@ import BigNumber from 'bignumber.js';
 import { CommonService } from '../util/common.service';
 import { SwapService } from '../util/swap.service';
 import { Store } from '@ngrx/store';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 interface State {
   tokens: any;
@@ -54,7 +55,8 @@ export class ApiService {
     private http: HttpClient,
     private commonService: CommonService,
     private swapService: SwapService,
-    private store: Store<State>
+    private store: Store<State>,
+    private nzMessage: NzMessageService,
   ) {
     this.getTokens();
   }
@@ -526,6 +528,9 @@ export class ApiService {
               target.push(temp);
             });
             return this.handleSwapPathReceiveAmount(target);
+          } else {
+            this.nzMessage.error(res.error_msg);
+            return null;
           }
         })
       )
@@ -617,6 +622,9 @@ export class ApiService {
               target.push(temp);
             });
             return target;
+          } else {
+            this.nzMessage.error(res.error_msg);
+            return null;
           }
         })
       )
@@ -630,6 +638,9 @@ export class ApiService {
     fromUsd: Token
   ): Promise<AssetQueryResponse> {
     const res1 = await this.getFromEthSwapPath(fromToken, fromUsd, inputAmount); // 排序
+    if (!res1) {
+      return res1;
+    }
     for (const res1Item of res1) {
       const amountOutA = res1Item.amount[res1Item.amount.length - 1];
       this.commonService.log(`amountOutA: ${amountOutA}`);
@@ -736,6 +747,9 @@ export class ApiService {
     swapPathArr: AssetQueryResponse,
     hasAggregator = false
   ): AssetQueryResponse {
+    if (!swapPathArr) {
+      return swapPathArr;
+    }
     swapPathArr.forEach((item) => {
       item.receiveAmount = String(item.amount[item.amount.length - 1]);
       if (hasAggregator) {

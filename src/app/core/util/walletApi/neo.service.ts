@@ -90,7 +90,7 @@ export class NeoApiService {
     inputAmount: string
   ): Promise<string> {
     const walletName = this.neoWalletName;
-    if (walletName === 'NeoLine' && this.checkNeoLineNetwork() === false) {
+    if (this.checkNeoLineNetwork(walletName) === false) {
       return;
     }
     const checkBalance = await this.swapService.getNeoBalances(
@@ -132,7 +132,7 @@ export class NeoApiService {
     toAddress: string
   ): Promise<string> {
     const walletName = this.neoWalletName;
-    if (walletName === 'NeoLine' && this.checkNeoLineNetwork() === false) {
+    if (this.checkNeoLineNetwork(walletName) === false) {
       return;
     }
     const checkBalance = await this.swapService.getNeoBalances(
@@ -211,7 +211,7 @@ export class NeoApiService {
     deadline: number
   ): Promise<string> {
     const walletName = this.neoWalletName;
-    if (walletName === 'NeoLine' && this.checkNeoLineNetwork() === false) {
+    if (this.checkNeoLineNetwork(walletName) === false) {
       return;
     }
     const checkBalance = await this.swapService.getNeoBalances(
@@ -297,7 +297,7 @@ export class NeoApiService {
     crossAssetHash: string = ''
   ): Promise<string> {
     const walletName = this.neoWalletName;
-    if (walletName === 'NeoLine' && this.checkNeoLineNetwork() === false) {
+    if (this.checkNeoLineNetwork(walletName) === false) {
       return;
     }
     const checkBalance = await this.swapService.getNeoBalances(
@@ -391,7 +391,10 @@ export class NeoApiService {
   //#endregion
 
   //#region private function
-  private checkNeoLineNetwork(): boolean {
+  private checkNeoLineNetwork(walletName: NeoWalletName): boolean {
+    if (walletName === 'O3') {
+      return true;
+    }
     if (this.neolineNetwork !== NETWORK) {
       this.nzMessage.error(MESSAGE.SwitchNeolineNetwork[this.lang]([NETWORK]));
       return false;

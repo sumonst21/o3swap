@@ -126,7 +126,6 @@ export class SwapComponent implements OnInit, OnDestroy {
   swapFail(): void {
     this.pageStatus = 'home';
     this.initResultData = null;
-    this.nzMessage.error(MESSAGE.quoteAgain[this.lang]);
   }
   //#region
 }

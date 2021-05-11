@@ -679,6 +679,9 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       .getSwapPath(this.fromToken, this.toToken, this.inputAmount)
       .then((res) => {
         this.showInquiry = false;
+        if (res && res.length === 0) {
+          this.nzMessage.error(MESSAGE.quoteAgain[this.lang]);
+        }
         if (!res || res.length === 0) {
           this.swapFail.emit();
         }

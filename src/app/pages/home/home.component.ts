@@ -75,6 +75,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.apiService.getTotalData().subscribe((res: CommonHttpResponse) => {
       if (res.status === 'success') {
         this.totalData = res.data;
+      } else {
+        this.nzMessage.error(res.error_msg);
       }
     });
   }
