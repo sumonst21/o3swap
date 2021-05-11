@@ -27,6 +27,15 @@ export const ETH_CROSS_SWAP_CONTRACT_HASH = {
       : '0x0488ADd7e3D4C58acb8DF7c487dAfC48e3224833',
 };
 
+export const POLY_WRAPPER_CONTRACT_HASH = {
+  ETH:
+    NETWORK === 'MainNet' ? '0x2aA63cd0b28FB4C31fA8e4E95Ec11815Be07b9Ac' : '',
+  BSC:
+    NETWORK === 'MainNet' ? '0xE3D0FB6E3cB5DA61EB18b06D035052441009d1E6' : '',
+  HECO:
+    NETWORK === 'MainNet' ? '0x4fE451186c0D69205ACc1fA00FD75fc6d71e47eE' : '',
+};
+
 export const SWAP_CONTRACT_CHAIN_ID = {
   BSC: NETWORK === 'MainNet' ? 6 : 79,
   HECO: NETWORK === 'MainNet' ? 7 : 7,

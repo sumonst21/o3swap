@@ -581,7 +581,6 @@ export class VaultdMetaMaskWalletApiService {
       return;
     }
     const localTx: VaultTransaction = JSON.parse(localTxString);
-    console.log(localTx);
     if (
       localTx.fromToken.chain === 'NEO' ||
       localTx.walletName !== 'MetaMask'

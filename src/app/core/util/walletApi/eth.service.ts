@@ -16,6 +16,8 @@ import {
   WETH_ASSET_HASH,
   AGGREGATOR_CONTRACT,
   CHAINS,
+  POLY_WRAPPER_CONTRACT_HASH,
+  O3_TOKEN,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
@@ -91,7 +93,7 @@ export class EthApiService {
     fromAddress: string
   ): Promise<any> {
     this.commonService.log(`\u001b[32m  ✓ eth swap weth \u001b[0m`);
-    const json = await this.swapService.getWEthJson();
+    const json = await this.swapService.getSwapJson('wEth');
     const swapContract = new this.web3.eth.Contract(
       json,
       WETH_ASSET_HASH[fromToken.chain].assetID
@@ -134,7 +136,7 @@ export class EthApiService {
     fromAddress: string
   ): Promise<any> {
     this.commonService.log(`\u001b[32m  ✓ eth swap weth \u001b[0m`);
-    const json = await this.swapService.getWEthJson();
+    const json = await this.swapService.getSwapJson('wEth');
     const swapContract = new this.web3.eth.Contract(
       json,
       WETH_ASSET_HASH[fromToken.chain].assetID
@@ -171,7 +173,7 @@ export class EthApiService {
   }
   //#endregion
 
-  //#region USDT BUSD PUSD swap
+  //#region USDT BUSD HUSD swap
   async swapCrossChain(
     fromToken: Token,
     toToken: Token,
@@ -184,7 +186,7 @@ export class EthApiService {
     txAtPage: TxAtPage
   ): Promise<string> {
     this.commonService.log('poly swap');
-    const json = await this.swapService.getSwapperJson();
+    const json = await this.swapService.getSwapJson('swapper');
     const swapContract = new this.web3.eth.Contract(
       json,
       ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain]
@@ -229,6 +231,74 @@ export class EthApiService {
           ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain],
           data,
           bigNumberPolyFee
+        ),
+      ],
+    };
+    return this.metaMaskWalletApiService
+      .sendTransaction(requestData, fromToken.chain)
+      .then((hash) => {
+        this.handleTx(
+          fromToken,
+          toToken,
+          inputAmount,
+          receiveAmount,
+          hash,
+          txAtPage
+        );
+        return hash;
+      });
+  }
+  //#endregion
+
+  //#region O3 BO3 HO3 swap
+  async swapO3CrossChain(
+    fromToken: Token,
+    toToken: Token,
+    inputAmount: string,
+    fromAddress: string,
+    toAddress: string,
+    receiveAmount: string,
+    polyFee: string,
+    txAtPage: TxAtPage
+  ): Promise<string> {
+    this.commonService.log('swap o3');
+    const json = await this.swapService.getSwapJson('polyWrapper');
+    const swapContract = new this.web3.eth.Contract(
+      json,
+      POLY_WRAPPER_CONTRACT_HASH[fromToken.chain]
+    );
+    const bigNumberPolyFee = new BigNumber(polyFee)
+      .shiftedBy(O3_TOKEN.decimals)
+      .dp(0)
+      .toFixed();
+    const params = {
+      fromAsset: this.commonService.add0xHash(fromToken.assetID),
+      toChainId: SWAP_CONTRACT_CHAIN_ID[toToken.chain],
+      toAddress,
+      amount: new BigNumber(inputAmount)
+        .shiftedBy(fromToken.decimals)
+        .toFixed(),
+      fee: bigNumberPolyFee,
+      id: 1,
+    };
+    this.commonService.log(params);
+    const data = swapContract.methods
+      .lock(
+        params.fromAsset,
+        params.toChainId,
+        params.toAddress,
+        params.amount,
+        params.fee,
+        params.id
+      )
+      .encodeABI();
+    const requestData = {
+      method: 'eth_sendTransaction',
+      params: [
+        this.swapService.getSendTransactionParams(
+          fromAddress,
+          POLY_WRAPPER_CONTRACT_HASH[fromToken.chain],
+          data
         ),
       ],
     };
@@ -666,7 +736,7 @@ export class EthApiService {
     fee: string
   ): Promise<string> {
     this.commonService.log('add liquidity');
-    const json = await this.swapService.getSwapperJson();
+    const json = await this.swapService.getSwapJson('swapper');
     const swapContract = new this.web3.eth.Contract(
       json,
       ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain]
@@ -737,7 +807,7 @@ export class EthApiService {
     fee: string
   ): Promise<string> {
     this.commonService.log('remove liquidity');
-    const json = await this.swapService.getSwapperJson();
+    const json = await this.swapService.getSwapJson('swapper');
     const swapContract = new this.web3.eth.Contract(
       json,
       ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain]
@@ -814,7 +884,7 @@ export class EthApiService {
     if (fromToken.assetID === ETH_SOURCE_ASSET_HASH) {
       tokenhash = WETH_ASSET_HASH[fromToken.chain].assetID;
     }
-    const json = await this.swapService.getEthErc20Json();
+    const json = await this.swapService.getSwapJson('ethErc20');
     const ethErc20Contract = new this.web3.eth.Contract(json, tokenhash);
     let contract = ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain];
     if (aggregator) {
@@ -863,7 +933,7 @@ export class EthApiService {
     if (spender) {
       contract = spender;
     }
-    const json = await this.swapService.getEthErc20Json();
+    const json = await this.swapService.getSwapJson('ethErc20');
     const ethErc20Contract = new this.web3.eth.Contract(json, tokenhash);
     const data = ethErc20Contract.methods
       .approve(

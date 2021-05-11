@@ -14,6 +14,7 @@ import {
   USD_TOKENS,
   INIT_CHAIN_TOKENS,
   NEO_TOKEN,
+  O3_TOKEN,
 } from '@lib';
 import { Token } from '@lib';
 import { Observable, Unsubscribable } from 'rxjs';
@@ -144,6 +145,22 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
   isDisableToken(token: Token): boolean {
     if (
       !this.isFrom &&
+      this.fromToken &&
+      this.fromToken.assetID === O3_TOKEN.assetID &&
+      token.assetID === O3_TOKEN.assetID
+    ) {
+      return false;
+    }
+    if (
+      this.isFrom &&
+      this.toToken &&
+      this.toToken.assetID === O3_TOKEN.assetID &&
+      token.assetID === O3_TOKEN.assetID
+    ) {
+      return false;
+    }
+    if (
+      !this.isFrom &&
       this.fromToken.chain !== this.chain &&
       USD_TOKENS.findIndex((usdItem) => usdItem.assetID === token.assetID) < 0
     ) {
@@ -259,9 +276,8 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
   }
   handleTokenAmount(): void {
     if (this.tokenBalance.NEO[this.MYNNEO_TOKEN[0].assetID]) {
-      this.MYNNEO_TOKEN[0].amount = this.tokenBalance.NEO[
-        this.MYNNEO_TOKEN[0].assetID
-      ].amount;
+      this.MYNNEO_TOKEN[0].amount =
+        this.tokenBalance.NEO[this.MYNNEO_TOKEN[0].assetID].amount;
     }
     // chainType tokens
     Object.keys(this.MYCHAIN_TOKENS).forEach((key) => {

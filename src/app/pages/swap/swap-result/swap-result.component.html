@@ -18,7 +18,7 @@
   </div>
   <div class="receive content-border content-border-active">
     <p class="sub-title">{{ 'Receive' | translate: lang:langPageName }}</p>
-    <p class="amount">{{ chooseSwapPath?.receiveAmount | transNumber }} {{ toToken?.symbol }}</p>
+    <p class="amount"><app-long-balance [balance]="chooseSwapPath?.receiveAmount"></app-long-balance> {{ toToken?.symbol }}</p>
     <p class="fiat">≈＄{{ chooseSwapPath?.fiat }}</p>
     <div class="optimal">{{ 'Optimal' | translate: lang:langPageName }}</div>
   </div>
@@ -67,14 +67,14 @@
     </div>
     <div class="fee-item" *ngIf="showPolyFee">
       <p class="label">{{ 'PolyFee' | translate: lang:langPageName }}</p>
-      <div class="value">{{ polyFee | transNumber }} {{ SOURCE_TOKEN_SYMBOL[fromToken.chain] }}</div>
+      <div class="value">{{ polyFee | transNumber }} {{ polyFeeSymbol }}</div>
     </div>
     <div class="fee-item" *ngIf="showO3SwapFee">
       <p class="label">{{ 'O3Swapfee' | translate: lang:langPageName:[O3_AGGREGATOR_FEE] }}</p>
     </div>
   </div>
   <button class="confirm" (click)="swap()"
-    [ngClass]="{active: chooseSwapPath}">{{ 'Confirm' | translate: lang:langPageName }}</button>
+    [ngClass]="{active: checkCanSwap()}">{{ 'Confirm' | translate: lang:langPageName }}</button>
   <div class="setting-group">
     <div class="refresh">
       <span *ngIf="lang==='en'">{{ 'After' | translate: lang:langPageName }}&nbsp;</span>
@@ -158,7 +158,7 @@
       </div>
       <div class="fee-item" *ngIf="showPolyFee">
         <p class="label">{{ 'PolyFee' | translate: lang:langPageName }}</p>
-        <div class="value">{{ polyFee | transNumber }} {{ SOURCE_TOKEN_SYMBOL[fromToken.chain] }}</div>
+        <div class="value">{{ polyFee | transNumber }} {{ polyFeeSymbol }}</div>
       </div>
       <div class="fee-item" *ngIf="showO3SwapFee">
         <p class="label">{{ 'O3Swapfee' | translate: lang:langPageName:[O3_AGGREGATOR_FEE] }}</p>
@@ -176,6 +176,6 @@
       </div>
     </div>
     <button class="confirm" (click)="swap()"
-      [ngClass]="{active: chooseSwapPath}">{{ 'Confirm' | translate: lang:langPageName }}</button>
+      [ngClass]="{active: checkCanSwap()}">{{ 'Confirm' | translate: lang:langPageName }}</button>
   </div>
 </section>

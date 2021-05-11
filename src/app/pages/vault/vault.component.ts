@@ -393,7 +393,6 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
   }
   getLP(token: Token): void {
-    console.log(token);
     window.open(
       `https://app.uniswap.org/#/add/v2/${token.pairTokens[0]}/${token.pairTokens[1]}`
     );

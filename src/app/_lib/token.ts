@@ -101,7 +101,7 @@ export const NEO_TOKEN: Token = {
 export const O3_TOKEN: Token = {
   assetID:
     NETWORK === 'MainNet'
-      ? '0x899239a9a3f10d5333a512801a4c1b1c3bef10bb'
+      ? '0x2c42672ae36883da889e0f93747be502a59dc7c5'
       : '0xF8d653130a460b4a41e2B2271dD091A9Bb910775',
   symbol: 'O3',
   decimals: 18,

@@ -52,9 +52,7 @@ export class SwapService {
   private tokens$: Observable<any>;
   private chainTokens = INIT_CHAIN_TOKENS;
 
-  private wEthJson;
-  private swapperJson;
-  private ethErc20Json;
+  private swapJson = {};
   private aggregatorSwapJson = {
     BSC: {
       Pancakeswap: null,
@@ -153,7 +151,7 @@ export class SwapService {
     address = address || this.accountAddress[token.chain];
     let params;
     if (token.assetID !== ETH_SOURCE_ASSET_HASH) {
-      const json = await this.getEthErc20Json();
+      const json = await this.getSwapJson('ethErc20');
       const ethErc20Contract = new this.web3.eth.Contract(json, token.assetID);
       const data = await ethErc20Contract.methods
         .balanceOf(address)
@@ -189,45 +187,32 @@ export class SwapService {
       .toPromise();
   }
 
-  getWEthJson(): Promise<any> {
-    if (this.wEthJson) {
-      return of(this.wEthJson).toPromise();
+  getSwapJson(
+    type: 'wEth' | 'swapper' | 'polyWrapper' | 'ethErc20'
+  ): Promise<any> {
+    if (this.swapJson[type]) {
+      return of(this.swapJson[type]).toPromise();
+    }
+    let pathName: string;
+    switch (type) {
+      case 'wEth':
+        pathName = 'weth';
+        break;
+      case 'swapper':
+        pathName = 'eth-swapper';
+        break;
+      case 'polyWrapper':
+        pathName = 'PolyWrapper';
+        break;
+      case 'ethErc20':
+        pathName = 'eth-erc20';
+        break;
     }
     return this.http
-      .get('assets/contracts-json/weth.json')
+      .get(`assets/contracts-json/${pathName}.json`)
       .pipe(
         map((res) => {
-          this.wEthJson = res;
-          return res;
-        })
-      )
-      .toPromise();
-  }
-
-  getEthErc20Json(): Promise<any> {
-    if (this.ethErc20Json) {
-      return of(this.ethErc20Json).toPromise();
-    }
-    return this.http
-      .get('assets/contracts-json/eth-erc20.json')
-      .pipe(
-        map((res) => {
-          this.ethErc20Json = res;
-          return res;
-        })
-      )
-      .toPromise();
-  }
-
-  getSwapperJson(): Promise<any> {
-    if (this.swapperJson) {
-      return of(this.swapperJson).toPromise();
-    }
-    return this.http
-      .get('assets/contracts-json/eth-swapper.json')
-      .pipe(
-        map((res) => {
-          this.swapperJson = res;
+          this.swapJson[type] = res;
           return res;
         })
       )

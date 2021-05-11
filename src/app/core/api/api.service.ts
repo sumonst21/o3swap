@@ -30,6 +30,7 @@ import {
   NEO_TOKEN,
   CHAINS,
   UPDATE_RATES,
+  O3_TOKEN,
 } from '@lib';
 import BigNumber from 'bignumber.js';
 import { CommonService } from '../util/common.service';
@@ -56,7 +57,7 @@ export class ApiService {
     private commonService: CommonService,
     private swapService: SwapService,
     private store: Store<State>,
-    private nzMessage: NzMessageService,
+    private nzMessage: NzMessageService
   ) {
     this.getTokens();
   }
@@ -204,6 +205,12 @@ export class ApiService {
       );
       return this.handleSwapPathReceiveAmount(res);
     }
+    if (
+      fromToken.assetID === O3_TOKEN.assetID &&
+      toToken.assetID === O3_TOKEN.assetID
+    ) {
+      return this.getEthWEthSwapPath(fromToken, toToken, inputAmount);
+    }
     this.commonService.log(4);
     return of([]).toPromise();
   }
@@ -327,10 +334,17 @@ export class ApiService {
   }
 
   getFromEthPolyFee(fromToken: Token, toToken: Token): Promise<string> {
+    let hash = ETH_SOURCE_ASSET_HASH;
+    if (
+      fromToken.assetID === O3_TOKEN.assetID &&
+      toToken.assetID === O3_TOKEN.assetID
+    ) {
+      hash = O3_TOKEN.assetID;
+    }
     return this.http
       .post(`${CROSS_CHAIN_SWAP_DETAIL_HOST}/getfee`, {
         SrcChainId: SWAP_CONTRACT_CHAIN_ID[fromToken.chain],
-        Hash: this.commonService.remove0xHash(ETH_SOURCE_ASSET_HASH),
+        Hash: this.commonService.remove0xHash(hash),
         DstChainId: SWAP_CONTRACT_CHAIN_ID[toToken.chain],
       })
       .pipe(

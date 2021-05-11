@@ -22,6 +22,8 @@ import {
   NEO_TOKEN,
   NNEO_TOKEN,
   MESSAGE,
+  O3_TOKEN,
+  POLY_WRAPPER_CONTRACT_HASH,
 } from '@lib';
 import { ApiService, CommonService, EthApiService, NeoApiService } from '@core';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -104,6 +106,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   polyFee: string;
   showPolyFee = false;
   showO3SwapFee = false;
+  polyFeeSymbol: string;
 
   fromAddress: string;
   toAddress: string;
@@ -192,6 +195,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.price = this.initData.price;
       this.lnversePrice = this.initData.lnversePrice;
       this.polyFee = this.initData.polyFee;
+      this.polyFeeSymbol = this.initData.polyFeeSymbol;
       this.showO3SwapFee = this.initData.showO3SwapFee;
       this.showInquiry = false;
     } else {
@@ -227,6 +231,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       price: this.price,
       lnversePrice: this.lnversePrice,
       polyFee: this.polyFee,
+      polyFeeSymbol: this.polyFeeSymbol,
       showO3SwapFee: this.showO3SwapFee,
     };
     this.closePage.emit(initData);
@@ -266,6 +271,16 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         this.calculationPrice();
       }
     });
+  }
+
+  checkCanSwap(): boolean {
+    if (
+      this.chooseSwapPath &&
+      new BigNumber(this.chooseSwapPath.receiveAmount).comparedTo(0) > 0
+    ) {
+      return true;
+    }
+    return false;
   }
 
   async swap(): Promise<void> {
@@ -354,6 +369,13 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     }
     // eth 跨链
     if (this.fromToken.chain !== this.toToken.chain) {
+      if (
+        this.fromToken.assetID === O3_TOKEN.assetID &&
+        this.toToken.assetID === O3_TOKEN.assetID
+      ) {
+        this.swapO3CrossChainEth();
+        return;
+      }
       const fromUsd = USD_TOKENS.find(
         (item) =>
           item.assetID === this.fromToken.assetID &&
@@ -578,6 +600,27 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       });
   }
 
+  swapO3CrossChainEth(): void {
+    this.ethApiService
+      .swapO3CrossChain(
+        this.fromToken,
+        this.toToken,
+        this.inputAmount,
+        this.fromAddress,
+        this.toAddress,
+        new BigNumber(this.chooseSwapPath.receiveAmount)
+          .shiftedBy(O3_TOKEN.decimals)
+          .toFixed(),
+        this.polyFee,
+        'swap'
+      )
+      .then((res) => {
+        if (res) {
+          this.closePage.emit();
+        }
+      });
+  }
+
   swapCrossChainEth(): void {
     this.ethApiService
       .swapCrossChain(
@@ -613,6 +656,13 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         walletName = this.hecoWalletName;
         break;
     }
+    let spender;
+    if (
+      this.fromToken.assetID === O3_TOKEN.assetID &&
+      this.toToken.assetID === O3_TOKEN.assetID
+    ) {
+      spender = POLY_WRAPPER_CONTRACT_HASH[this.fromToken.chain];
+    }
     if (!this.commonService.isMobileWidth()) {
       this.modal.create({
         nzContent: ApproveModalComponent,
@@ -626,6 +676,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
           fromAddress: this.fromAddress,
           aggregator: this.chooseSwapPath.aggregator,
           walletName,
+          spender,
         },
       });
     } else {
@@ -640,6 +691,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
           fromAddress: this.fromAddress,
           aggregator: this.chooseSwapPath.aggregator,
           walletName,
+          spender,
         },
       });
     }
@@ -660,10 +712,18 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.commonService.log('check show approve return');
       return false;
     }
+    let spender;
+    if (
+      this.fromToken.assetID === O3_TOKEN.assetID &&
+      this.toToken.assetID === O3_TOKEN.assetID
+    ) {
+      spender = POLY_WRAPPER_CONTRACT_HASH[this.fromToken.chain];
+    }
     const balance = await this.ethApiService.getAllowance(
       this.fromToken,
       this.fromAddress,
-      this.chooseSwapPath.aggregator
+      this.chooseSwapPath.aggregator,
+      spender
     );
     if (
       new BigNumber(balance).comparedTo(new BigNumber(this.inputAmount)) >= 0
@@ -728,7 +788,38 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         this.fromToken,
         this.toToken
       );
+      if (
+        this.fromToken.assetID === O3_TOKEN.assetID &&
+        this.toToken.assetID === O3_TOKEN.assetID
+      ) {
+        this.handleReceiveO3();
+        this.polyFeeSymbol = O3_TOKEN.symbol;
+      } else {
+        this.polyFeeSymbol = SOURCE_TOKEN_SYMBOL[this.fromToken.chain];
+      }
     }
+  }
+  handleReceiveO3(): void {
+    if (
+      new BigNumber(this.chooseSwapPath.amount[1]).comparedTo(
+        new BigNumber(this.polyFee).shiftedBy(O3_TOKEN.decimals)
+      ) <= 0
+    ) {
+      this.chooseSwapPath.receiveAmount = 0;
+    } else {
+      this.chooseSwapPath.receiveAmount = new BigNumber(
+        this.chooseSwapPath.amount[1]
+      )
+        .minus(new BigNumber(this.polyFee).shiftedBy(O3_TOKEN.decimals))
+        .shiftedBy(-O3_TOKEN.decimals)
+        .dp(O3_TOKEN.decimals)
+        .toFixed();
+    }
+    this.receiveSwapPathArray.forEach((item) => {
+      item.receiveAmount = this.chooseSwapPath.receiveAmount;
+    });
+    this.handleReceiveSwapPathFiat();
+    this.calculationPrice();
   }
   checkO3SwapFee(): void {
     if (this.fromToken.chain === this.toToken.chain) {
@@ -790,6 +881,10 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     }
   }
   calculationPrice(): void {
+    if (this.chooseSwapPath && this.chooseSwapPath.receiveAmount === 0) {
+      this.price = '--';
+      this.lnversePrice = '--';
+    }
     if (this.chooseSwapPath && this.chooseSwapPath.receiveAmount) {
       this.price = new BigNumber(this.chooseSwapPath.receiveAmount)
         .dividedBy(new BigNumber(this.inputAmount))
@@ -888,7 +983,8 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     if (
       this.showPolyFee &&
       this.polyFee &&
-      this.fromToken.assetID !== ETH_SOURCE_ASSET_HASH
+      this.fromToken.assetID !== ETH_SOURCE_ASSET_HASH &&
+      this.polyFeeSymbol !== 'O3'
     ) {
       if (
         !chainBalances[ETH_SOURCE_ASSET_HASH] ||
