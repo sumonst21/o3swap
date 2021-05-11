@@ -21,6 +21,7 @@ import {
   MESSAGE,
   O3STAKING_CONTRACT,
   O3TOKEN_CONTRACT,
+  O3_TOKEN,
   Token,
   TOKEN_STAKING_TOKENS,
   UNLOCK_LP_TOKENS,
@@ -31,6 +32,7 @@ interface State {
 }
 interface State {
   vault: any;
+  rates: any;
 }
 @Component({
   selector: 'app-vault',
@@ -46,6 +48,10 @@ export class VaultComponent implements OnInit, OnDestroy {
   vault$: Observable<any>;
   vaultUnScribe: Unsubscribable;
   isCanClick = true;
+
+  ratesUnScribe: Unsubscribable;
+  rates$: Observable<any>;
+  rates = {};
 
   o3Locked = '--';
   o3Available = '--';
@@ -70,6 +76,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.lang = state.language;
     });
     this.vault$ = store.select('vault');
+    this.rates$ = store.select('rates');
   }
 
   ngOnInit(): void {
@@ -77,6 +84,9 @@ export class VaultComponent implements OnInit, OnDestroy {
       if (this.vaultdMetaMaskWalletApiService.vaultWallet) {
         this.initO3Data();
       }
+    });
+    this.ratesUnScribe = this.rates$.subscribe((state) => {
+      this.rates = state.rates;
     });
     interval(15000).subscribe(() => {
       if (this.vaultdMetaMaskWalletApiService.vaultWallet) {
@@ -93,6 +103,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();
+    }
+    if (this.ratesUnScribe) {
+      this.ratesUnScribe.unsubscribe();
     }
   }
 
@@ -146,7 +159,6 @@ export class VaultComponent implements OnInit, OnDestroy {
           item.sharePerBlock,
         ] = res;
         item.apy = this.getStakingAYP(item);
-        console.log(item);
       });
     });
     // lp staking
@@ -161,6 +173,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',
       ]).then((res) => {
         [item.balance, item.totalStaking, item.staked] = res;
+        item.apy = this.getStakingAYP(item);
       });
     });
     let tempTotalProfit = new BigNumber('0');
@@ -361,20 +374,53 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   getStakingAYP(token: any): string {
+    const tokenPrice = this.getTokenPrice(token);
+    const O3TokenPrice = this.getTokenPrice(O3_TOKEN);
     const yearSecond = new BigNumber('31536000');
     const blockTime = new BigNumber('15');
     const yearBlock = yearSecond.div(blockTime);
     const sharePerBlock = new BigNumber(token.sharePerBlock);
     const totalStaked = token.totalStaking;
     const result = yearBlock.times(sharePerBlock).div(totalStaked).times(100);
-    return result.toFixed();
+    let priceRatio = new BigNumber(tokenPrice).div(new BigNumber(O3TokenPrice));
+    if (token.assetID === O3_TOKEN.assetID) {
+      priceRatio = new BigNumber(1);
+    }
+    if (priceRatio.isNaN()) {
+      return '--';
+    } else {
+      return result.times(priceRatio).toFixed();
+    }
   }
-
   getLP(token: Token): void {
     console.log(token);
     window.open(
       `https://app.uniswap.org/#/add/v2/${token.pairTokens[0]}/${token.pairTokens[1]}`
     );
+  }
+
+  getTokenPrice(token: Token): string {
+    if (token.pairTokens) {
+      let resultPrice = new BigNumber(0);
+      token.pairTokens.forEach((item) => {
+        const price = this.commonService.getAssetRateByHash(
+          this.rates,
+          item,
+          token.chain
+        );
+        if (new BigNumber(price).comparedTo(0) <= 0) {
+          return '0';
+        }
+        resultPrice = resultPrice.plus(new BigNumber(price));
+      });
+      return resultPrice.toFixed();
+    } else {
+      return this.commonService.getAssetRateByHash(
+        this.rates,
+        token.assetID,
+        token.chain
+      );
+    }
   }
 
   async checkShowApprove(

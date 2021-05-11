@@ -78,6 +78,27 @@ export class CommonService {
     return;
   }
 
+  getAssetRateByHash(rates: {}, hash: string, chainType: string): string {
+    let chain = chainType.toLowerCase();
+    if (chain === 'neo') {
+      chain = 'neo2';
+    }
+    if (!rates[chain]) {
+      return;
+    }
+    const rateList = rates[chain];
+    const filterKey = Object.keys(rateList).filter(
+      (key) =>
+        this.remove0xHash(hash).toLowerCase() ===
+        this.remove0xHash(rateList[key].asset_id).toLowerCase()
+    );
+    if (filterKey.length > 0) {
+      return rateList[filterKey[0]].price;
+    } else {
+      return '0';
+    }
+  }
+
   add0xHash(hash: string): string {
     if (hash.startsWith('0x')) {
       return hash;
@@ -85,11 +106,17 @@ export class CommonService {
       return `0x${hash}`;
     }
   }
+  judgeAssetHash(hash: string, anotherHash: string): boolean {
+    return (
+      this.remove0xHash(hash).toLowerCase() ===
+      this.remove0xHash(anotherHash).toLowerCase()
+    );
+  }
   remove0xHash(hash: string): string {
-    if (hash.startsWith('0x')) {
+    if ((hash || '').startsWith('0x')) {
       return hash.slice(2);
     } else {
-      return hash;
+      return hash || '';
     }
   }
   isMobileWidth(): boolean {
