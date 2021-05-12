@@ -127,6 +127,41 @@
     </div>
   </div>
 </section>
+<section class="content news">
+  <div class="wrapper">
+    <p class="sub-title">NEWS</p>
+    <div class="page-container">
+      <img (click)="preNew()" src="/assets/images/home/news/page-pre.png" alt="">
+      <img (click)="nextNew()" src="/assets/images/home/news/page-next.png" alt="">
+    </div>
+    <ul id="news-group" class="news-group">
+      <li class="new-item" *ngFor="let item of displayNews; index as index" [ngClass]="{active: index===newsIndex}">
+        <div class="new-content" *ngIf="item.id<5">
+          <a [href]="item.url" target="_blank"><img [src]="item.image" alt=""></a>
+        </div>
+        <div class="new-content" *ngIf="item.id===5">
+          <iframe width="100%" src="https://www.youtube.com/embed/Hc1xFfvqSbM" title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+        <div class="new-content" *ngIf="item.id===6">
+          <iframe width="100%" src="https://www.youtube.com/embed/Oux8MInoDrc" title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+        <div class="new-content" *ngIf="item.id===7">
+          <iframe width="100%" src="https://www.youtube.com/embed/5JB723BLEwQ" title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+        <p class="new-title">{{ item.title }}</p>
+      </li>
+    </ul>
+  </div>
+</section>
 <section class="content o3wallet">
   <div class="wrapper">
     <img class="logo" src="/assets/images/home/o3wallet-logo.png" alt="">

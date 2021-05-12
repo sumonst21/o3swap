@@ -362,7 +362,81 @@ section.roadmap {
   }
 }
 
+section.news {
+  overflow: hidden;
+  max-width: 2000px;
+  margin: 0 auto;
+  .wrapper {
+    position: relative;
+  }
+  .sub-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    writing-mode: vertical-lr;
+  }
+  .page-container {
+    padding-left: 90px;
+    img {
+      width: 12px;
+      height: 20px;
+      cursor: pointer;
+      &:first-child {
+        margin-right: 30px;
+      }
+    }
+  }
+  ul#news-group {
+    margin-top: 40px;
+    padding-left: 90px;
+    display: flex;
+    align-items: flex-end;
+    transition: all 0.3s;
+    li.new-item {
+      &:not(:last-child) {
+        margin-right: 70px;
+      }
+      .new-content {
+        width: 360px;
+        height: 330px;
+        display: inline-flex;
+        align-items: flex-end;
+        img {
+          width: 100%;
+          max-height: 330px;
+        }
+        iframe {
+          height: 202px;
+        }
+      }
+      .new-title {
+        width: 360px;
+        font-size: 14px;
+        opacity: 0.7;
+        margin-top: 30px;
+        height: 20px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      &.active {
+        .new-content {
+          width: 540px;
+          iframe {
+            height: 303px;
+          }
+        }
+        .new-title {
+          width: 540px;
+          font-size: 20px;
+        }
+      }
+    }
+  }
+}
+
 section.o3wallet {
+  margin-top: 190px;
   .wrapper {
     width: 1320px;
     height: 220px;
