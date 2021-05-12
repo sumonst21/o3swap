@@ -250,9 +250,8 @@ export class LiquidityComponent implements OnInit, OnDestroy {
 
   async maxAddLiquidityInput(index: number): Promise<void> {
     if (!new BigNumber(this.addLiquidityTokens[index].amount).isNaN()) {
-      this.addLiquidityInputAmount[index] = this.addLiquidityTokens[
-        index
-      ].amount;
+      this.addLiquidityInputAmount[index] =
+        this.addLiquidityTokens[index].amount;
       this.receiveAmount[index] = await this.apiService.getPoolOutGivenSingleIn(
         this.addLiquidityTokens[index],
         this.addLiquidityInputAmount[index]
@@ -271,12 +270,11 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       !new BigNumber(this.LPToken.amount).isZero()
     ) {
       this.payAmount[index] = this.LPToken.amount;
-      this.removeLiquidityInputAmount[
-        index
-      ] = await this.apiService.getSingleOutGivenPoolIn(
-        this.addLiquidityTokens[index],
-        this.payAmount[index]
-      );
+      this.removeLiquidityInputAmount[index] =
+        await this.apiService.getSingleOutGivenPoolIn(
+          this.addLiquidityTokens[index],
+          this.payAmount[index]
+        );
       this.removePolyFee[index] = await this.apiService.getFromEthPolyFee(
         this.LPToken,
         this.addLiquidityTokens[index]
@@ -290,6 +288,14 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       return;
     }
     if (this.ethApiService.checkNetwork(token) === false) {
+      return;
+    }
+    if (
+      !this.receiveAmount[index] ||
+      (this.receiveAmount[index] &&
+        new BigNumber(this.receiveAmount[index]).comparedTo(0) <= 0)
+    ) {
+      this.nzMessage.error(MESSAGE.receive0[this.lang](['LP']));
       return;
     }
     const tokenBalance = new BigNumber(token.amount);
@@ -361,6 +367,15 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     }
     if (lpBalance.comparedTo(lpPayAmount) < 0) {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
+      return;
+    }
+    if (
+      !this.removeLiquidityInputAmount[index] ||
+      (this.removeLiquidityInputAmount[index] &&
+        new BigNumber(this.removeLiquidityInputAmount[index]).comparedTo(0) <=
+          0)
+    ) {
+      this.nzMessage.error(MESSAGE.receive0[this.lang]([token.symbol]));
       return;
     }
     const allowance = await this.ethApiService.getAllowance(
@@ -517,9 +532,8 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     this.tokenBalance.HECO = state.hecoBalances;
     this.addLiquidityTokens.forEach((item, index) => {
       if (this.tokenBalance[item.chain][item.assetID]) {
-        this.addLiquidityTokens[index].amount = this.tokenBalance[item.chain][
-          item.assetID
-        ].amount;
+        this.addLiquidityTokens[index].amount =
+          this.tokenBalance[item.chain][item.assetID].amount;
       } else {
         if (
           (item.chain === 'ETH' && this.ethAccountAddress) ||

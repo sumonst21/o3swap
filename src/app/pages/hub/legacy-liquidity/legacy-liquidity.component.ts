@@ -244,6 +244,15 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return;
     }
+    if (
+      !this.removeLiquidityInputAmount[index] ||
+      (this.removeLiquidityInputAmount[index] &&
+        new BigNumber(this.removeLiquidityInputAmount[index]).comparedTo(0) <=
+          0)
+    ) {
+      this.nzMessage.error(MESSAGE.receive0[this.lang]([token.symbol]));
+      return;
+    }
     const allowance = await this.ethApiService.getAllowance(
       this.LPToken,
       this.currentAddress

@@ -135,6 +135,10 @@ const swap = {
     en: 'Search token name',
     zh: '搜索代币名字',
   },
+  Close: {
+    en: 'Close',
+    zh: '关闭',
+  },
 };
 
 export default swap;

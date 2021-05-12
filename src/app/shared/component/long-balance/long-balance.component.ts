@@ -40,6 +40,9 @@ export class LongBalanceComponent implements OnInit, OnChanges {
     } else if (stringValue.length > this.length) {
       this.displayBalance = stringValue.substring(0, this.length);
       this.showTooltip = true;
+      if (new BigNumber(this.displayBalance).dp(8).toFixed() === '0') {
+        this.displayBalance = '0.00000000...';
+      }
     }
   }
 }

@@ -67,4 +67,8 @@ export const MESSAGE = {
       `Insufficient ${params[0]} for transfer amount and poly fee`,
     zh: (params: string[]) => `${params[0]}不足以支付转账金额和手续费`,
   },
+  receive0: {
+    en: (params: string[]) => `you will receive 0 ${params[0]}`,
+    zh: (params: string[]) => `你将收到 0 ${params[0]}`,
+  },
 };

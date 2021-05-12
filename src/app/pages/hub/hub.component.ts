@@ -260,6 +260,13 @@ export class HubComponent implements OnInit, OnDestroy {
     if (this.checkInputAmountLimit() === false) {
       return false;
     }
+    if (
+      !this.receiveAmount ||
+      (this.receiveAmount &&
+        new BigNumber(this.receiveAmount).comparedTo(0) <= 0)
+    ) {
+      return false;
+    }
     return true;
   }
 
@@ -379,9 +386,8 @@ export class HubComponent implements OnInit, OnDestroy {
     }
     this.fromToken.amount = '0';
     if (this.tokenBalances[this.fromToken.chain][this.fromToken.assetID]) {
-      this.fromToken.amount = this.tokenBalances[this.fromToken.chain][
-        this.fromToken.assetID
-      ].amount;
+      this.fromToken.amount =
+        this.tokenBalances[this.fromToken.chain][this.fromToken.assetID].amount;
     }
     this.changeDetectorRef.detectChanges();
   }
