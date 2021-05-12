@@ -82,6 +82,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    return;
     this.vaultUnScribe = this.vault$.subscribe((state) => {
       if (this.vaultdMetaMaskWalletApiService.vaultWallet) {
         this.initO3Data();
@@ -112,6 +113,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async initO3Data(): Promise<void> {
+    return;
     // head data
     Promise.all([
       this.vaultdMetaMaskWalletApiService.getLockedOf() || '--',
@@ -211,6 +213,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     balance: string,
     isStake: boolean = true
   ): Promise<void> {
+    return;
     let modal;
     if (!this.checkWalletConnect()) {
       return;
@@ -274,6 +277,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     balance: string,
     isStake: boolean = true
   ): Promise<void> {
+    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -334,6 +338,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimUnlockO3(token: any): Promise<void> {
+    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -357,6 +362,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimProfit(token: any): Promise<void> {
+    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -407,6 +413,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
   }
   getLP(token: Token): void {
+    return;
     window.open(
       `https://app.uniswap.org/#/add/v2/${token.pairTokens[0]}/${token.pairTokens[1]}`
     );
@@ -482,6 +489,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     return true;
   }
   showApproveModal(token: Token, spender: string): void {
+    return;
     const walletName = this.vaultdMetaMaskWalletApiService.vaultWallet
       .walletName;
     const address = this.vaultdMetaMaskWalletApiService.vaultWallet.address;
