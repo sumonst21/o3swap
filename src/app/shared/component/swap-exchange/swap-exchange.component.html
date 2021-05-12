@@ -11,7 +11,9 @@
     <li class="exchange-item" *ngFor="let swapItem of receiveSwapPathArray; index as index"
       (click)="changeSwapPath(index)" [ngClass]="{active: chooseSwapPathIndex===index}">
       <div class="left">
-        <p class="name">{{ swapItem.receiveAmount | transNumber }} {{ toTokenSymbol }}</p>
+        <p class="name">
+          <app-long-balance [balance]="swapItem.receiveAmount"></app-long-balance> {{ toTokenSymbol }}
+        </p>
         <p class="fiat">≈＄{{ swapItem.fiat }}<span *ngIf="swapItem.aggregator ">({{ swapItem.aggregator }})</span></p>
       </div>
       <ul class="routes">

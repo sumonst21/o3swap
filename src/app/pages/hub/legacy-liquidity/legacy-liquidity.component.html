@@ -20,7 +20,8 @@
           <span class="amount">--</span>
           <span class="rate">≈＄0.0</span>
         </div>
-        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'" nzTooltipPlacement="top">
+        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'"
+          nzTooltipPlacement="top">
           {{ 'STAKE' | translate: lang:langPageName }}
         </div>
       </div>
@@ -34,7 +35,8 @@
           <span class="amount">--</span>
           <span class="rate">≈＄0.0</span>
         </div>
-        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'" nzTooltipPlacement="top">
+        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'"
+          nzTooltipPlacement="top">
           {{ 'CLAIM' | translate: lang:langPageName }}
         </div>
       </div>
@@ -102,7 +104,8 @@
       <ul>
         <li class="item-list">
           <div>
-            USDT+BUSD+HUSD: <span class="value">&nbsp;&nbsp;{{ pusdtBalance.ALL | transNumber }}</span>
+            USDT+BUSD+HUSD: <span class="value">&nbsp;&nbsp;<app-long-balance [balance]="pusdtBalance.ALL">
+              </app-long-balance></span>
           </div>
         </li>
         <li class="item-list">
@@ -112,7 +115,9 @@
           </div>
           <div>
             <div>
-              <div>USDT: <span class="value">{{ pusdtBalance.ETH.value | transNumber }}</span>
+              <div>USDT: <span class="value">
+                  <app-long-balance [balance]="pusdtBalance.ETH.value"></app-long-balance>
+                </span>
                 ({{ pusdtBalance.ETH.percentage }}%)</div>
             </div>
             <div class="progress-container">
@@ -129,7 +134,9 @@
           </div>
           <div>
             <div>
-              <div>BUSD: <span class="value">{{ pusdtBalance.BSC.value | transNumber }}</span>
+              <div>BUSD: <span class="value">
+                  <app-long-balance [balance]="pusdtBalance.BSC.value"></app-long-balance>
+                </span>
                 ({{ pusdtBalance.BSC.percentage }}%)</div>
             </div>
             <div class="progress-container">
@@ -146,7 +153,9 @@
           </div>
           <div>
             <div>
-              <div>HUSD: <span class="value">{{ pusdtBalance.HECO.value | transNumber }}</span>
+              <div>HUSD: <span class="value">
+                  <app-long-balance [balance]="pusdtBalance.HECO.value"></app-long-balance>
+                </span>
                 ({{ pusdtBalance.HECO.percentage }}%)</div>
             </div>
             <div class="progress-container">

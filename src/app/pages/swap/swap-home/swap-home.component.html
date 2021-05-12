@@ -41,7 +41,10 @@
   </div>
   <div class="receive content-border" [ngClass]="{'content-border-active': !changeData&&chooseSwapPath }">
     <p class="sub-title receive-title">{{ 'YouWillReceive' | translate: lang:langPageName }}</p>
-    <p class="receive-amount">{{ chooseSwapPath?.receiveAmount || '--' }} {{ toToken?.symbol }}</p>
+    <p class="receive-amount">
+      <app-long-balance [balance]="chooseSwapPath?.receiveAmount" defaultValue="--"></app-long-balance>
+      {{ toToken?.symbol }}
+    </p>
     <p class="receive-fiat">≈＄{{ chooseSwapPath?.fiat || '--.--' }}</p>
     <button class="confirm" (click)="inquiry()"
       [ngClass]="{active: checkCanInquiry()}">{{ 'RFQ' | translate: lang:langPageName }}</button>

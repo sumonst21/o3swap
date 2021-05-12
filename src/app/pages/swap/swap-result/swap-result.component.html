@@ -8,7 +8,9 @@
   <p class="title">{{ 'Swap' | translate: lang:'app' }}</p>
   <div class="exchange-amount">
     <p class="left">
-      <span class="token-from">{{ inputAmount }} {{ fromToken?.symbol }}</span>
+      <span class="token-from">
+        <app-long-balance [balance]="inputAmount"></app-long-balance> {{ fromToken?.symbol }}
+      </span>
       <img class="exchange" src="/assets/images/swap/exchange.png" alt="">
       <span class="token-to">{{ toToken?.symbol }}</span>
     </p>
@@ -18,7 +20,9 @@
   </div>
   <div class="receive content-border content-border-active">
     <p class="sub-title">{{ 'Receive' | translate: lang:langPageName }}</p>
-    <p class="amount"><app-long-balance [balance]="chooseSwapPath?.receiveAmount"></app-long-balance> {{ toToken?.symbol }}</p>
+    <p class="amount">
+      <app-long-balance [balance]="chooseSwapPath?.receiveAmount"></app-long-balance> {{ toToken?.symbol }}
+    </p>
     <p class="fiat">≈＄{{ chooseSwapPath?.fiat }}</p>
     <div class="optimal">{{ 'Optimal' | translate: lang:langPageName }}</div>
   </div>
@@ -67,7 +71,9 @@
     </div>
     <div class="fee-item" *ngIf="showPolyFee">
       <p class="label">{{ 'PolyFee' | translate: lang:langPageName }}</p>
-      <div class="value">{{ polyFee | transNumber }} {{ polyFeeSymbol }}</div>
+      <div class="value">
+        <app-long-balance [balance]="polyFee"></app-long-balance> {{ polyFeeSymbol }}
+      </div>
     </div>
     <div class="fee-item" *ngIf="showO3SwapFee">
       <p class="label">{{ 'O3Swapfee' | translate: lang:langPageName:[O3_AGGREGATOR_FEE] }}</p>
@@ -101,7 +107,9 @@
   </p>
   <div class="exchange-amount">
     <p class="left">
-      <span class="token-from">{{ inputAmount }} {{ fromToken?.symbol }}</span>
+      <span class="token-from">
+        <app-long-balance [balance]="inputAmount"></app-long-balance> {{ fromToken?.symbol }}
+      </span>
       <img class="exchange" src="/assets/images/swap/exchange.png" alt="">
       <span class="token-to">{{ toToken?.symbol }}</span>
     </p>
@@ -118,7 +126,9 @@
     </div>
     <div class="receive content-border content-border-active">
       <p class="sub-title">{{ 'Receive' | translate: lang:langPageName }}</p>
-      <p class="amount">{{ chooseSwapPath?.receiveAmount | transNumber }} {{ toToken?.symbol }}</p>
+      <p class="amount">
+        <app-long-balance [balance]="chooseSwapPath?.receiveAmount"></app-long-balance>{{ toToken?.symbol }}
+      </p>
       <p class="fiat">≈＄{{ chooseSwapPath?.fiat }}</p>
       <div class="optimal">{{ 'Optimal' | translate: lang:langPageName }}</div>
     </div>
@@ -158,7 +168,9 @@
       </div>
       <div class="fee-item" *ngIf="showPolyFee">
         <p class="label">{{ 'PolyFee' | translate: lang:langPageName }}</p>
-        <div class="value">{{ polyFee | transNumber }} {{ polyFeeSymbol }}</div>
+        <div class="value">
+          <app-long-balance [balance]="polyFee"></app-long-balance>{{ polyFeeSymbol }}
+        </div>
       </div>
       <div class="fee-item" *ngIf="showO3SwapFee">
         <p class="label">{{ 'O3Swapfee' | translate: lang:langPageName:[O3_AGGREGATOR_FEE] }}</p>
