@@ -144,20 +144,16 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
 
   isDisableToken(token: Token): boolean {
     if (
-      !this.isFrom &&
-      this.fromToken &&
-      this.fromToken.assetID === O3_TOKEN.assetID &&
-      token.assetID === O3_TOKEN.assetID
+      (!this.isFrom &&
+        this.fromToken &&
+        this.fromToken.assetID === O3_TOKEN.assetID) ||
+      (this.isFrom && this.toToken && this.toToken.assetID === O3_TOKEN.assetID)
     ) {
-      return false;
-    }
-    if (
-      this.isFrom &&
-      this.toToken &&
-      this.toToken.assetID === O3_TOKEN.assetID &&
-      token.assetID === O3_TOKEN.assetID
-    ) {
-      return false;
+      if (token.assetID === O3_TOKEN.assetID) {
+        return false;
+      } else {
+        return true;
+      }
     }
     if (
       !this.isFrom &&
