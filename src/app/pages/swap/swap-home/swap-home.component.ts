@@ -9,7 +9,14 @@ import {
   ChangeDetectorRef,
   SimpleChanges,
 } from '@angular/core';
-import { MESSAGE, NEO_TOKEN, NNEO_TOKEN, SwapStateType, Token } from '@lib';
+import {
+  MESSAGE,
+  NEO_TOKEN,
+  NNEO_TOKEN,
+  O3_TOKEN,
+  SwapStateType,
+  Token,
+} from '@lib';
 import BigNumber from 'bignumber.js';
 import {
   SwapSettingModalComponent,
@@ -122,9 +129,10 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
         currentFromToken &&
         this.tokenBalance[this.fromToken.chain][this.fromToken.assetID]
       ) {
-        this.fromToken.amount = this.tokenBalance[this.fromToken.chain][
-          this.fromToken.assetID
-        ].amount;
+        this.fromToken.amount =
+          this.tokenBalance[this.fromToken.chain][
+            this.fromToken.assetID
+          ].amount;
       }
     }
   }
@@ -187,6 +195,13 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
           }
           this.inputAmount = '';
           this.fromToken = res;
+          if (
+            this.toToken &&
+            this.toToken.assetID === O3_TOKEN.assetID &&
+            this.fromToken.assetID !== O3_TOKEN.assetID
+          ) {
+            this.toToken = null;
+          }
           this.checkInputAmountDecimal();
           this.checkInputAmountLimit();
           this.calcutionInputAmountFiat();
@@ -280,12 +295,10 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       this.fromToken &&
       this.tokenBalance[this.fromToken.chain][this.fromToken.assetID]
     ) {
-      this.fromToken.amount = this.tokenBalance[this.fromToken.chain][
-        this.fromToken.assetID
-      ].amount;
-      this.fromToken.amount = this.tokenBalance[this.fromToken.chain][
-        this.fromToken.assetID
-      ].amount;
+      this.fromToken.amount =
+        this.tokenBalance[this.fromToken.chain][this.fromToken.assetID].amount;
+      this.fromToken.amount =
+        this.tokenBalance[this.fromToken.chain][this.fromToken.assetID].amount;
     }
   }
   checkCanInquiry(): boolean {
