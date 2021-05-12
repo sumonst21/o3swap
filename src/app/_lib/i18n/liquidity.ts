@@ -65,7 +65,7 @@ const liquidity = {
   },
   LegacyLP: {
     en: 'Legacy LP',
-    zh: '旧版流动性'
+    zh: '旧版流动性',
   },
 };
 

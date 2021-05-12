@@ -59,6 +59,10 @@ const hub = {
     en: 'Daily volume',
     zh: '每日交易量',
   },
+  WithdrawLegacyLP: {
+    en: 'Withdraw Legacy LP',
+    zh: '提取旧版LP',
+  },
 };
 
 export default hub;

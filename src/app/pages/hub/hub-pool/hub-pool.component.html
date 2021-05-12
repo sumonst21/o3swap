@@ -23,11 +23,20 @@
         </div>
       </div>
       <div class="right">
-        <div class="btn-primary btn deposit-btn" [routerLink]="['/hub/liquidity', 'add']">
-          {{ 'Deposit' | translate: lang:langPageName }}
+        <div>
+          <button class="btn-primary btn deposit-btn" [routerLink]="['/hub/liquidity', 'add']">
+            {{ 'Deposit' | translate: lang:langPageName }}
+          </button>
+          <button class="btn-primary btn withdrawal-btn" [routerLink]="['/hub/liquidity', 'remove']">
+            {{ 'Withdraw' | translate: lang:langPageName }}
+          </button>
         </div>
-        <div class="btn-primary btn withdrawal-btn" [routerLink]="['/hub/liquidity', 'remove']">
-          {{ 'Withdraw' | translate: lang:langPageName }}
+        <div>
+          <button class="btn-primary btn withdrawal-btn legacy" routerLink="/hub/legacy-liquidity/remove">
+            {{ 'WithdrawLegacyLP' | translate: lang:langPageName }}
+          </button>
+          <img nz-tooltip [nzTooltipTitle]="'LegacyLPTip' | translate: lang:'liquidity'" nzTooltipPlacement="bottom"
+            class="question" src="/assets/images/question.png" alt="">
         </div>
       </div>
     </div>
