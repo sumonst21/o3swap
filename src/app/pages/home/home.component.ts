@@ -16,35 +16,27 @@ interface State {
   styleUrls: ['./home.component.scss', './mobile.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  liquiditySource = LiquiditySource;
-  copyRightYear = new Date().getFullYear();
-  roadmapIndex = 0;
-  roadmapLen = 4;
-  roadmapInterval: Unsubscribable;
-  enterActiviteFirst = false;
-  enterActiviteLast = false;
+  public liquiditySource = LiquiditySource;
+  public copyRightYear = new Date().getFullYear();
+  public roadmapIndex = 0;
+  private roadmapLen = 4;
+  private roadmapInterval: Unsubscribable;
 
-  email = '';
-  canSubscribe = true;
-  isFocus = false;
-  isLoadingEmail = false;
+  public email = '';
+  public canSubscribe = true;
+  public isFocus = false;
+  public isLoadingEmail = false;
 
-  priceOptions = {
-    path: '/assets/json/price/data.json',
-  };
-  swapOptions = {
+  public swapOptions = {
     path: '/assets/json/swap/data.json',
   };
-  exchangeOptions = {
-    path: '/assets/json/exchange.json',
-  };
 
-  langPageName = 'home';
-  langUnScribe: Unsubscribable;
-  language$: Observable<any>;
-  lang: string;
+  public langPageName = 'home';
+  private langUnScribe: Unsubscribable;
+  private language$: Observable<any>;
+  public lang: string;
 
-  totalData = { pool_tvl: '', total_addresses: '', total_tx_count: '' };
+  public totalData = { pool_tvl: '', total_addresses: '', total_tx_count: '' };
 
   constructor(
     private store: Store<State>,
@@ -81,6 +73,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  //#region roadmap
   roadmapIntervalFun(): void {
     if (this.roadmapInterval) {
       this.roadmapInterval.unsubscribe();
@@ -98,7 +91,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   leaveRoadmap(): void {
     this.roadmapIntervalFun();
   }
+  //#endregion
 
+  //#region subscript news
   subscriptNews(): void {
     if (this.isLoadingEmail === true) {
       return;
@@ -128,6 +123,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       return false;
     }
   }
+  //#endregion
 
   changeLang(lang: 'en' | 'zh'): void {
     if (lang === this.lang) {
