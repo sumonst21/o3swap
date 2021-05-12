@@ -96,26 +96,36 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
-.scroll {
+
+.ant-table-body {
+  background: #252525;
+}
+
+.scroll,
+.ant-table-body {
   overflow: scroll;
 }
 
 // 滚动条样式
-.scroll::-webkit-scrollbar {
+.scroll::-webkit-scrollbar,
+.ant-table-body::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 /*正常时候的主干部分*/
-.scroll::-webkit-scrollbar-track {
+.scroll::-webkit-scrollbar-track,
+.ant-table-body::-webkit-scrollbar-track {
   background: transparent;
 }
 /*正常情况下滑块的样式*/
-.scroll::-webkit-scrollbar-thumb {
+.scroll::-webkit-scrollbar-thumb,
+.ant-table-body::-webkit-scrollbar-thumb {
   background-color: #121212;
   border-radius: 5px;
 }
 /*当同时有垂直滚动条和水平滚动条时交汇的部分.*/
-.scroll::-webkit-scrollbar-corner {
+.scroll::-webkit-scrollbar-corner,
+.ant-table-body::-webkit-scrollbar-corner {
   background: transparent;
 }
 

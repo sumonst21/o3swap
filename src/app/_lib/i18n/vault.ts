@@ -79,6 +79,18 @@ const vault = {
     en: 'Provide O3 liquidity on DEX to unlock your O3',
     zh: '提供O3流动性以解锁O3',
   },
+  Amount: {
+    en: 'Amount',
+    zh: '数量',
+  },
+  Balance: {
+    en: 'Balance',
+    zh: '余额',
+  },
+  Confirm: {
+    en: 'Confirm',
+    zh: '确认',
+  },
 };
 
 export default vault;
