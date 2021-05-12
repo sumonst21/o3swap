@@ -18,6 +18,7 @@ import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
 import {
   LP_STAKING_TOKENS,
+  LP_TOKENS,
   MESSAGE,
   O3STAKING_CONTRACT,
   O3TOKEN_CONTRACT,
@@ -25,6 +26,7 @@ import {
   Token,
   TOKEN_STAKING_TOKENS,
   UNLOCK_LP_TOKENS,
+  USD_TOKENS,
 } from '@lib';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 interface State {
@@ -171,8 +173,15 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
           '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingStaked(item) || '--',
+        this.vaultdMetaMaskWalletApiService.getO3StakingSharePerBlock(item) ||
+          '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked] = res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -382,11 +391,15 @@ export class VaultComponent implements OnInit, OnDestroy {
     const sharePerBlock = new BigNumber(token.sharePerBlock);
     const totalStaked = token.totalStaking;
     const result = yearBlock.times(sharePerBlock).div(totalStaked).times(100);
-    let priceRatio = new BigNumber(tokenPrice).div(new BigNumber(O3TokenPrice));
+    let priceRatio = new BigNumber(O3TokenPrice).div(new BigNumber(tokenPrice));
     if (token.assetID === O3_TOKEN.assetID) {
       priceRatio = new BigNumber(1);
     }
-    if (priceRatio.isNaN()) {
+    if (
+      priceRatio.isNaN() ||
+      priceRatio.comparedTo(0) === 0 ||
+      !priceRatio.isFinite()
+    ) {
       return '--';
     } else {
       return result.times(priceRatio).toFixed();
@@ -414,6 +427,17 @@ export class VaultComponent implements OnInit, OnDestroy {
       });
       return resultPrice.toFixed();
     } else {
+      if (
+        LP_TOKENS.filter((item) => {
+          return this.commonService.judgeAssetHash(token.assetID, item.assetID);
+        }).length > 0
+      ) {
+        return this.commonService.getAssetRateByHash(
+          this.rates,
+          USD_TOKENS[0].assetID,
+          USD_TOKENS[0].chain
+        );
+      }
       return this.commonService.getAssetRateByHash(
         this.rates,
         token.assetID,

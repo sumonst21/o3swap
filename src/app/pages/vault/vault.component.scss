@@ -233,7 +233,7 @@
   }
 }
 
-@media screen and (min-width: 801px) {
+@media screen and (min-width: 751px) {
   .page-container {
     width: 1000px;
     .item-container.row-1 {
@@ -345,6 +345,8 @@
           img {
             width: 30px;
             height: 30px;
+          }
+          .token > img {
             margin-right: 15px;
           }
         }
@@ -352,6 +354,7 @@
     }
     .logo-box {
       display: inline-block;
+      margin-right: 15px;
       img {
         position: relative;
         z-index: 2;

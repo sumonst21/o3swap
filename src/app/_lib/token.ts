@@ -142,14 +142,6 @@ export const LP_STAKING_TOKENS: Token[] = [
     amount: '0',
     chain: 'ETH',
     logo: '/assets/images/tokens/lp-eth.png',
-    pairTokens: [
-      '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
-      '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-    ],
-    pairLogos: [
-      '/assets/images/tokens/lp-eth.png',
-      '/assets/images/tokens/lp-eth.png',
-    ],
   },
 ];
 

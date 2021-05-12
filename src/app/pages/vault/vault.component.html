@@ -123,9 +123,14 @@
         <div class="group-container">
           <div class="item-group" *ngFor="let item of lpstakingTokenList">
             <div class="item-group-title">
-              <div class="token"><img [src]="item.logo" alt="">{{ item.symbol }}</div>
+              <div class="token">
+                <div class="logo-box" *ngIf="item.pairLogos"><img class="token-img" [src]="item.pairLogos[0]"
+                    alt=""><img class="token-img" [src]="item.pairLogos[1]" alt=""></div><img *ngIf="!item.pairLogos"
+                  [src]="item.logo" alt="">{{ item.symbol }}
+              </div>
               <div class="right">
-                <button class="btn-primary" (click)="showStakingStake(item, item.balance, true)">Stake</button>
+                <button class="btn-primary"
+                  (click)="showStakingStake(item, item.balance, true)">{{ 'Stake' | translate: lang:langPageName }}</button>
                 <button class="btn-primary unstake-btn"
                   (click)="showStakingStake(item, item.staked, false)">{{ 'Unstake' | translate: lang:langPageName }}</button>
               </div>
@@ -153,7 +158,10 @@
                 <div class="name">{{ 'TotalStaking' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
-                <div class="value">--</div>
+                <div class="value">
+                  <app-long-balance [balance]="item.apy || '--'">
+                  </app-long-balance>
+                </div>
                 <div class="name">APY%</div>
               </div>
             </div>
