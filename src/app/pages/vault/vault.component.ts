@@ -398,7 +398,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (
       priceRatio.isNaN() ||
       priceRatio.comparedTo(0) === 0 ||
-      !priceRatio.isFinite()
+      !priceRatio.isFinite() ||
+      result.isNaN()
     ) {
       return '--';
     } else {

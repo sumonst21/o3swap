@@ -100,7 +100,7 @@ export class CommonService {
   }
 
   add0xHash(hash: string): string {
-    if (hash.startsWith('0x')) {
+    if ((hash || '').startsWith('0x')) {
       return hash;
     } else {
       return `0x${hash}`;
