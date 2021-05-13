@@ -133,10 +133,10 @@
                   [src]="item.logo" alt="">{{ item.symbol }}
               </div>
               <div class="right">
-                <button class="btn-primary" (click)="showStakingStake(item, item.balance, true)" nz-tooltip
-                  [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">{{ 'Stake' | translate: lang:langPageName }}</button>
-                <button class="btn-primary unstake-btn" (click)="showStakingStake(item, item.staked, false)" nz-tooltip
-                  [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">{{ 'Unstake' | translate: lang:langPageName }}</button>
+                <button class="btn-primary"
+                  (click)="showStakingStake(item, item.balance, true)">{{ 'Stake' | translate: lang:langPageName }}</button>
+                <button class="btn-primary unstake-btn"
+                  (click)="showStakingStake(item, item.staked, false)">{{ 'Unstake' | translate: lang:langPageName }}</button>
               </div>
             </div>
             <div class="detail-item">
@@ -171,8 +171,8 @@
             </div>
             <p class="line"></p>
             <p class="claimable-box">{{ 'Claimable' | translate: lang:langPageName }} O3: &nbsp;<span
-                class="value">{{ item.profit }}</span><span class="claim-btn" (click)="claimProfit(item)" nz-tooltip
-                [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">{{ 'Claim' | translate: lang:langPageName }}</span>
+                class="value">{{ item.profit }}</span><span class="claim-btn"
+                (click)="claimProfit(item)">{{ 'Claim' | translate: lang:langPageName }}</span>
             </p>
           </div>
         </div>
@@ -194,8 +194,8 @@
                   <span class="value">
                     <app-long-balance [balance]="item.profit  || '--'">
                     </app-long-balance>
-                  </span><span class="claim-btn" (click)="claimProfit(item)" nz-tooltip
-                    [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">{{ 'Claim' | translate: lang:langPageName }}</span>
+                  </span><span class="claim-btn"
+                    (click)="claimProfit(item)">{{ 'Claim' | translate: lang:langPageName }}</span>
                 </p>
               </div>
 
@@ -224,10 +224,10 @@
               </div>
             </div>
             <div class="stake">
-              <span (click)="showStakingStake(item, item.balance, true)" nz-tooltip
-                [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">{{ 'Stake' | translate: lang:langPageName }}</span>
-              <span (click)="showStakingStake(item, item.staked, false)" nz-tooltip
-                [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">{{ 'Unstake' | translate: lang:langPageName }}</span>
+              <span
+                (click)="showStakingStake(item, item.balance, true)">{{ 'Stake' | translate: lang:langPageName }}</span>
+              <span
+                (click)="showStakingStake(item, item.staked, false)">{{ 'Unstake' | translate: lang:langPageName }}</span>
             </div>
           </div>
         </div>

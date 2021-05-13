@@ -85,7 +85,6 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (this.commonService.isMobileWidth()) {
       this.isMobile = true;
     }
-    return;
     this.vaultUnScribe = this.vault$.subscribe((state) => {
       if (this.vaultdMetaMaskWalletApiService.vaultWallet) {
         this.initO3Data();
@@ -113,7 +112,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async initO3Data(): Promise<void> {
-    return;
     // head data
     Promise.all([
       this.vaultdMetaMaskWalletApiService.getLockedOf() || '--',
@@ -130,19 +128,19 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
     });
     // unlock zoon
-    this.stakeUnlockTokenList.forEach(async (item: any) => {
-      Promise.all([
-        this.vaultdMetaMaskWalletApiService.getStaked(item) || '--',
-        this.swapService.getEthBalancByHash(
-          item,
-          this.vaultdMetaMaskWalletApiService.vaultWallet.address
-        ) || '--',
-        this.vaultdMetaMaskWalletApiService.claimableUnlocked(item) || '--',
-        this.vaultdMetaMaskWalletApiService.getUnlockSpeed(item) || '--',
-      ]).then((res) => {
-        [item.staked, item.remaining, item.claimable, item.speed] = res;
-      });
-    });
+    // this.stakeUnlockTokenList.forEach(async (item: any) => {
+    //   Promise.all([
+    //     this.vaultdMetaMaskWalletApiService.getStaked(item) || '--',
+    //     this.swapService.getEthBalancByHash(
+    //       item,
+    //       this.vaultdMetaMaskWalletApiService.vaultWallet.address
+    //     ) || '--',
+    //     this.vaultdMetaMaskWalletApiService.claimableUnlocked(item) || '--',
+    //     this.vaultdMetaMaskWalletApiService.getUnlockSpeed(item) || '--',
+    //   ]).then((res) => {
+    //     [item.staked, item.remaining, item.claimable, item.speed] = res;
+    //   });
+    // });
     // o3 Staking
     this.o3StakingTokenList.forEach(async (item: any) => {
       Promise.all([
@@ -277,7 +275,6 @@ export class VaultComponent implements OnInit, OnDestroy {
     balance: string,
     isStake: boolean = true
   ): Promise<void> {
-    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -338,7 +335,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimUnlockO3(token: any): Promise<void> {
-    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -362,7 +358,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimProfit(token: any): Promise<void> {
-    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -442,13 +437,13 @@ export class VaultComponent implements OnInit, OnDestroy {
       ) {
         return this.commonService.getAssetRateByHash(
           this.rates,
-          USD_TOKENS[0].assetID,
+          '0xdac17f958d2ee523a2206206994597c13d831ec7',
           USD_TOKENS[0].chain
         );
       }
       return this.commonService.getAssetRateByHash(
         this.rates,
-        token.assetID,
+        '0xee9801669c6138e84bd50deb500827b776777d28',
         token.chain
       );
     }
@@ -489,7 +484,6 @@ export class VaultComponent implements OnInit, OnDestroy {
     return true;
   }
   showApproveModal(token: Token, spender: string): void {
-    return;
     const walletName = this.vaultdMetaMaskWalletApiService.vaultWallet
       .walletName;
     const address = this.vaultdMetaMaskWalletApiService.vaultWallet.address;

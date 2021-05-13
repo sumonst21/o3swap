@@ -1,5 +1,11 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ApiService, CommonService, EthApiService, SwapService } from '@core';
+import {
+  ApiService,
+  CommonService,
+  EthApiService,
+  SwapService,
+  VaultdMetaMaskWalletApiService,
+} from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { SwapStateType } from 'src/app/_lib/swap';
@@ -14,6 +20,7 @@ import {
   EthWalletName,
   SOURCE_TOKEN_SYMBOL,
   MESSAGE,
+  O3_TOKEN,
 } from '@lib';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -49,6 +56,13 @@ export class LiquidityComponent implements OnInit, OnDestroy {
   public liquidityType: LiquidityType = 'add';
 
   public LPToken: Token = LP_TOKENS.find((item) => item.chain === 'ETH');
+  public LPStaked = '--';
+  public LPEarned = '--';
+  public LPTokenMoney = '--';
+  public LPStakedMoney = '--';
+  public LPEarnedMoney = '--';
+  private isCanClick = true;
+
   public addLiquidityInputAmount = [];
   public removeLiquidityInputAmount = [];
   public receiveAmount: string[] = [];
@@ -96,7 +110,8 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     private modal: NzModalService,
     private drawerService: NzDrawerService,
     private ethApiService: EthApiService,
-    private swapService: SwapService
+    private swapService: SwapService,
+    private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -131,7 +146,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.bscWalletName = state.bscWalletName;
       this.hecoWalletName = state.hecoWalletName;
       this.handleAccountBalance(state);
-      this.getLPBalance();
+      this.initLPData();
       this.changeDetectorRef.detectChanges();
     });
   }
@@ -250,8 +265,9 @@ export class LiquidityComponent implements OnInit, OnDestroy {
 
   async maxAddLiquidityInput(index: number): Promise<void> {
     if (!new BigNumber(this.addLiquidityTokens[index].amount).isNaN()) {
-      this.addLiquidityInputAmount[index] =
-        this.addLiquidityTokens[index].amount;
+      this.addLiquidityInputAmount[index] = this.addLiquidityTokens[
+        index
+      ].amount;
       this.receiveAmount[index] = await this.apiService.getPoolOutGivenSingleIn(
         this.addLiquidityTokens[index],
         this.addLiquidityInputAmount[index]
@@ -270,11 +286,12 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       !new BigNumber(this.LPToken.amount).isZero()
     ) {
       this.payAmount[index] = this.LPToken.amount;
-      this.removeLiquidityInputAmount[index] =
-        await this.apiService.getSingleOutGivenPoolIn(
-          this.addLiquidityTokens[index],
-          this.payAmount[index]
-        );
+      this.removeLiquidityInputAmount[
+        index
+      ] = await this.apiService.getSingleOutGivenPoolIn(
+        this.addLiquidityTokens[index],
+        this.payAmount[index]
+      );
       this.removePolyFee[index] = await this.apiService.getFromEthPolyFee(
         this.LPToken,
         this.addLiquidityTokens[index]
@@ -422,6 +439,99 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       });
   }
 
+  // async showStakingStake(
+  //   token: Token,
+  //   balance: string,
+  //   isStake: boolean = true
+  // ): Promise<void> {
+  //   if (this.checkWalletConnect(token) === false) {
+  //     return;
+  //   }
+  //   if (this.ethApiService.checkNetwork(token) === false) {
+  //     return;
+  //   }
+  //   const contractHash = O3STAKING_CONTRACT[token.assetID];
+  //   let modal;
+  //   if (!this.commonService.isMobileWidth()) {
+  //     modal = this.modal.create({
+  //       nzContent: VaultStakeModalComponent,
+  //       nzFooter: null,
+  //       nzTitle: null,
+  //       nzClosable: false,
+  //       nzClassName: 'custom-modal custom-stake-modal',
+  //       nzComponentParams: {
+  //         token,
+  //         balance,
+  //         isStake,
+  //       },
+  //     });
+  //   } else {
+  //     modal = this.drawerService.create({
+  //       nzContent: VaultStakeDrawerComponent,
+  //       nzTitle: null,
+  //       nzClosable: false,
+  //       nzPlacement: 'bottom',
+  //       nzWrapClassName: 'custom-drawer',
+  //       nzContentParams: {
+  //         token,
+  //         balance,
+  //         isStake,
+  //       },
+  //     });
+  //   }
+  //   modal.afterClose.subscribe(async (res) => {
+  //     if (res) {
+  //       if (!this.checkBalance(balance, res)) {
+  //         return;
+  //       }
+  //       const showApprove = await this.checkShowApprove(
+  //         token,
+  //         this.ethAccountAddress,
+  //         res,
+  //         contractHash
+  //       );
+  //       if (showApprove === true) {
+  //         this.showApproveModal(token, contractHash);
+  //         return;
+  //       }
+  //       if (isStake) {
+  //         this.vaultdMetaMaskWalletApiService.o3StakingStake(
+  //           token,
+  //           res,
+  //           this.ethAccountAddress
+  //         );
+  //       }
+  //     }
+  //   });
+  // }
+
+  // async claimProfit(token: any): Promise<void> {
+  //   if (this.checkWalletConnect(token) === false) {
+  //     return;
+  //   }
+  //   if (this.ethApiService.checkNetwork(token) === false) {
+  //     return;
+  //   }
+  //   if (this.isCanClick) {
+  //     this.isCanClick = false;
+  //     setTimeout(() => {
+  //       this.isCanClick = true;
+  //     }, 4000);
+  //   } else {
+  //     return;
+  //   }
+  //   const claimable = new BigNumber(this.LPEarned);
+  //   if (claimable.isNaN() || claimable.isZero()) {
+  //     return;
+  //   }
+  //   const contractHash = O3STAKING_CONTRACT[token.assetID];
+  //   this.vaultdMetaMaskWalletApiService.o3StakingClaimProfit(
+  //     token,
+  //     this.LPEarned,
+  //     this.ethAccountAddress
+  //   );
+  // }
+
   //#region
   checkInputAmountDecimal(amount: string, decimals: number): boolean {
     const decimalPart = amount && amount.split('.')[1];
@@ -431,7 +541,24 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     }
     return true;
   }
-
+  async checkShowApprove(
+    token: Token,
+    address: string,
+    inputAmount: string,
+    spender: string
+  ): Promise<boolean> {
+    const balance = await this.ethApiService.getAllowance(
+      token,
+      address,
+      null,
+      spender
+    );
+    if (new BigNumber(balance).comparedTo(new BigNumber(inputAmount)) >= 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
   getFromTokenAddress(token: Token): string {
     switch (token.chain) {
       case 'ETH':
@@ -442,7 +569,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         return this.hecoAccountAddress;
     }
   }
-  showApproveModal(token: Token): void {
+  showApproveModal(token: Token, spender?: string): void {
     let walletName: string;
     switch (token.chain) {
       case 'ETH':
@@ -467,6 +594,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
           fromToken: token,
           fromAddress: this.getFromTokenAddress(token),
           walletName,
+          spender,
         },
       });
     } else {
@@ -511,7 +639,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     }
     return true;
   }
-  private getLPBalance(): void {
+  private initLPData(): void {
     if (!this.LPToken) {
       return;
     }
@@ -519,12 +647,68 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.LPToken.amount = '--';
       return;
     }
-    this.swapService.getEthBalancByHash(this.LPToken).then((res) => {
-      if (this.LPToken.amount !== res) {
-        this.getPusdtBalance();
-      }
-      this.LPToken.amount = res || '0';
+    Promise.all([
+      this.swapService.getEthBalancByHash(
+        this.LPToken,
+        this.ethAccountAddress
+      ) || '0',
+      this.vaultdMetaMaskWalletApiService.getO3StakingStaked(
+        this.LPToken,
+        this.ethAccountAddress
+      ) || '--',
+      this.vaultdMetaMaskWalletApiService.getO3StakingTotalProfit(
+        this.LPToken,
+        this.ethAccountAddress
+      ) || '--',
+    ]).then((res) => {
+      [this.LPToken.amount, this.LPStaked, this.LPEarned] = res;
+      const O3Price = this.getTokenPrice(O3_TOKEN);
+      const LPPrice = this.getTokenPrice(this.LPToken);
+      const lpTokenMoney = new BigNumber(this.LPToken.amount).times(
+        new BigNumber(LPPrice)
+      );
+      const lpStakedMoney = new BigNumber(LPPrice).times(
+        new BigNumber(this.LPStaked)
+      );
+      const lpEnearnedMoney = new BigNumber(O3Price).times(
+        new BigNumber(this.LPEarned)
+      );
+      this.LPTokenMoney = lpTokenMoney.isNaN() ? '--' : lpTokenMoney.toFixed();
+      this.LPStakedMoney = lpStakedMoney.isNaN()
+        ? '--'
+        : lpStakedMoney.toFixed();
+      this.LPEarnedMoney = lpEnearnedMoney.isNaN()
+        ? '--'
+        : lpEnearnedMoney.toFixed();
     });
+  }
+  private getTokenPrice(token: Token): string {
+    if (
+      LP_TOKENS.filter((item) => {
+        return this.commonService.judgeAssetHash(token.assetID, item.assetID);
+      }).length > 0
+    ) {
+      return this.commonService.getAssetRateByHash(
+        this.rates,
+        '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        USD_TOKENS[0].chain
+      );
+    }
+    return this.commonService.getAssetRateByHash(
+      this.rates,
+      '0xee9801669c6138e84bd50deb500827b776777d28',
+      token.chain
+    );
+  }
+
+  private checkBalance(balance: string, input: string): boolean {
+    const balanceNumber = new BigNumber(balance);
+    const inputNumber = new BigNumber(input);
+    if (balanceNumber.comparedTo(input) < 0 || balanceNumber.isNaN()) {
+      this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
+      return false;
+    }
+    return true;
   }
   private handleAccountBalance(state): void {
     this.tokenBalance.ETH = state.ethBalances;
@@ -532,8 +716,9 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     this.tokenBalance.HECO = state.hecoBalances;
     this.addLiquidityTokens.forEach((item, index) => {
       if (this.tokenBalance[item.chain][item.assetID]) {
-        this.addLiquidityTokens[index].amount =
-          this.tokenBalance[item.chain][item.assetID].amount;
+        this.addLiquidityTokens[index].amount = this.tokenBalance[item.chain][
+          item.assetID
+        ].amount;
       } else {
         if (
           (item.chain === 'ETH' && this.ethAccountAddress) ||

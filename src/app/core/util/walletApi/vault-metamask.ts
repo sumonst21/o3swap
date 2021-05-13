@@ -141,7 +141,11 @@ export class VaultdMetaMaskWalletApiService {
   //#endregion
 
   //#region vault staking
-  async o3StakingStake(token: Token, inputAmount: string): Promise<any> {
+  async o3StakingStake(
+    token: Token,
+    inputAmount: string,
+    address?: string
+  ): Promise<any> {
     const json = await this.getO3StakingJson();
     const o3StakingContractHash = O3STAKING_CONTRACT[token.assetID];
     const o3StakingContract = new this.web3.eth.Contract(
@@ -158,7 +162,7 @@ export class VaultdMetaMaskWalletApiService {
         method: 'eth_sendTransaction',
         params: [
           this.getSendTransactionParams(
-            this.vaultWallet.address,
+            address || this.vaultWallet.address,
             o3StakingContractHash,
             data
           ),
@@ -207,7 +211,11 @@ export class VaultdMetaMaskWalletApiService {
         this.handleDapiError(error);
       });
   }
-  async o3StakingClaimProfit(token: Token, profit: string): Promise<any> {
+  async o3StakingClaimProfit(
+    token: Token,
+    profit: string,
+    address?: string
+  ): Promise<any> {
     const json = await this.getO3StakingJson();
     const o3StakingContractHash = O3STAKING_CONTRACT[token.assetID];
     const o3StakingContract = new this.web3.eth.Contract(
@@ -220,7 +228,7 @@ export class VaultdMetaMaskWalletApiService {
         method: 'eth_sendTransaction',
         params: [
           this.getSendTransactionParams(
-            this.vaultWallet.address,
+            address || this.vaultWallet.address,
             o3StakingContractHash,
             data
           ),
@@ -282,8 +290,11 @@ export class VaultdMetaMaskWalletApiService {
       }
     });
   }
-  async getO3StakingTotalProfit(token: Token): Promise<string> {
-    if (!this.vaultWallet) {
+  async getO3StakingTotalProfit(
+    token: Token,
+    address?: string
+  ): Promise<string> {
+    if (!this.vaultWallet && !address) {
       return;
     }
     let params;
@@ -291,11 +302,11 @@ export class VaultdMetaMaskWalletApiService {
     const json = await this.getO3StakingJson();
     const o3Contract = new this.web3.eth.Contract(json, contractHash);
     const data = await o3Contract.methods
-      .getTotalProfit(this.vaultWallet.address)
+      .getTotalProfit(address || this.vaultWallet.address)
       .encodeABI();
     params = [
       this.getSendTransactionParams(
-        this.vaultWallet.address,
+        address || this.vaultWallet.address,
         contractHash,
         data
       ),
@@ -307,8 +318,8 @@ export class VaultdMetaMaskWalletApiService {
       }
     });
   }
-  async getO3StakingStaked(token: Token): Promise<string> {
-    if (!this.vaultWallet) {
+  async getO3StakingStaked(token: Token, address?: string): Promise<string> {
+    if (!this.vaultWallet && !address) {
       return;
     }
     let params;
@@ -316,11 +327,11 @@ export class VaultdMetaMaskWalletApiService {
     const json = await this.getO3StakingJson();
     const o3Contract = new this.web3.eth.Contract(json, contractHash);
     const data = await o3Contract.methods
-      .getStakingAmount(this.vaultWallet.address)
+      .getStakingAmount(address || this.vaultWallet.address)
       .encodeABI();
     params = [
       this.getSendTransactionParams(
-        this.vaultWallet.address,
+        address || this.vaultWallet.address,
         contractHash,
         data
       ),

@@ -9,7 +9,8 @@
       <div class="content">
         <div class="value">
           <app-long-balance class="amount" [balance]="LPToken?.amount" defaultValue="--"></app-long-balance>
-          <span class="rate">--</span>
+          <span class="rate">≈＄ <app-long-balance [balance]="LPTokenMoney"></app-long-balance>
+          </span>
         </div>
       </div>
     </div>
@@ -19,13 +20,15 @@
       </div>
       <div class="content">
         <div class="value">
-          <span class="amount">--</span>
-          <span class="rate">≈＄0.0</span>
+          <span class="amount">
+            <app-long-balance [balance]="LPStaked"></app-long-balance>
+          </span>
+          <span class="rate">≈＄ <app-long-balance [balance]="LPStakedMoney"></app-long-balance></span>
         </div>
-        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'"
-          nzTooltipPlacement="top">
+        <!-- <div class="btn-primary receive-btn" nzTooltipPlacement="top"
+          (click)="showStakingStake(LPToken, LPToken.amount, true)">
           {{ 'STAKE' | translate: lang:langPageName }}
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="item">
@@ -34,13 +37,14 @@
       </div>
       <div class="content">
         <div class="value">
-          <span class="amount">--</span>
-          <span class="rate">≈＄0.0</span>
+          <span class="amount">
+            <app-long-balance [balance]="LPEarned"></app-long-balance>
+          </span>
+          <span class="rate">≈＄ <app-long-balance [balance]="LPEarnedMoney"></app-long-balance></span>
         </div>
-        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'"
-          nzTooltipPlacement="top">
+        <!-- <div class="btn-primary receive-btn" nzTooltipPlacement="top" (click)="claimProfit(LPToken)">
           {{ 'CLAIM' | translate: lang:langPageName }}
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -295,7 +299,7 @@
       <div class="content">
         <div class="value">
           <app-long-balance class="amount" [balance]="LPToken?.amount" defaultValue="--"></app-long-balance>
-          <span class="rate">--</span>
+          <span class="rate">≈＄ <app-long-balance [balance]="LPTokenMoney"></app-long-balance></span>
         </div>
       </div>
     </div>
@@ -305,11 +309,12 @@
       </div>
       <div class="content">
         <div class="value">
-          <span class="amount">--</span>
-          <span class="rate">≈＄0.0</span>
+          <span class="amount">
+            <app-long-balance [balance]="LPStaked"></app-long-balance>
+          </span>
+          <span class="rate">≈＄ <app-long-balance [balance]="LPStakedMoney"></app-long-balance></span>
         </div>
-        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'"
-          nzTooltipPlacement="top">
+        <div class="btn-primary receive-btn" nzTooltipPlacement="top">
           {{ 'STAKE' | translate: lang:langPageName }}
         </div>
       </div>
@@ -320,11 +325,12 @@
       </div>
       <div class="content">
         <div class="value">
-          <span class="amount">--</span>
-          <span class="rate">≈＄0.0</span>
+          <span class="amount">
+            <app-long-balance [balance]="LPEarned"></app-long-balance>
+          </span>
+          <span class="rate">≈＄ <app-long-balance [balance]="LPEarnedMoney"></app-long-balance></span>
         </div>
-        <div class="btn-primary receive-btn" nz-tooltip [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'"
-          nzTooltipPlacement="top">
+        <div class="btn-primary receive-btn" nzTooltipPlacement="top">
           {{ 'CLAIM' | translate: lang:langPageName }}
         </div>
       </div>
