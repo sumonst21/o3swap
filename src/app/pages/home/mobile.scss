@@ -295,17 +295,23 @@
   section.news {
     .wrapper {
       padding: 0 5%;
+      padding-top: 34px;
     }
     .sub-title {
-      position: relative;
+      position: absolute;
+      left: 5%;
       writing-mode: inherit;
     }
     .page-container {
+      position: absolute;
+      top: 5px;
+      right: 0;
       padding-left: 0;
-      margin-top: 20px;
+      margin-top: 0;
+      padding-right: 5%;
     }
     ul#news-group {
-      margin-top: 20px;
+      margin-top: 10px;
       padding-left: 0;
       li.new-item {
         &:not(:last-child) {
@@ -323,8 +329,8 @@
         }
         .new-title {
           width: 90vw;
-          font-size: 18px;
-          height: 18px;
+          font-size: 15px;
+          height: 15px;
           margin-top: 15px;
         }
         &.active {
@@ -336,7 +342,7 @@
           }
           .new-title {
             width: 90vw;
-            font-size: 18px;
+            font-size: 15px;
           }
         }
       }
