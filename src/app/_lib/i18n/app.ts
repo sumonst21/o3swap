@@ -32,9 +32,8 @@ const app = {
     zh: 'Doc',
   },
   riskTip: {
-    en:
-      'O3 Swap is currently in the testing phase. The testing amount is limited to below $20 in USD. Back up your private keys securely and trade at your own risk.',
-    zh: 'O3 Swap目前处于测试阶段，金额限制低于$20美元，请自行承担风险。',
+    en: 'O3 Swap is in beta. Please trade at your own risk level.',
+    zh: 'O3 Swap 目前开放测试版，请按您的风险水平进行交易。',
   },
   ConnectWallet: {
     en: 'Connect Wallet',
@@ -65,14 +64,12 @@ const app = {
     zh: '授权',
   },
   ApproveDesc: {
-    en:
-      'Approval is required for the transaction with a first-time contract call and a new address.',
+    en: 'Approval is required for the transaction with a first-time contract call and a new address.',
     zh: '首次合约调用和新地址交易需要授权',
   },
   riskDesc: {
-    en:
-      'O3 Swap is currently in the testing phase. We are limiting the transaction amount to below $20. Please back up your private keys securely and trade at your own risk!',
-    zh: 'O3 Swap目前处于测试阶段，金额限制低于$20美元，请自行承担风险。',
+    en: 'O3 Swap is in beta. Please trade at your own risk level.',
+    zh: 'O3 Swap 目前开放测试版，请按您的风险水平进行交易。',
   },
   IUnderstand: {
     en: 'I understand',
