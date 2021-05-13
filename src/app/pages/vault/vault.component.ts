@@ -82,6 +82,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (this.commonService.isMobileWidth()) {
+      this.isMobile = true;
+    }
     return;
     this.vaultUnScribe = this.vault$.subscribe((state) => {
       if (this.vaultdMetaMaskWalletApiService.vaultWallet) {
@@ -96,9 +99,6 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.initO3Data();
       }
     });
-    if (this.commonService.isMobileWidth()) {
-      this.isMobile = true;
-    }
   }
   ngOnDestroy(): void {
     if (this.vaultUnScribe) {
