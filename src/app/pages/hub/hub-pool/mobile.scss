@@ -57,9 +57,13 @@
             margin-bottom: 10px;
           }
           .btn {
+            display: block;
             width: 78px;
             height: 34px;
             border-radius: 6px;
+          }
+          .legacy {
+            display: none;
           }
         }
       }
