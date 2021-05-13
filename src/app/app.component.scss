@@ -38,7 +38,7 @@
     width: auto;
     display: inline-block;
     white-space: nowrap;
-    animation: 15s wordsLoop linear infinite normal;
+    // animation: 15s wordsLoop linear infinite normal;
   }
   img.risk-icon {
     width: 16px;
@@ -56,8 +56,8 @@
 
 @keyframes wordsLoop {
   0% {
-    transform: translateX(100%);
-    -webkit-transform: translateX(100%);
+    transform: translateX(360px);
+    -webkit-transform: translateX(360px);
   }
   100% {
     transform: translateX(-100%);
@@ -67,8 +67,8 @@
 
 @-webkit-keyframes wordsLoop {
   0% {
-    transform: translateX(100%);
-    -webkit-transform: translateX(100%);
+    transform: translateX(360px);
+    -webkit-transform: translateX(360px);
   }
   100% {
     transform: translateX(-100%);
@@ -251,7 +251,7 @@ header {
       right: 3%;
     }
     .risk-tip-text {
-      animation: 15s wordsLoop1 linear infinite normal;
+      animation: 10s wordsLoop1 linear infinite normal;
     }
   }
   @keyframes wordsLoop1 {
