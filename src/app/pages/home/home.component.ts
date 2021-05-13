@@ -75,13 +75,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       id: 4,
     },
     {
-      url: 'https://www.youtube.com/watch?v=Hc1xFfvqSbM',
-      title: `ONE WINNING DECISION THAT CHANGES BOTH EXPERT'S ALTCOIN PORTFOLIO!`,
+      url: 'https://www.youtube.com/watch?v=HjjT2w1AISw',
+      title: `Finding the best exchange? O3 SWAP IDO is coming soon!`,
       id: 5,
     },
     {
-      url: 'https://www.youtube.com/watch?v=Oux8MInoDrc',
-      title: '【區塊先生】Curve.fi - DeFi 血脈 (293集)',
+      url: 'https://www.youtube.com/watch?v=xDvGaOgGKT8',
+      title: '【區塊先生】O3Swap - 跨鏈聚合交易協議 (298集)',
       id: 6,
     },
     {
