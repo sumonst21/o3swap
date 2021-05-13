@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { LiquiditySource } from './liquidity-source';
 import { ApiService, CommonService } from '@core';
@@ -96,10 +96,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   newsLen = this.sourceNews.length + 2;
   private newsInterval: Unsubscribable;
   private newsTimtOut;
-  @HostListener('window:blur', ['$event'])
-  onWindowBlur(event: any): void {
-    this.clearInterval();
-  }
   constructor(
     private store: Store<State>,
     private nzMessage: NzMessageService,
@@ -149,7 +145,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.calcNextNew();
     });
   }
-  clearInterval(): void {
+  onIframeClick(): void {
     clearTimeout(this.newsTimtOut);
     if (this.newsInterval) {
       this.newsInterval.unsubscribe();

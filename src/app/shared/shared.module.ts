@@ -40,6 +40,7 @@ import { TransNumberPipe } from './pipes/trans-number.pipe';
 import { TranslatePipe } from './pipes/translate.pipe';
 
 import { ErrSrcDirective } from './directive/err-src.directive';
+import { IframeTrackerDirective } from './directive/iframe-tracker.directive';
 
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzMessageModule } from 'ng-zorro-antd/message';
@@ -85,7 +86,7 @@ const COMPONENTS = [
   AccountComponent,
 ];
 const PIPES = [ShortAddressPipe, TransNumberPipe, TranslatePipe];
-const DIRECTIVES = [ErrSrcDirective];
+const DIRECTIVES = [ErrSrcDirective, IframeTrackerDirective];
 const THIRD_MODULES = [
   NzNotificationModule,
   NzMessageModule,
