@@ -134,7 +134,7 @@ export class HubPoolComponent implements OnInit, OnDestroy {
     ) {
       return '--';
     } else {
-      return result.times(priceRatio).dp(4).toFixed();
+      return result.times(priceRatio).toFixed();
     }
   }
 

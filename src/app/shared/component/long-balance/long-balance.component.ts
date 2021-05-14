@@ -45,10 +45,16 @@ export class LongBalanceComponent implements OnInit, OnChanges {
         this.displayBalance = '0.00000000...';
       }
     }
-    if (this.decimals !== -1) {
-      this.displayBalance = new BigNumber(this.displayBalance)
-        .dp(this.decimals)
-        .toFixed();
+    if (this.showTooltip) {
+      if (this.decimals !== -1) {
+        this.displayBalance = new BigNumber(this.displayBalance)
+          .dp(this.decimals)
+          .toFixed();
+      }
+    } else {
+      if (this.decimals !== -1) {
+        this.balance = new BigNumber(this.balance).dp(this.decimals).toFixed();
+      }
     }
   }
 }
