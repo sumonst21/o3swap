@@ -72,7 +72,7 @@
     <div class="fee-item" *ngIf="showPolyFee">
       <p class="label">{{ 'PolyFee' | translate: lang:langPageName }}</p>
       <div class="value">
-        <app-long-balance [balance]="polyFee"></app-long-balance> {{ polyFeeSymbol }}
+        <app-long-balance [balance]="polyFee"></app-long-balance>&nbsp;{{ polyFeeSymbol }}
       </div>
     </div>
     <div class="fee-item" *ngIf="showO3SwapFee">
@@ -169,7 +169,7 @@
       <div class="fee-item" *ngIf="showPolyFee">
         <p class="label">{{ 'PolyFee' | translate: lang:langPageName }}</p>
         <div class="value">
-          <app-long-balance [balance]="polyFee"></app-long-balance>{{ polyFeeSymbol }}
+          <app-long-balance [balance]="polyFee"></app-long-balance>&nbsp;{{ polyFeeSymbol }}
         </div>
       </div>
       <div class="fee-item" *ngIf="showO3SwapFee">
