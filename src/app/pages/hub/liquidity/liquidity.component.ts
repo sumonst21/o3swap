@@ -603,6 +603,9 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       ) || '--',
     ]).then((res) => {
       [this.LPToken.amount, this.LPStaked, this.LPEarned] = res;
+      if (!this.LPToken.amount) {
+        this.LPToken.amount = '0';
+      }
       const O3Price = this.getTokenPrice(O3_TOKEN);
       const LPPrice = this.getTokenPrice(this.LPToken);
       const lpTokenMoney = new BigNumber(this.LPToken.amount).times(
