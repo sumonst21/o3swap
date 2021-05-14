@@ -16,6 +16,7 @@ export class LongBalanceComponent implements OnInit, OnChanges {
   @Input() defaultValue = '0';
   @Input() length = 12;
   @Input() balance: string;
+  @Input() decimals = -1;
 
   displayBalance: string;
   showTooltip = false;
@@ -43,6 +44,11 @@ export class LongBalanceComponent implements OnInit, OnChanges {
       if (new BigNumber(this.displayBalance).dp(8).toFixed() === '0') {
         this.displayBalance = '0.00000000...';
       }
+    }
+    if (this.decimals !== -1) {
+      this.displayBalance = new BigNumber(this.displayBalance)
+        .dp(this.decimals)
+        .toFixed();
     }
   }
 }

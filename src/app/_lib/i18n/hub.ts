@@ -27,9 +27,9 @@ const hub = {
     en: 'VOL',
     zh: 'VOL',
   },
-  APR: {
-    en: 'APR',
-    zh: 'APR',
+  APY: {
+    en: 'APY',
+    zh: 'APY',
   },
   REWARDS: {
     en: 'REWARDS',

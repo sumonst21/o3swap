@@ -12,8 +12,11 @@
           <div class="name">{{ 'VOL' | translate: lang:langPageName }}</div>
         </div>
         <div class="item">
-          <div class="value">--</div>
-          <div class="name">{{ 'APR' | translate: lang:langPageName }}</div>
+          <div class="value">
+            <app-long-balance [balance]="LPAPY">
+            </app-long-balance>
+          </div>
+          <div class="name">{{ 'APY' | translate: lang:langPageName }}</div>
         </div>
         <div class="item">
           <div class="value">

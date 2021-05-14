@@ -4,17 +4,17 @@
       <div class="item-group item-total">
         <div class="group-title">{{ 'Total' | translate: lang:langPageName }}</div>
         <div class="group-content"><span>
-            <app-long-balance [balance]="o3Total || '--'">
+            <app-long-balance [balance]="o3Total || '--'" [decimals]="2">
             </app-long-balance>
           </span> O3</div>
         <div class="group-title">{{ 'Locked' | translate: lang:langPageName }} <app-long-balance
-            [balance]="o3Locked  || '--'">
+            [balance]="o3Locked  || '--'" [decimals]="2">
           </app-long-balance> O3</div>
       </div>
       <div class="item-group">
         <div class="group-title">{{ 'Available' | translate: lang:langPageName }}</div>
         <div class="group-content"><span>
-            <app-long-balance [balance]="o3Available || '--'">
+            <app-long-balance [balance]="o3Available || '--'" [decimals]="2">
             </app-long-balance>
           </span> O3</div>
         <!-- <div class="btn-primary receive-btn">Receive</div> -->
@@ -22,7 +22,7 @@
       <div class="item-group">
         <div class="group-title">{{ 'TotalProfit' | translate: lang:langPageName }}</div>
         <div class="group-content"><span>
-            <app-long-balance [balance]="totalProfit || '--'">
+            <app-long-balance [balance]="totalProfit || '--'" [decimals]="2">
             </app-long-balance>
           </span> O3</div>
       </div>
@@ -142,28 +142,28 @@
             <div class="detail-item">
               <div class="col">
                 <div class="value">
-                  <app-long-balance [balance]="item.staked  || '--'">
+                  <app-long-balance [balance]="item.staked  || '--'" [decimals]="2">
                   </app-long-balance>
                 </div>
                 <div class="name">{{ 'Staked' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
                 <div class="value">
-                  <app-long-balance [balance]="item.balance  || '--'">
+                  <app-long-balance [balance]="item.balance  || '--'" [decimals]="2">
                   </app-long-balance>
                 </div>
                 <div class="name">{{ 'Remaining' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
                 <div class="value">
-                  <app-long-balance [balance]="item.totalStaking  || '--'">
+                  <app-long-balance [balance]="item.totalStaking  || '--'" [decimals]="2">
                   </app-long-balance>
                 </div>
                 <div class="name">{{ 'TotalStaking' | translate: lang:langPageName }}</div>
               </div>
               <div class="col">
                 <div class="value">
-                  <app-long-balance [balance]="item.apy || '--'">
+                  <app-long-balance [balance]="item.apy || '--'" [decimals]="2">
                   </app-long-balance>
                 </div>
                 <div class="name">APY%</div>
@@ -203,21 +203,21 @@
             <div class="detail-container">
               <div class="detail-item">
                 <div class="value">
-                  <app-long-balance [balance]="item.staked  || '--'">
+                  <app-long-balance [balance]="item.staked  || '--'" [decimals]="2">
                   </app-long-balance>
                 </div>
                 <div class="name">{{ 'Staked' | translate: lang:langPageName }}</div>
               </div>
               <div class="detail-item">
                 <div class="value">
-                  <app-long-balance [balance]="item.totalStaking  || '--'">
+                  <app-long-balance [balance]="item.totalStaking  || '--'" [decimals]="2">
                   </app-long-balance>
                 </div>
                 <div class="name">{{ 'TotalStaking' | translate: lang:langPageName }}</div>
               </div>
               <div class="detail-item">
                 <div class="value">
-                  <app-long-balance [balance]="item.apy || '--'">
+                  <app-long-balance [balance]="item.apy || '--'" [decimals]="2">
                   </app-long-balance>
                 </div>
                 <div class="name">APY%</div>
