@@ -63,6 +63,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   stakeUnlockTokenList: any[] = UNLOCK_LP_TOKENS;
   o3StakingTokenList: any[] = TOKEN_STAKING_TOKENS;
   lpstakingTokenList: any[] = LP_STAKING_TOKENS;
+
+  private getDataInterval: Unsubscribable;
+
   constructor(
     private store: Store<State>,
     private modal: NzModalService,
@@ -92,7 +95,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.ratesUnScribe = this.rates$.subscribe((state) => {
       this.rates = state.rates;
     });
-    interval(15000).subscribe(() => {
+    this.getDataInterval = interval(15000).subscribe(() => {
       this.initO3Data();
     });
   }
@@ -105,6 +108,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     if (this.ratesUnScribe) {
       this.ratesUnScribe.unsubscribe();
+    }
+    if (this.getDataInterval) {
+      this.getDataInterval.unsubscribe();
     }
   }
 
@@ -151,12 +157,8 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultdMetaMaskWalletApiService.getO3StakingSharePerBlock(item) ||
           '0',
       ]).then((res) => {
-        [
-          item.balance,
-          item.totalStaking,
-          item.staked,
-          item.sharePerBlock,
-        ] = res;
+        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
+          res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -173,12 +175,8 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultdMetaMaskWalletApiService.getO3StakingSharePerBlock(item) ||
           '0',
       ]).then((res) => {
-        [
-          item.balance,
-          item.totalStaking,
-          item.staked,
-          item.sharePerBlock,
-        ] = res;
+        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
+          res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -485,8 +483,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     return true;
   }
   showApproveModal(token: Token, spender: string): void {
-    const walletName = this.vaultdMetaMaskWalletApiService.vaultWallet
-      .walletName;
+    const walletName =
+      this.vaultdMetaMaskWalletApiService.vaultWallet.walletName;
     const address = this.vaultdMetaMaskWalletApiService.vaultWallet.address;
     if (!this.commonService.isMobileWidth()) {
       this.modal.create({
