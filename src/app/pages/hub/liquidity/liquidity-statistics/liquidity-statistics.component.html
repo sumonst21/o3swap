@@ -1,24 +1,25 @@
-<div class="group-container">
+<div class="container">
   <div class="left">
-    <ul>
-      <li class="item-list">
-        <div>
-          USDT+BUSD+HUSD: <span class="value">&nbsp;&nbsp;<app-long-balance [balance]="pusdtBalance.ALL">
-            </app-long-balance></span>
-        </div>
-      </li>
-      <li class="item-list">
-        <div class="item-logo-box">
-          <img [src]="USDTToken.logo" alt="" class="token-logo">
+    <p class="total-balance">
+      USDT+BUSD+HUSD:
+      <span class="value">
+        <app-long-balance [balance]="pusdtBalance.ALL"></app-long-balance>
+      </span>
+    </p>
+    <ul class="usdt-balance">
+      <li class="balance-item">
+        <div class="item-logo">
+          <img class="logo" [src]="USDTToken.logo" alt="">
           <img class="token-type" src="/assets/images/bridge-liquidity/erc20.png" alt="">
         </div>
-        <div>
-          <div>
-            <div>USDT: <span class="value">
-                <app-long-balance [balance]="pusdtBalance.ETH.value"></app-long-balance>
-              </span>
-              ({{ pusdtBalance.ETH.percentage }}%)</div>
-          </div>
+        <div class="balance-right">
+          <p class="balance-desc">
+            USDT:
+            <span class="value">
+              <app-long-balance [balance]="pusdtBalance.ETH.value"></app-long-balance>
+            </span>
+            <span class="percentage">&nbsp;({{ pusdtBalance.ETH.percentage }}%)</span>
+          </p>
           <div class="progress-container">
             <nz-progress class="progress" [nzPercent]="pusdtBalance.ETH.percentage" [nzShowInfo]="false"
               nzStrokeWidth="6" nzStrokeColor="#46B069">
@@ -26,18 +27,19 @@
           </div>
         </div>
       </li>
-      <li class="item-list">
-        <div class="item-logo-box">
-          <img [src]="BUSDToken.logo" alt="" class="token-logo">
+      <li class="balance-item">
+        <div class="item-logo">
+          <img class="logo" [src]="BUSDToken.logo" alt="">
           <img class="token-type" src="/assets/images/bridge-liquidity/bep20.png" alt="">
         </div>
-        <div>
-          <div>
-            <div>BUSD: <span class="value">
-                <app-long-balance [balance]="pusdtBalance.BSC.value"></app-long-balance>
-              </span>
-              ({{ pusdtBalance.BSC.percentage }}%)</div>
-          </div>
+        <div class="balance-right">
+          <p class="balance-desc">
+            BUSD:
+            <span class="value">
+              <app-long-balance [balance]="pusdtBalance.BSC.value"></app-long-balance>
+            </span>
+            <span class="percentage">&nbsp;({{ pusdtBalance.BSC.percentage }}%)</span>
+          </p>
           <div class="progress-container">
             <nz-progress class="progress" [nzPercent]="pusdtBalance.BSC.percentage" [nzShowInfo]="false"
               nzStrokeWidth="6" nzStrokeColor="#46B069">
@@ -45,18 +47,19 @@
           </div>
         </div>
       </li>
-      <li class="item-list">
-        <div class="item-logo-box">
-          <img [src]="HUSDToken.logo" alt="" class="token-logo">
+      <li class="balance-item">
+        <div class="item-logo">
+          <img class="logo" [src]="HUSDToken.logo" alt="">
           <img class="token-type" src="/assets/images/bridge-liquidity/hrc20.png" alt="">
         </div>
-        <div>
-          <div>
-            <div>HUSD: <span class="value">
-                <app-long-balance [balance]="pusdtBalance.HECO.value"></app-long-balance>
-              </span>
-              ({{ pusdtBalance.HECO.percentage }}%)</div>
-          </div>
+        <div class="balance-right">
+          <p class="balance-desc">
+            HUSD:
+            <span class="value">
+              <app-long-balance [balance]="pusdtBalance.HECO.value"></app-long-balance>
+            </span>
+            <span class="percentage">&nbsp;({{ pusdtBalance.HECO.percentage }}%)</span>
+          </p>
           <div class="progress-container">
             <nz-progress class="progress" [nzPercent]="pusdtBalance.HECO.percentage" [nzShowInfo]="false"
               nzStrokeWidth="6" nzStrokeColor="#46B069">
@@ -65,15 +68,5 @@
         </div>
       </li>
     </ul>
-  </div>
-  <div class="right">
-    <!-- <div class="item-list">
-      <span class="name">{{ liquidityType == 'add' ? 'Receive' : 'PayAmount' }}</span>
-      <span class="value">{{ (liquidityType == 'add' ? receiveAmount : payAmount) | transNumber }}</span>
-    </div> -->
-    <!-- <div class="item-list">
-      <span class="name">Max slippage</span>
-      <span class="value">{{BRIDGE_SLIPVALUE}}%</span>
-    </div> -->
   </div>
 </div>

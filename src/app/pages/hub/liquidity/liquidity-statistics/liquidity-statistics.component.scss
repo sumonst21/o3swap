@@ -1,75 +1,50 @@
-.group-container {
-  margin: auto;
-  width: 1000px;
+.container {
+  display: flex;
+  padding: 40px 50px;
   background: #1e1e1e;
   border-radius: 20px;
-  display: flex;
-  margin-top: 20px;
-  display: flex;
-  .left,
-  .right {
-    padding: 30px 50px;
-    flex: 1;
-    &.left {
-      .item-logo-box {
-        position: relative;
-        .token-type {
-          width: 30px;
-          position: absolute;
-          left: 2px;
-          bottom: 0px;
-        }
-        .token-logo {
-          width: 34px;
-          height: 34px;
-          vertical-align: middle;
-          margin-right: 10px;
-        }
-      }
-      .item-list {
-        font-family: "fontMedium";
-        .token-name {
-          font-family: "fontDemiBold";
-        }
-        .value {
-          font-family: "fontRegular";
-        }
-        &:not(:first-child) {
-          margin-top: 30px;
-        }
-      }
-      .item-list,
-      .progress-container {
-        display: flex;
-        width: 100%;
-        height: 20px;
-        color: #8aa1a1;
-        .progress {
-          height: 6px;
-          width: 300px;
-        }
-      }
-    }
-    &.right .item-list {
+  .left {
+    color: #8aa1a1;
+    font-family: "fontDemiBold";
+    .value {
+      color: #fff;
       font-family: "fontRegular";
-      color: #8aa1a1;
-      justify-content: space-between;
-      height: 30px;
-      .value {
-        color: #46b069;
-      }
     }
-    .item-list {
-      display: flex;
-      align-items: center;
-      .value {
-        color: #ffffff;
-        justify-content: space-between;
-      }
+    .percentage {
+      font-family: "fontRegular";
     }
-    > div {
-      display: inline-block;
-      vertical-align: middle;
+    ul.usdt-balance {
+      margin-top: 20px;
+      li.balance-item {
+        display: flex;
+        align-items: center;
+        margin-top: 15px;
+        .item-logo {
+          position: relative;
+          .token-type {
+            width: 30px;
+            position: absolute;
+            left: 2px;
+            bottom: 0px;
+          }
+          img.logo {
+            width: 34px;
+            height: 34px;
+            vertical-align: middle;
+            margin-right: 10px;
+          }
+        }
+        .progress-container {
+          display: flex;
+          width: 100%;
+          height: 16px;
+          color: #8aa1a1;
+          .progress {
+            height: 6px;
+            width: 300px;
+          }
+        }
+      }
     }
   }
 }
