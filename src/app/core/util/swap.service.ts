@@ -145,7 +145,7 @@ export class SwapService {
     });
   }
   async getEthBalancByHash(token: Token, address?: string): Promise<string> {
-    if (!this.accountAddress[token.chain] && !address) {
+    if ((!this.accountAddress[token.chain] && !address) || address === '') {
       return;
     }
     address = address || this.accountAddress[token.chain];

@@ -42,7 +42,7 @@ export class VaultdMetaMaskWalletApiService {
   vaultTransaction: VaultTransaction;
 
   ethereum;
-  web3: Web3;
+  web3: Web3 = new Web3();
   o3Json;
   o3StakingJson;
 
@@ -86,7 +86,9 @@ export class VaultdMetaMaskWalletApiService {
           intervalReq.unsubscribe();
         }
         this.ethereum = (window as any).ethereum;
-        this.web3 = new Web3((window as any).ethereum);
+        this.web3 = (window as any).ethereum
+          ? new Web3((window as any).ethereum)
+          : new Web3();
         if (this.ethereum.isConnected()) {
           this.ethereum.request({ method: 'eth_accounts' }).then((result) => {
             if (result.length === 0) {
@@ -245,9 +247,6 @@ export class VaultdMetaMaskWalletApiService {
       });
   }
   async getO3StakingTotalStaing(token: Token): Promise<string> {
-    if (!this.vaultWallet) {
-      return;
-    }
     let params;
     const contractHash = O3STAKING_CONTRACT[token.assetID];
     const json = await this.getO3StakingJson();
@@ -255,7 +254,7 @@ export class VaultdMetaMaskWalletApiService {
     const data = await o3Contract.methods.totalStaked().encodeABI();
     params = [
       this.getSendTransactionParams(
-        this.vaultWallet.address,
+        this.vaultWallet?.address || contractHash,
         contractHash,
         data
       ),
@@ -268,9 +267,6 @@ export class VaultdMetaMaskWalletApiService {
     });
   }
   async getO3StakingSharePerBlock(token: Token): Promise<string> {
-    if (!this.vaultWallet) {
-      return;
-    }
     let params;
     const contractHash = O3STAKING_CONTRACT[token.assetID];
     const json = await this.getO3StakingJson();
@@ -278,7 +274,7 @@ export class VaultdMetaMaskWalletApiService {
     const data = await o3Contract.methods.getSharePerBlock().encodeABI();
     params = [
       this.getSendTransactionParams(
-        this.vaultWallet.address,
+        this.vaultWallet?.address || contractHash,
         contractHash,
         data
       ),

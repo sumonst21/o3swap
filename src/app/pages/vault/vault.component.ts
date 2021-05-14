@@ -85,18 +85,15 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (this.commonService.isMobileWidth()) {
       this.isMobile = true;
     }
+    this.initO3Data();
     this.vaultUnScribe = this.vault$.subscribe((state) => {
-      if (this.vaultdMetaMaskWalletApiService.vaultWallet) {
-        this.initO3Data();
-      }
+      this.initO3Data();
     });
     this.ratesUnScribe = this.rates$.subscribe((state) => {
       this.rates = state.rates;
     });
     interval(15000).subscribe(() => {
-      if (this.vaultdMetaMaskWalletApiService.vaultWallet) {
-        this.initO3Data();
-      }
+      this.initO3Data();
     });
   }
   ngOnDestroy(): void {
@@ -133,7 +130,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     //     this.vaultdMetaMaskWalletApiService.getStaked(item) || '--',
     //     this.swapService.getEthBalancByHash(
     //       item,
-    //       this.vaultdMetaMaskWalletApiService.vaultWallet.address
+    //       this.vaultdMetaMaskWalletApiService.vaultWallet?.address || ''
     //     ) || '--',
     //     this.vaultdMetaMaskWalletApiService.claimableUnlocked(item) || '--',
     //     this.vaultdMetaMaskWalletApiService.getUnlockSpeed(item) || '--',
@@ -146,7 +143,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       Promise.all([
         this.swapService.getEthBalancByHash(
           item,
-          this.vaultdMetaMaskWalletApiService.vaultWallet.address
+          this.vaultdMetaMaskWalletApiService.vaultWallet?.address || ''
         ) || '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
           '--',
@@ -168,7 +165,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       Promise.all([
         this.swapService.getEthBalancByHash(
           item,
-          this.vaultdMetaMaskWalletApiService.vaultWallet.address
+          this.vaultdMetaMaskWalletApiService.vaultWallet?.address || ''
         ) || '--',
         this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(item) ||
           '--',
@@ -203,6 +200,9 @@ export class VaultComponent implements OnInit, OnDestroy {
       ) {
         this.totalProfit = tempTotalProfit.toFixed() || '--';
       }
+    }
+    if (!this.vaultdMetaMaskWalletApiService.vaultWallet) {
+      this.totalProfit = '--';
     }
   }
 
@@ -405,7 +405,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     ) {
       return '--';
     } else {
-      return result.times(priceRatio).toFixed();
+      return result.times(priceRatio).dp(4).toFixed();
     }
   }
   getLP(token: Token): void {
