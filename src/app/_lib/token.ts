@@ -136,7 +136,10 @@ export const TOKEN_STAKING_TOKENS: Token[] = [O3_TOKEN];
 
 export const LP_STAKING_TOKENS: Token[] = [
   {
-    assetID: '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
+    assetID:
+      NETWORK === 'MainNet'
+        ? '0x61415f9060b1a81bbda3b79baa11acd27cddd83d'
+        : '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
     symbol: 'LP',
     decimals: 18,
     amount: '0',
