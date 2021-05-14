@@ -235,7 +235,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (!this.checkWalletConnect()) {
       return;
     }
-    if (this.ethApiService.checkNetwork(token) === false) {
+    if (this.vaultdMetaMaskWalletApiService.checkNetwork(token) === false) {
       return;
     }
     if (!this.commonService.isMobileWidth()) {
@@ -297,7 +297,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (!this.checkWalletConnect()) {
       return;
     }
-    if (this.ethApiService.checkNetwork(token) === false) {
+    if (this.vaultdMetaMaskWalletApiService.checkNetwork(token) === false) {
       return;
     }
     const contractHash = O3STAKING_CONTRACT[token.assetID];
@@ -357,7 +357,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (!this.checkWalletConnect()) {
       return;
     }
-    if (this.ethApiService.checkNetwork(token) === false) {
+    if (this.vaultdMetaMaskWalletApiService.checkNetwork(token) === false) {
       return;
     }
     if (this.isCanClick) {
@@ -380,7 +380,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (!this.checkWalletConnect()) {
       return;
     }
-    if (this.ethApiService.checkNetwork(token) === false) {
+    if (this.vaultdMetaMaskWalletApiService.checkNetwork(token) === false) {
       return;
     }
     if (this.isCanClick) {
@@ -408,7 +408,9 @@ export class VaultComponent implements OnInit, OnDestroy {
       return;
     }
     if (
-      this.ethApiService.checkNetwork(this.stakeUnlockTokenList[0]) === false
+      this.vaultdMetaMaskWalletApiService.checkNetwork(
+        this.stakeUnlockTokenList[0]
+      ) === false
     ) {
       return;
     }

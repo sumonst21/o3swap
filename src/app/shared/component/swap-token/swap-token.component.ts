@@ -148,7 +148,10 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
       this.fromToken &&
       this.fromToken.assetID === O3_TOKEN.assetID
     ) {
-      if (token.assetID === O3_TOKEN.assetID) {
+      if (
+        token.assetID === O3_TOKEN.assetID ||
+        token.chain === this.fromToken.chain
+      ) {
         return false;
       } else {
         return true;
@@ -271,8 +274,9 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
   }
   handleTokenAmount(): void {
     if (this.tokenBalance.NEO[this.MYNNEO_TOKEN[0].assetID]) {
-      this.MYNNEO_TOKEN[0].amount =
-        this.tokenBalance.NEO[this.MYNNEO_TOKEN[0].assetID].amount;
+      this.MYNNEO_TOKEN[0].amount = this.tokenBalance.NEO[
+        this.MYNNEO_TOKEN[0].assetID
+      ].amount;
     }
     // chainType tokens
     Object.keys(this.MYCHAIN_TOKENS).forEach((key) => {

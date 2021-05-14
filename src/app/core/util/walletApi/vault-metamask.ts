@@ -10,6 +10,8 @@ import {
   UPDATE_VAULT_WALLET,
   O3STAKING_CONTRACT,
   O3TOKEN_CONTRACT,
+  METAMASK_CHAIN,
+  NETWORK,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -144,6 +146,20 @@ export class VaultdMetaMaskWalletApiService {
   }
   //#endregion
 
+  checkNetwork(fromToken: Token): boolean {
+    if (!this.ethereum) {
+      this.ethereum = (window as any).ethereum;
+    }
+    const chainId = new BigNumber(this.ethereum.chainId, 16).toNumber();
+    const chain = METAMASK_CHAIN[chainId];
+    if (chain !== fromToken.chain) {
+      this.nzMessage.error(
+        MESSAGE.SwitchMetaMaskNetwork[this.lang]([fromToken.chain, NETWORK])
+      );
+      return false;
+    }
+    return true;
+  }
   //#region vault staking
   async o3StakingStake(
     token: Token,
