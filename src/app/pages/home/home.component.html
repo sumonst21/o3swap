@@ -16,7 +16,9 @@
     </div>
     <div class="data-item">
       <p class="name">{{ 'LiquidityAmount' | translate: lang:langPageName }}</p>
-      <p class="data">{{ totalData?.pool_tvl | number: '1.0-8' }}</p>
+      <p class="data">
+        <app-long-balance [balance]="totalData?.pool_tvl"></app-long-balance>
+      </p>
     </div>
   </div>
 </section>
