@@ -210,57 +210,5 @@
         }
       }
     }
-    .blp-detail {
-      width: 100%;
-      margin-top: 20px;
-      padding: 30px 25px;
-      flex-direction: column;
-      flex-wrap: wrap;
-      .left {
-        padding: 0;
-        .item-logo-box {
-          position: relative;
-          .token-type {
-            width: 25px;
-            position: absolute;
-            left: 2px;
-            bottom: 0px;
-          }
-          .token-logo {
-            width: 25px;
-            height: 25px;
-            vertical-align: middle;
-            margin-right: 10px;
-          }
-        }
-        .item-list {
-          font-family: "fontMedium";
-          .token-name {
-            font-family: "fontDemiBold";
-          }
-          .value {
-            font-family: "fontRegular";
-          }
-          &:not(:first-child) {
-            margin-top: 30px;
-          }
-        }
-        .item-list,
-        .progress-container {
-          display: flex;
-          width: calc(100 - 30px);
-          height: 20px;
-          color: #8aa1a1;
-          .progress {
-            height: 6px;
-            width: 100%;
-          }
-        }
-      }
-      .right {
-        padding: 0;
-        padding-top: 30px;
-      }
-    }
   }
 }

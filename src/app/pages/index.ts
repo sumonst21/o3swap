@@ -7,3 +7,4 @@ export { HubComponent } from './hub/hub.component';
 export { HubPoolComponent } from './hub/hub-pool/hub-pool.component';
 export { LiquidityComponent } from './hub/liquidity/liquidity.component';
 export { LegacyLiquidityComponent } from './hub/legacy-liquidity/legacy-liquidity.component';
+export { LiquidityStatisticsComponent } from './hub/liquidity/liquidity-statistics/liquidity-statistics.component';

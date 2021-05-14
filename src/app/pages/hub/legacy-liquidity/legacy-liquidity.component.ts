@@ -10,7 +10,6 @@ import {
   Token,
   USD_TOKENS,
   LP_TOKENS,
-  ETH_PUSDT_ASSET,
   ConnectChainType,
   EthWalletName,
   MESSAGE,
@@ -37,15 +36,6 @@ interface State {
 export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   public BRIDGE_SLIPVALUE = BRIDGE_SLIPVALUE;
   public addLiquidityTokens: Token[] = JSON.parse(JSON.stringify(USD_TOKENS));
-  public USDTToken: Token = this.addLiquidityTokens.find(
-    (item) => item.symbol.indexOf('USDT') >= 0
-  );
-  public BUSDToken: Token = this.addLiquidityTokens.find(
-    (item) => item.symbol.indexOf('BUSD') >= 0
-  );
-  public HUSDToken: Token = this.addLiquidityTokens.find(
-    (item) => item.symbol.indexOf('HUSD') >= 0
-  );
 
   public LPToken: Token;
   private LPTokens: Token[];
@@ -70,13 +60,6 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   private ratesUnScribe: Unsubscribable;
   private rates$: Observable<any>;
   private rates = {};
-
-  public pusdtBalance = {
-    ALL: '',
-    ETH: { value: '', percentage: '0' },
-    BSC: { value: '', percentage: '0' },
-    HECO: { value: '', percentage: '0' },
-  };
 
   public langPageName = 'liquidity';
   private langUnScribe: Unsubscribable;
@@ -111,7 +94,6 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     this.ratesUnScribe = this.rates$.subscribe((state) => {
       this.rates = state.rates;
     });
-    this.getPusdtBalance();
     this.LPTokens = JSON.parse(JSON.stringify(LP_TOKENS));
     this.swapUnScribe = this.swap$.subscribe((state: SwapStateType) => {
       this.ethAccountAddress = state.ethAccountAddress;
@@ -139,46 +121,6 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();
     }
-  }
-
-  async getPusdtBalance(): Promise<void> {
-    this.pusdtBalance.ETH.value = await this.apiService.getPUsdtBalance(
-      ETH_PUSDT_ASSET.ETH.assetID,
-      ETH_PUSDT_ASSET.ETH.decimals
-    );
-    this.pusdtBalance.BSC.value = await this.apiService.getPUsdtBalance(
-      ETH_PUSDT_ASSET.BSC.assetID,
-      ETH_PUSDT_ASSET.BSC.decimals
-    );
-    this.pusdtBalance.HECO.value = await this.apiService.getPUsdtBalance(
-      ETH_PUSDT_ASSET.HECO.assetID,
-      ETH_PUSDT_ASSET.HECO.decimals
-    );
-    this.pusdtBalance.ALL = new BigNumber(this.pusdtBalance.ETH.value)
-      .plus(new BigNumber(this.pusdtBalance.BSC.value))
-      .plus(new BigNumber(this.pusdtBalance.HECO.value))
-      .toFixed();
-    this.pusdtBalance.ETH.percentage = new BigNumber(
-      this.pusdtBalance.ETH.value
-    )
-      .dividedBy(new BigNumber(this.pusdtBalance.ALL))
-      .times(100)
-      .dp(3)
-      .toFixed();
-    this.pusdtBalance.BSC.percentage = new BigNumber(
-      this.pusdtBalance.BSC.value
-    )
-      .dividedBy(new BigNumber(this.pusdtBalance.ALL))
-      .times(100)
-      .dp(3)
-      .toFixed();
-    this.pusdtBalance.HECO.percentage = new BigNumber(
-      this.pusdtBalance.HECO.value
-    )
-      .dividedBy(new BigNumber(this.pusdtBalance.ALL))
-      .times(100)
-      .dp(3)
-      .toFixed();
   }
 
   async changeOutAmount(token: Token, index: number, $event?): Promise<void> {
@@ -214,13 +156,12 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       !new BigNumber(this.LPToken.amount).isZero()
     ) {
       this.payAmount[index] = this.LPToken.amount;
-      this.removeLiquidityInputAmount[
-        index
-      ] = await this.apiService.getSingleOutGivenPoolIn(
-        this.addLiquidityTokens[index],
-        this.payAmount[index],
-        false
-      );
+      this.removeLiquidityInputAmount[index] =
+        await this.apiService.getSingleOutGivenPoolIn(
+          this.addLiquidityTokens[index],
+          this.payAmount[index],
+          false
+        );
     }
   }
 
@@ -381,9 +322,6 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     }
     this.swapService.getEthBalancByHash(this.LPToken).then((res) => {
       // this.LPToken['amount'] = res || '0';
-      if (this.LPToken.amount !== res) {
-        this.getPusdtBalance();
-      }
       this.LPToken.amount = res || '0';
     });
   }
@@ -393,9 +331,8 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     this.tokenBalance.HECO = state.hecoBalances;
     this.addLiquidityTokens.forEach((item, index) => {
       if (this.tokenBalance[item.chain][item.assetID]) {
-        this.addLiquidityTokens[index].amount = this.tokenBalance[item.chain][
-          item.assetID
-        ].amount;
+        this.addLiquidityTokens[index].amount =
+          this.tokenBalance[item.chain][item.assetID].amount;
       } else {
         if (
           (item.chain === 'ETH' && this.ethAccountAddress) ||

@@ -15,7 +15,6 @@ import {
   Token,
   USD_TOKENS,
   LP_TOKENS,
-  ETH_PUSDT_ASSET,
   ConnectChainType,
   EthWalletName,
   SOURCE_TOKEN_SYMBOL,
@@ -44,15 +43,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
   public SOURCE_TOKEN_SYMBOL = SOURCE_TOKEN_SYMBOL;
   public BRIDGE_SLIPVALUE = BRIDGE_SLIPVALUE;
   public addLiquidityTokens: Token[] = JSON.parse(JSON.stringify(USD_TOKENS));
-  public USDTToken: Token = this.addLiquidityTokens.find(
-    (item) => item.symbol.indexOf('USDT') >= 0
-  );
-  public BUSDToken: Token = this.addLiquidityTokens.find(
-    (item) => item.symbol.indexOf('BUSD') >= 0
-  );
-  public HUSDToken: Token = this.addLiquidityTokens.find(
-    (item) => item.symbol.indexOf('HUSD') >= 0
-  );
   public liquidityType: LiquidityType = 'add';
 
   public LPToken: Token = LP_TOKENS.find((item) => item.chain === 'ETH');
@@ -88,12 +78,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
   private rates$: Observable<any>;
   private rates = {};
   private isSwapCanClick = true;
-  public pusdtBalance = {
-    ALL: '',
-    ETH: { value: '', percentage: '0' },
-    BSC: { value: '', percentage: '0' },
-    HECO: { value: '', percentage: '0' },
-  };
 
   public langPageName = 'liquidity';
   private langUnScribe: Unsubscribable;
@@ -137,7 +121,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     this.ratesUnScribe = this.rates$.subscribe((state) => {
       this.rates = state.rates;
     });
-    this.getPusdtBalance();
     this.swapUnScribe = this.swap$.subscribe((state: SwapStateType) => {
       this.ethAccountAddress = state.ethAccountAddress;
       this.bscAccountAddress = state.bscAccountAddress;
@@ -161,46 +144,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();
     }
-  }
-
-  async getPusdtBalance(): Promise<void> {
-    this.pusdtBalance.ETH.value = await this.apiService.getPUsdtBalance(
-      ETH_PUSDT_ASSET.ETH.assetID,
-      ETH_PUSDT_ASSET.ETH.decimals
-    );
-    this.pusdtBalance.BSC.value = await this.apiService.getPUsdtBalance(
-      ETH_PUSDT_ASSET.BSC.assetID,
-      ETH_PUSDT_ASSET.BSC.decimals
-    );
-    this.pusdtBalance.HECO.value = await this.apiService.getPUsdtBalance(
-      ETH_PUSDT_ASSET.HECO.assetID,
-      ETH_PUSDT_ASSET.HECO.decimals
-    );
-    this.pusdtBalance.ALL = new BigNumber(this.pusdtBalance.ETH.value)
-      .plus(new BigNumber(this.pusdtBalance.BSC.value))
-      .plus(new BigNumber(this.pusdtBalance.HECO.value))
-      .toFixed();
-    this.pusdtBalance.ETH.percentage = new BigNumber(
-      this.pusdtBalance.ETH.value
-    )
-      .dividedBy(new BigNumber(this.pusdtBalance.ALL))
-      .times(100)
-      .dp(3)
-      .toFixed();
-    this.pusdtBalance.BSC.percentage = new BigNumber(
-      this.pusdtBalance.BSC.value
-    )
-      .dividedBy(new BigNumber(this.pusdtBalance.ALL))
-      .times(100)
-      .dp(3)
-      .toFixed();
-    this.pusdtBalance.HECO.percentage = new BigNumber(
-      this.pusdtBalance.HECO.value
-    )
-      .dividedBy(new BigNumber(this.pusdtBalance.ALL))
-      .times(100)
-      .dp(3)
-      .toFixed();
   }
 
   changeLiquidityType(params: LiquidityType): void {
@@ -265,9 +208,8 @@ export class LiquidityComponent implements OnInit, OnDestroy {
 
   async maxAddLiquidityInput(index: number): Promise<void> {
     if (!new BigNumber(this.addLiquidityTokens[index].amount).isNaN()) {
-      this.addLiquidityInputAmount[index] = this.addLiquidityTokens[
-        index
-      ].amount;
+      this.addLiquidityInputAmount[index] =
+        this.addLiquidityTokens[index].amount;
       this.receiveAmount[index] = await this.apiService.getPoolOutGivenSingleIn(
         this.addLiquidityTokens[index],
         this.addLiquidityInputAmount[index]
@@ -286,12 +228,11 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       !new BigNumber(this.LPToken.amount).isZero()
     ) {
       this.payAmount[index] = this.LPToken.amount;
-      this.removeLiquidityInputAmount[
-        index
-      ] = await this.apiService.getSingleOutGivenPoolIn(
-        this.addLiquidityTokens[index],
-        this.payAmount[index]
-      );
+      this.removeLiquidityInputAmount[index] =
+        await this.apiService.getSingleOutGivenPoolIn(
+          this.addLiquidityTokens[index],
+          this.payAmount[index]
+        );
       this.removePolyFee[index] = await this.apiService.getFromEthPolyFee(
         this.LPToken,
         this.addLiquidityTokens[index]
@@ -716,9 +657,8 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     this.tokenBalance.HECO = state.hecoBalances;
     this.addLiquidityTokens.forEach((item, index) => {
       if (this.tokenBalance[item.chain][item.assetID]) {
-        this.addLiquidityTokens[index].amount = this.tokenBalance[item.chain][
-          item.assetID
-        ].amount;
+        this.addLiquidityTokens[index].amount =
+          this.tokenBalance[item.chain][item.assetID].amount;
       } else {
         if (
           (item.chain === 'ETH' && this.ethAccountAddress) ||
