@@ -208,8 +208,9 @@ export class LiquidityComponent implements OnInit, OnDestroy {
 
   async maxAddLiquidityInput(index: number): Promise<void> {
     if (!new BigNumber(this.addLiquidityTokens[index].amount).isNaN()) {
-      this.addLiquidityInputAmount[index] =
-        this.addLiquidityTokens[index].amount;
+      this.addLiquidityInputAmount[index] = this.addLiquidityTokens[
+        index
+      ].amount;
       this.receiveAmount[index] = await this.apiService.getPoolOutGivenSingleIn(
         this.addLiquidityTokens[index],
         this.addLiquidityInputAmount[index]
@@ -228,11 +229,12 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       !new BigNumber(this.LPToken.amount).isZero()
     ) {
       this.payAmount[index] = this.LPToken.amount;
-      this.removeLiquidityInputAmount[index] =
-        await this.apiService.getSingleOutGivenPoolIn(
-          this.addLiquidityTokens[index],
-          this.payAmount[index]
-        );
+      this.removeLiquidityInputAmount[
+        index
+      ] = await this.apiService.getSingleOutGivenPoolIn(
+        this.addLiquidityTokens[index],
+        this.payAmount[index]
+      );
       this.removePolyFee[index] = await this.apiService.getFromEthPolyFee(
         this.LPToken,
         this.addLiquidityTokens[index]
@@ -634,13 +636,13 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     ) {
       return this.commonService.getAssetRateByHash(
         this.rates,
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        USD_TOKENS[0].assetID,
         USD_TOKENS[0].chain
       );
     }
     return this.commonService.getAssetRateByHash(
       this.rates,
-      '0xee9801669c6138e84bd50deb500827b776777d28',
+      token.assetID,
       token.chain
     );
   }
@@ -660,8 +662,9 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     this.tokenBalance.HECO = state.hecoBalances;
     this.addLiquidityTokens.forEach((item, index) => {
       if (this.tokenBalance[item.chain][item.assetID]) {
-        this.addLiquidityTokens[index].amount =
-          this.tokenBalance[item.chain][item.assetID].amount;
+        this.addLiquidityTokens[index].amount = this.tokenBalance[item.chain][
+          item.assetID
+        ].amount;
       } else {
         if (
           (item.chain === 'ETH' && this.ethAccountAddress) ||

@@ -27,7 +27,7 @@
           </span> O3</div>
       </div>
     </div>
-    <section class="airdrop">
+    <section class="airdrop" *ngIf="airdropO3 != '0'">
       <div class="left">
         <span class="airdrop-title">{{ 'Airdrop' | translate: lang:langPageName }}:&nbsp;</span>
         --
@@ -96,23 +96,19 @@
                   </app-long-balance>
                 </td>
                 <td nzRight class="unlock-zone-btn-block">
-                  <button class="btn-primary deposit-btn claim-btn" (click)="claimUnlockO3(item)" nz-tooltip
-                    [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">
+                  <button class="btn-primary deposit-btn claim-btn" (click)="claimUnlockO3(item)">
                     {{ 'Claim' | translate: lang:langPageName }}
                   </button>
-                  <button class="btn-primary deposit-btn get-lp-btn" (click)="getLP(item)" nz-tooltip
-                    [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">
+                  <button class="btn-primary deposit-btn get-lp-btn" (click)="getLP(item)">
                     {{ 'GetLP' | translate: lang:langPageName }}
                   </button>
                   <div>
                     <button class="btn-primary stake-btn"
-                      (click)="showUnlockStake(stakeUnlockTokenList[i], item.remaining || '0')" nz-tooltip
-                      [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">
+                      (click)="showUnlockStake(stakeUnlockTokenList[i], item.remaining || '0')">
                       {{ 'Stake' | translate: lang:langPageName }}
                     </button>
                     <button class="btn-primary unstake-btn"
-                      (click)="showUnlockStake(stakeUnlockTokenList[i], item.staked || '0', false)" nz-tooltip
-                      [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">
+                      (click)="showUnlockStake(stakeUnlockTokenList[i], item.staked || '0', false)">
                       {{ 'Unstake' | translate: lang:langPageName }}
                     </button>
                   </div>
@@ -178,8 +174,7 @@
             </div>
             <p class="line"></p>
             <p class="claimable-box">{{ 'Claimable' | translate: lang:langPageName }} O3: &nbsp;<span
-                class="value">{{ item.profit }}</span><span class="claim-btn" nz-tooltip
-                [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'"
+                class="value">{{ item.profit }}</span><span class="claim-btn"
                 (click)="claimProfit(item)">{{ 'Claim' | translate: lang:langPageName }}</span>
             </p>
           </div>
@@ -202,8 +197,8 @@
                   <span class="value">
                     <app-long-balance [balance]="item.profit  || '--'">
                     </app-long-balance>
-                  </span><span class="claim-btn" (click)="claimProfit(item)" nz-tooltip
-                    [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">{{ 'Claim' | translate: lang:langPageName }}</span>
+                  </span><span class="claim-btn"
+                    (click)="claimProfit(item)">{{ 'Claim' | translate: lang:langPageName }}</span>
                 </p>
               </div>
 

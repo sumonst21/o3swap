@@ -60,6 +60,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   o3Total = '--';
 
   totalProfit = '--';
+  airdropO3 = '0';
   stakeUnlockTokenList: any[] = UNLOCK_LP_TOKENS;
   o3StakingTokenList: any[] = TOKEN_STAKING_TOKENS;
   lpstakingTokenList: any[] = LP_STAKING_TOKENS;
@@ -88,6 +89,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (this.commonService.isMobileWidth()) {
       this.isMobile = true;
     }
+    this.initAridrop();
     this.initO3Data();
     this.vaultUnScribe = this.vault$.subscribe((state) => {
       this.initO3Data();
@@ -131,19 +133,19 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
     });
     // unlock zoon
-    // this.stakeUnlockTokenList.forEach(async (item: any) => {
-    //   Promise.all([
-    //     this.vaultdMetaMaskWalletApiService.getStaked(item) || '--',
-    //     this.swapService.getEthBalancByHash(
-    //       item,
-    //       this.vaultdMetaMaskWalletApiService.vaultWallet?.address || ''
-    //     ) || '--',
-    //     this.vaultdMetaMaskWalletApiService.claimableUnlocked(item) || '--',
-    //     this.vaultdMetaMaskWalletApiService.getUnlockSpeed(item) || '--',
-    //   ]).then((res) => {
-    //     [item.staked, item.remaining, item.claimable, item.speed] = res;
-    //   });
-    // });
+    this.stakeUnlockTokenList.forEach(async (item: any) => {
+      Promise.all([
+        this.vaultdMetaMaskWalletApiService.getStaked(item) || '--',
+        this.swapService.getEthBalancByHash(
+          item,
+          this.vaultdMetaMaskWalletApiService.vaultWallet?.address || ''
+        ) || '--',
+        this.vaultdMetaMaskWalletApiService.claimableUnlocked(item) || '--',
+        this.vaultdMetaMaskWalletApiService.getUnlockSpeed(item) || '--',
+      ]).then((res) => {
+        [item.staked, item.remaining, item.claimable, item.speed] = res;
+      });
+    });
     // o3 Staking
     this.o3StakingTokenList.forEach(async (item: any) => {
       Promise.all([
@@ -212,12 +214,23 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
   }
 
+  async initAridrop(): Promise<void> {
+    return;
+    this.vaultdMetaMaskWalletApiService.getAirdropClaimable().then((res) => {
+      const airdropNum = new BigNumber(res);
+      if (airdropNum.isNaN() || !airdropNum.isFinite()) {
+        this.airdropO3 = '0';
+      } else {
+        this.airdropO3 = airdropNum.toFixed();
+      }
+    });
+  }
+
   async showUnlockStake(
     token: Token,
     balance: string,
     isStake: boolean = true
   ): Promise<void> {
-    return;
     let modal;
     if (!this.checkWalletConnect()) {
       return;
@@ -341,7 +354,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimUnlockO3(token: any): Promise<void> {
-    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -365,7 +377,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimProfit(token: any): Promise<void> {
-    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -409,7 +420,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     } else {
       return;
     }
-    this.vaultdMetaMaskWalletApiService.claimAirdrop();
+    this.vaultdMetaMaskWalletApiService.claimAirdrop(this.airdropO3);
   }
 
   getStakingAYP(token: any): string {
@@ -437,7 +448,6 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
   }
   getLP(token: Token): void {
-    return;
     window.open(
       `https://app.uniswap.org/#/add/v2/${token.pairTokens[0]}/${token.pairTokens[1]}`
     );

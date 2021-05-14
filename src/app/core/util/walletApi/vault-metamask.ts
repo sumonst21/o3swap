@@ -100,7 +100,8 @@ export class VaultdMetaMaskWalletApiService {
             );
             if (
               localVaultWallet &&
-              localVaultWallet.walletName === 'MetaMask'
+              (localVaultWallet.walletName === 'MetaMask' ||
+                localVaultWallet.walletName === 'O3')
             ) {
               this.vaultConnect(localVaultWallet.chain, false);
             }
@@ -552,7 +553,31 @@ export class VaultdMetaMaskWalletApiService {
     });
   }
 
-  async claimAirdrop(): Promise<string> {
+  async getAirdropClaimable(): Promise<string> {
+    if (!this.vaultWallet) {
+      return;
+    }
+    let params;
+    const constractHash = '';
+    const json = await this.getO3Json();
+    const o3Contract = new this.web3.eth.Contract(json, constractHash);
+    const data = await o3Contract.methods.getClaimable().encodeABI();
+    params = [
+      this.getSendTransactionParams(
+        this.vaultWallet.address,
+        constractHash,
+        data
+      ),
+      'latest',
+    ];
+    return this.rpcApiService.getEthCall(params, O3_TOKEN).then((res) => {
+      if (res) {
+        return res;
+      }
+    });
+  }
+
+  async claimAirdrop(claimable: string): Promise<string> {
     if (!this.vaultWallet) {
       return;
     }
@@ -573,7 +598,7 @@ export class VaultdMetaMaskWalletApiService {
       })
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(O3_TOKEN, '100', hash, VaultTransactionType.claim);
+        this.handleTx(O3_TOKEN, claimable, hash, VaultTransactionType.claim);
         return hash;
       })
       .catch((error) => {

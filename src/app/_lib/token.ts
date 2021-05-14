@@ -115,7 +115,7 @@ export const UNLOCK_LP_TOKENS: Token[] = [
   {
     assetID:
       NETWORK === 'MainNet'
-        ? '0xAFf61AE683aCD66033973c816D4D8e94e2538880'
+        ? '0x4B8852E4747B8a7d4CAf0440e4e3397032a6723D'
         : '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
     symbol: 'UNI-LP',
     decimals: 18,
@@ -123,8 +123,8 @@ export const UNLOCK_LP_TOKENS: Token[] = [
     chain: 'ETH',
     logo: '/assets/images/tokens/lp-eth.png',
     pairTokens: [
-      '0xdac17f958d2ee523a2206206994597c13d831ec7',
-      '0x899239a9a3f10d5333a512801a4c1b1c3bef10bb',
+      '0xEe9801669C6138E84bD50dEB500827b776777d28',
+      '0xdAC17F958D2ee523a2206206994597C13D831ec7',
     ],
     pairLogos: [
       '/assets/images/tokens/o3.png',
