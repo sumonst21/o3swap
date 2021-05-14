@@ -8,16 +8,20 @@
   <div class="total-data">
     <div class="data-item">
       <p class="name">{{ 'Transactions' | translate: lang:langPageName }}</p>
-      <p class="data">{{ totalData?.total_tx_count | number }}</p>
+      <p class="data">
+        <app-long-balance [balance]="totalData?.total_tx_count" [defaultValue]="'--'"></app-long-balance>
+      </p>
     </div>
     <div class="data-item">
       <p class="name">{{ 'Addresses' | translate: lang:langPageName }}</p>
-      <p class="data">{{ totalData?.total_addresses | number }}</p>
+      <p class="data">
+        <app-long-balance [balance]="totalData?.total_addresses" [defaultValue]="'--'"></app-long-balance>
+      </p>
     </div>
     <div class="data-item">
       <p class="name">{{ 'LiquidityAmount' | translate: lang:langPageName }}</p>
       <p class="data">
-        <app-long-balance [balance]="totalData?.pool_tvl"></app-long-balance>
+        <app-long-balance [balance]="totalData?.pool_tvl" [defaultValue]="'--'"></app-long-balance>
       </p>
     </div>
   </div>

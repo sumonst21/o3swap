@@ -91,6 +91,14 @@ const vault = {
     en: 'Confirm',
     zh: '确认',
   },
+  CLAIM: {
+    en: 'CLAIM',
+    zh: '领取',
+  },
+  Airdrop: {
+    en: 'Airdrop',
+    zh: '空投'
+  }
 };
 
 export default vault;

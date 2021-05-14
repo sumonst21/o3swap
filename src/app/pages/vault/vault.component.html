@@ -28,8 +28,11 @@
       </div>
     </div>
     <section class="airdrop">
-      <div class="left"><span class="airdrop-title">Airdrop:&nbsp;</span> --</div> <button
-        (click)="claimAirdrop()">CLAIM</button>
+      <div class="left">
+        <span class="airdrop-title">{{ 'Airdrop' | translate: lang:langPageName }}:&nbsp;</span>
+        --
+      </div>
+      <button (click)="claimAirdrop()">{{ 'CLAIM' | translate: lang:langPageName }}</button>
     </section>
     <div class="item-container row-2">
       <div class="list-container">
