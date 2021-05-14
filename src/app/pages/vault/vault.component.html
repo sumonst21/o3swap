@@ -164,14 +164,15 @@
               <div class="col">
                 <div class="value">
                   <app-long-balance [balance]="item.apy || '--'" [decimals]="2">
-                  </app-long-balance>
+                  </app-long-balance>&nbsp;%
                 </div>
                 <div class="name">APY%</div>
               </div>
             </div>
             <p class="line"></p>
             <p class="claimable-box">{{ 'Claimable' | translate: lang:langPageName }} O3: &nbsp;<span
-                class="value">{{ item.profit }}</span><span class="claim-btn"
+                class="value">{{ item.profit }}</span><span class="claim-btn" nz-tooltip
+                [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'"
                 (click)="claimProfit(item)">{{ 'Claim' | translate: lang:langPageName }}</span>
             </p>
           </div>
@@ -194,8 +195,8 @@
                   <span class="value">
                     <app-long-balance [balance]="item.profit  || '--'">
                     </app-long-balance>
-                  </span><span class="claim-btn"
-                    (click)="claimProfit(item)">{{ 'Claim' | translate: lang:langPageName }}</span>
+                  </span><span class="claim-btn" (click)="claimProfit(item)" nz-tooltip
+                    [nzTooltipTitle]="'ComingSoon' | translate: lang:'app'">{{ 'Claim' | translate: lang:langPageName }}</span>
                 </p>
               </div>
 
@@ -218,7 +219,7 @@
               <div class="detail-item">
                 <div class="value">
                   <app-long-balance [balance]="item.apy || '--'" [decimals]="2">
-                  </app-long-balance>
+                  </app-long-balance>&nbsp;%
                 </div>
                 <div class="name">APY%</div>
               </div>

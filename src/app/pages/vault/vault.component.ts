@@ -365,6 +365,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimProfit(token: any): Promise<void> {
+    return;
     if (!this.checkWalletConnect()) {
       return;
     }
