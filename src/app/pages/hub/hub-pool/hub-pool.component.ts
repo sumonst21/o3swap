@@ -80,7 +80,6 @@ export class HubPoolComponent implements OnInit, OnDestroy {
         this.LPToken.staked,
         this.LPToken.sharePerBlock,
       ] = res;
-      console.log(res);
       this.LPAPY = this.getStakingAYP(this.LPToken);
     });
   }
@@ -133,7 +132,7 @@ export class HubPoolComponent implements OnInit, OnDestroy {
       ) {
         return this.commonService.getAssetRateByHash(
           this.rates,
-          USD_TOKENS[0].chain,
+          USD_TOKENS[0].assetID,
           USD_TOKENS[0].chain
         );
       }
