@@ -3,7 +3,7 @@
     <p class="total-balance">
       USDT+BUSD+HUSD:
       <span class="value">
-        <app-long-balance [balance]="pusdtBalance.ALL"></app-long-balance>
+        <app-long-balance [balance]="pusdtBalance.ALL" [decimals]="2"></app-long-balance>
       </span>
     </p>
     <ul class="usdt-balance">
@@ -16,7 +16,7 @@
           <p class="balance-desc">
             USDT:
             <span class="value">
-              <app-long-balance [balance]="pusdtBalance.ETH.value"></app-long-balance>
+              <app-long-balance [balance]="pusdtBalance.ETH.value" [decimals]="2"></app-long-balance>
             </span>
             <span class="percentage">&nbsp;({{ pusdtBalance.ETH.percentage }}%)</span>
           </p>
@@ -36,7 +36,7 @@
           <p class="balance-desc">
             BUSD:
             <span class="value">
-              <app-long-balance [balance]="pusdtBalance.BSC.value"></app-long-balance>
+              <app-long-balance [balance]="pusdtBalance.BSC.value" [decimals]="2"></app-long-balance>
             </span>
             <span class="percentage">&nbsp;({{ pusdtBalance.BSC.percentage }}%)</span>
           </p>
@@ -56,7 +56,7 @@
           <p class="balance-desc">
             HUSD:
             <span class="value">
-              <app-long-balance [balance]="pusdtBalance.HECO.value"></app-long-balance>
+              <app-long-balance [balance]="pusdtBalance.HECO.value" [decimals]="2"></app-long-balance>
             </span>
             <span class="percentage">&nbsp;({{ pusdtBalance.HECO.percentage }}%)</span>
           </p>

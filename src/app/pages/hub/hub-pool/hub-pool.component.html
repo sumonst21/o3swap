@@ -4,7 +4,9 @@
     <div class="pool-detail">
       <div class="list">
         <div class="item">
-          <div class="value">$--</div>
+          <div class="value">
+            <app-long-balance [balance]="allUsdtBalance" [decimals]="2"></app-long-balance>
+          </div>
           <div class="name">{{ 'TVL' | translate: lang:langPageName }}</div>
         </div>
         <div class="item">
@@ -13,8 +15,7 @@
         </div>
         <div class="item">
           <div class="value">
-            <app-long-balance [balance]="LPAPY">
-            </app-long-balance>
+            <app-long-balance [balance]="LPAPY" [decimals]="2"></app-long-balance>
           </div>
           <div class="name">{{ 'APY' | translate: lang:langPageName }}</div>
         </div>
@@ -54,7 +55,10 @@
 <div class="group-container statistical-data">
   <div class="header">{{ 'TotalPoolDepositsDailyVolume' | translate: lang:langPageName }}</div>
   <div class="desc">
-    <p>{{ 'TotalPoolDeposit' | translate: lang:langPageName }}: $--</p>
+    <p>
+      {{ 'TotalPoolDeposit' | translate: lang:langPageName }}:
+      <app-long-balance [balance]="allUsdtBalance" [decimals]="2"></app-long-balance>
+    </p>
     <p>{{ 'DailyVolume' | translate: lang:langPageName }}: $--</p>
   </div>
 </div>

@@ -1,11 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonService } from '@core/util/common.service';
-import { SwapService } from '@core/util/swap.service';
+import { ApiService, CommonService, SwapService } from '@core';
 import { VaultdMetaMaskWalletApiService } from '@core/util/walletApi/vault-metamask';
-import { O3_TOKEN, Token, LP_TOKENS, USD_TOKENS } from '@lib';
+import { O3_TOKEN, Token, LP_TOKENS, USD_TOKENS, ETH_PUSDT_ASSET } from '@lib';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
-import { Unsubscribable, Observable } from 'rxjs';
+import { Unsubscribable, Observable, interval } from 'rxjs';
 
 interface State {
   language: any;
@@ -30,11 +29,15 @@ export class HubPoolComponent implements OnInit, OnDestroy {
   LPToken: any = LP_TOKENS.filter((item) => item.chain === 'ETH')[0];
   LPAPY = '--';
 
+  public allUsdtBalance: string;
+  private getallUsdtInterval: Unsubscribable;
+
   constructor(
     private store: Store<State>,
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
     private commonService: CommonService,
-    private swapService: SwapService
+    private swapService: SwapService,
+    private apiService: ApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -53,10 +56,36 @@ export class HubPoolComponent implements OnInit, OnDestroy {
     if (this.ratesUnScribe) {
       this.ratesUnScribe.unsubscribe();
     }
+    if (this.getallUsdtInterval) {
+      this.getallUsdtInterval.unsubscribe();
+    }
   }
 
   ngOnInit(): void {
     this.initAPY();
+    this.getAllUsdtBalance();
+    this.getallUsdtInterval = interval(15000).subscribe(() => {
+      this.getAllUsdtBalance();
+    });
+  }
+
+  async getAllUsdtBalance(): Promise<void> {
+    const usdtBalance = await this.apiService.getPUsdtBalance(
+      ETH_PUSDT_ASSET.ETH.assetID,
+      ETH_PUSDT_ASSET.ETH.decimals
+    );
+    const busdBalance = await this.apiService.getPUsdtBalance(
+      ETH_PUSDT_ASSET.BSC.assetID,
+      ETH_PUSDT_ASSET.BSC.decimals
+    );
+    const husdBalance = await this.apiService.getPUsdtBalance(
+      ETH_PUSDT_ASSET.HECO.assetID,
+      ETH_PUSDT_ASSET.HECO.decimals
+    );
+    this.allUsdtBalance = new BigNumber(usdtBalance)
+      .plus(new BigNumber(busdBalance))
+      .plus(new BigNumber(husdBalance))
+      .toFixed();
   }
 
   initAPY(): void {
