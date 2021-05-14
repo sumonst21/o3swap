@@ -167,7 +167,7 @@ export class HubPoolComponent implements OnInit, OnDestroy {
       }
       return this.commonService.getAssetRateByHash(
         this.rates,
-        token.chain,
+        token.assetID,
         token.chain
       );
     }
