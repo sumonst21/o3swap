@@ -391,6 +391,27 @@ export class VaultComponent implements OnInit, OnDestroy {
     );
   }
 
+  async claimAirdrop(): Promise<void> {
+    return;
+    if (!this.checkWalletConnect()) {
+      return;
+    }
+    if (
+      this.ethApiService.checkNetwork(this.stakeUnlockTokenList[0]) === false
+    ) {
+      return;
+    }
+    if (this.isCanClick) {
+      this.isCanClick = false;
+      setTimeout(() => {
+        this.isCanClick = true;
+      }, 4000);
+    } else {
+      return;
+    }
+    this.vaultdMetaMaskWalletApiService.claimAirdrop();
+  }
+
   getStakingAYP(token: any): string {
     const tokenPrice = this.getTokenPrice(token);
     const O3TokenPrice = this.getTokenPrice(O3_TOKEN);

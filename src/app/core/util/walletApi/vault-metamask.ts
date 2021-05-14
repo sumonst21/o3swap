@@ -45,6 +45,7 @@ export class VaultdMetaMaskWalletApiService {
   web3: Web3 = new Web3();
   o3Json;
   o3StakingJson;
+  airdropJson;
 
   language$: Observable<any>;
   lang: string;
@@ -550,6 +551,36 @@ export class VaultdMetaMaskWalletApiService {
       }
     });
   }
+
+  async claimAirdrop(): Promise<string> {
+    if (!this.vaultWallet) {
+      return;
+    }
+    const constractHash = '';
+    const json = await this.getAirdropJson();
+    const o3Contract = new this.web3.eth.Contract(json, constractHash);
+    const data = o3Contract.methods.claim().encodeABI();
+    return this.ethereum
+      .request({
+        method: 'eth_sendTransaction',
+        params: [
+          this.getSendTransactionParams(
+            this.vaultWallet.address,
+            constractHash,
+            data
+          ),
+        ],
+      })
+      .then((hash) => {
+        this.commonService.log(hash);
+        this.handleTx(O3_TOKEN, '100', hash, VaultTransactionType.claim);
+        return hash;
+      })
+      .catch((error) => {
+        this.commonService.log(error);
+        this.handleDapiError(error);
+      });
+  }
   //#endregion
 
   //#region private function
@@ -666,6 +697,20 @@ export class VaultdMetaMaskWalletApiService {
       .pipe(
         map((res) => {
           this.o3Json = res;
+          return res;
+        })
+      )
+      .toPromise();
+  }
+  private getAirdropJson(): Promise<any> {
+    if (this.airdropJson) {
+      return of(this.airdropJson).toPromise();
+    }
+    return this.http
+      .get('assets/contracts-json/Airdrop.json')
+      .pipe(
+        map((res) => {
+          this.airdropJson = res;
           return res;
         })
       )
