@@ -70,9 +70,13 @@ export const AGGREGATOR_CONTRACT = {
 
 export const O3STAKING_CONTRACT = {
   [O3_TOKEN.assetID]:
-    NETWORK === 'MainNet' ? '' : '0x97058684943932e0158cC60F33a4a98f17066927',
+    NETWORK === 'MainNet'
+      ? '0x0423f3b26593db401a3382b483981e619C808dfC'
+      : '0x97058684943932e0158cC60F33a4a98f17066927',
   [LP_TOKENS.filter((item) => item.chain === 'ETH')[0].assetID]:
-    NETWORK === 'MainNet' ? '' : '0x9A7Ae672cf00304c9CD54AC217a90B16e6EF4749',
+    NETWORK === 'MainNet'
+      ? '0x0eE932A6E89619DD865221754813c5627d00AdB3'
+      : '0x9A7Ae672cf00304c9CD54AC217a90B16e6EF4749',
 };
 
 export const O3TOKEN_CONTRACT = O3_TOKEN.assetID;

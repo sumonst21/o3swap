@@ -335,6 +335,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimUnlockO3(token: any): Promise<void> {
+    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -437,13 +438,13 @@ export class VaultComponent implements OnInit, OnDestroy {
       ) {
         return this.commonService.getAssetRateByHash(
           this.rates,
-          '0xdac17f958d2ee523a2206206994597c13d831ec7',
+          USD_TOKENS[0].assetID,
           USD_TOKENS[0].chain
         );
       }
       return this.commonService.getAssetRateByHash(
         this.rates,
-        '0xee9801669c6138e84bd50deb500827b776777d28',
+        token.assetID,
         token.chain
       );
     }

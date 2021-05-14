@@ -117,7 +117,7 @@ export const UNLOCK_LP_TOKENS: Token[] = [
       NETWORK === 'MainNet'
         ? '0xAFf61AE683aCD66033973c816D4D8e94e2538880'
         : '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
-    symbol: 'LP',
+    symbol: 'UNI-LP',
     decimals: 18,
     amount: '0',
     chain: 'ETH',
