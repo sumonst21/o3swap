@@ -81,7 +81,7 @@ export class EthApiService {
 
   //#region network
   checkNetwork(fromToken: Token): boolean {
-    return this.getEthDapiService(fromToken).checkNetwork(fromToken);
+    return this.metaMaskWalletApiService.checkNetwork(fromToken);
   }
   //#endregion
 
