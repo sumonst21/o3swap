@@ -167,5 +167,19 @@
         }
       }
     }
+    section.airdrop {
+      margin-top: 0;
+      height: 67px;
+      padding-left: 5%;
+      padding-right: 5%;
+      .left {
+        font-size: 16px;
+      }
+      button {
+        width: 67px;
+        height: 28px;
+        border-radius: 6px;
+      }
+    }
   }
 }

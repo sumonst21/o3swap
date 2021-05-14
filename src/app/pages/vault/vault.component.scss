@@ -205,6 +205,38 @@
       }
     }
   }
+  section.airdrop {
+    background-color: #46b069;
+    border-radius: 10px;
+    height: 70px;
+    width: 100%;
+    margin-bottom: 25px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 30px;
+    padding-right: 40px;
+    .left {
+      font-size: 18px;
+      display: inline-flex;
+      align-items: center;
+      .airdrop-title {
+        font-family: "fontDemiBold";
+      }
+    }
+    button {
+      width: 90px;
+      height: 36px;
+      background: #ffffff;
+      border-radius: 10px;
+      color: #46b069;
+      cursor: pointer;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
   .tran-list {
     width: 100%;
     text-align: left;
