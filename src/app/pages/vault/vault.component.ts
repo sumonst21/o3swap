@@ -55,6 +55,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   rates$: Observable<any>;
   rates = {};
 
+  addressAirdropData = null;
+
   o3Locked = '--';
   o3Available = '--';
   o3Total = '--';
@@ -93,6 +95,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.initO3Data();
     this.vaultUnScribe = this.vault$.subscribe((state) => {
       this.initO3Data();
+      this.initAridrop();
     });
     this.ratesUnScribe = this.rates$.subscribe((state) => {
       this.rates = state.rates;
@@ -207,15 +210,33 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async initAridrop(): Promise<void> {
-    return;
-    this.vaultdMetaMaskWalletApiService.getAirdropClaimable().then((res) => {
-      const airdropNum = new BigNumber(res);
-      if (airdropNum.isNaN() || !airdropNum.isFinite()) {
-        this.airdropO3 = '0';
-      } else {
-        this.airdropO3 = airdropNum.toFixed();
-      }
-    });
+    const address =
+      this.vaultdMetaMaskWalletApiService.vaultWallet?.address || '';
+    const airdropList = await this.vaultdMetaMaskWalletApiService.getAirdropListJson();
+    const addressAirdropInfo =
+      airdropList[
+        Object.keys(airdropList).find(
+          (key) => key.toLowerCase() === address.toLowerCase()
+        )
+      ];
+    if (
+      !this.vaultdMetaMaskWalletApiService.vaultWallet ||
+      !addressAirdropInfo
+    ) {
+      return;
+    }
+    this.addressAirdropData = addressAirdropInfo;
+    this.vaultdMetaMaskWalletApiService
+      .isAirdropClaimed(addressAirdropInfo.index)
+      .then((res) => {
+        if (res) {
+          this.airdropO3 = '0';
+        } else {
+          this.airdropO3 = new BigNumber(this.addressAirdropData?.amount, 16)
+            .div(new BigNumber(10).pow(18))
+            .toFixed();
+        }
+      });
   }
 
   async showUnlockStake(
@@ -397,7 +418,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimAirdrop(): Promise<void> {
-    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -416,7 +436,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     } else {
       return;
     }
-    this.vaultdMetaMaskWalletApiService.claimAirdrop(this.airdropO3);
+    this.vaultdMetaMaskWalletApiService.claimAirdrop();
   }
 
   getStakingAYP(token: any): string {

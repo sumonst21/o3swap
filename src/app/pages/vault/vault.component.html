@@ -30,7 +30,7 @@
     <section class="airdrop" *ngIf="airdropO3 != '0'">
       <div class="left">
         <span class="airdrop-title">{{ 'Airdrop' | translate: lang:langPageName }}:&nbsp;</span>
-        --
+        {{ airdropO3 }}
       </div>
       <button (click)="claimAirdrop()">{{ 'CLAIM' | translate: lang:langPageName }}</button>
     </section>

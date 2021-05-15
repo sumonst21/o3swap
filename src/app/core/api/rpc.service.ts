@@ -65,7 +65,7 @@ export class RpcApiService {
       return this.getNeoLineTokenBalance(address);
     }
   }
-  getEthCall(params, token: Token): Promise<any> {
+  getEthCall(params, token: Token, isDefault: boolean = false): Promise<any> {
     const method = 'eth_call';
     return this.http
       .post(this.getEthRpcHost(token.chain), {
@@ -76,13 +76,16 @@ export class RpcApiService {
       })
       .pipe(
         map((response: any) => {
-          const balance = response.result;
+          const result = response.result;
+          if (isDefault) {
+            return result;
+          }
           if (
-            balance &&
-            !new BigNumber(balance).isNaN() &&
-            new BigNumber(balance).comparedTo(0) >= 0
+            result &&
+            !new BigNumber(result).isNaN() &&
+            new BigNumber(result).comparedTo(0) >= 0
           ) {
-            return new BigNumber(balance).shiftedBy(-token.decimals).toFixed();
+            return new BigNumber(result).shiftedBy(-token.decimals).toFixed();
           }
         })
       )

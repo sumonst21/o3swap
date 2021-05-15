@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ethers } from 'ethers';
 import {
   ConnectChainType,
   EthWalletName,
@@ -12,6 +13,7 @@ import {
   O3TOKEN_CONTRACT,
   METAMASK_CHAIN,
   NETWORK,
+  ETH_AIRDROP_CLAIM_CONTRACT,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -30,6 +32,7 @@ import BigNumber from 'bignumber.js';
 import { RpcApiService } from '@core/api/rpc.service';
 import { getMessageFromCode } from 'eth-rpc-errors';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import BalanceTree from '../markle/balance-tree';
 interface State {
   vault: any;
   language: any;
@@ -45,6 +48,8 @@ export class VaultdMetaMaskWalletApiService {
 
   ethereum;
   web3: Web3 = new Web3();
+  airdropListJson;
+
   o3Json;
   o3StakingJson;
   airdropJson;
@@ -160,6 +165,7 @@ export class VaultdMetaMaskWalletApiService {
     }
     return true;
   }
+
   //#region vault staking
   async o3StakingStake(
     token: Token,
@@ -569,15 +575,15 @@ export class VaultdMetaMaskWalletApiService {
     });
   }
 
-  async getAirdropClaimable(): Promise<string> {
+  async isAirdropClaimed(index: number): Promise<boolean> {
     if (!this.vaultWallet) {
       return;
     }
     let params;
-    const constractHash = '';
-    const json = await this.getO3Json();
+    const constractHash = ETH_AIRDROP_CLAIM_CONTRACT;
+    const json = await this.getAirdropJson();
     const o3Contract = new this.web3.eth.Contract(json, constractHash);
-    const data = await o3Contract.methods.getClaimable().encodeABI();
+    const data = await o3Contract.methods.isClaimed(index).encodeABI();
     params = [
       this.getSendTransactionParams(
         this.vaultWallet.address,
@@ -586,35 +592,61 @@ export class VaultdMetaMaskWalletApiService {
       ),
       'latest',
     ];
-    return this.rpcApiService.getEthCall(params, O3_TOKEN).then((res) => {
-      if (res) {
-        return res;
+    return this.rpcApiService.getEthCall(params, O3_TOKEN, true).then((res) => {
+      if (new BigNumber(res).comparedTo(0) === 0) {
+        return false;
+      } else {
+        return true;
       }
     });
   }
 
-  async claimAirdrop(claimable: string): Promise<string> {
+  async claimAirdrop(): Promise<string> {
     if (!this.vaultWallet) {
       return;
     }
-    const constractHash = '';
+    const constractHash = ETH_AIRDROP_CLAIM_CONTRACT;
+    const list = await this.getAirdropListJson();
+    const listArr = [];
+    for (const key in list) {
+      if (Object.prototype.hasOwnProperty.call(list, key)) {
+        const element = list[key];
+        listArr.push({
+          account: key,
+          amount: ethers.BigNumber.from(element.amount),
+        });
+      }
+    }
     const json = await this.getAirdropJson();
+    const addressKey = Object.keys(list).find(
+      (key) => key.toLowerCase() === this.vaultWallet.address.toLowerCase()
+    );
     const o3Contract = new this.web3.eth.Contract(json, constractHash);
-    const data = o3Contract.methods.claim().encodeABI();
+    const addressInfo = list[addressKey];
+    const account = addressKey;
+    const amount = ethers.BigNumber.from(addressInfo.amount);
+    const balanceTree = new BalanceTree(listArr);
+    const data = o3Contract.methods
+      .claim(
+        addressInfo.index,
+        account,
+        amount,
+        balanceTree.getProof(addressInfo.index, account, amount)
+      )
+      .encodeABI();
     return this.ethereum
       .request({
         method: 'eth_sendTransaction',
-        params: [
-          this.getSendTransactionParams(
-            this.vaultWallet.address,
-            constractHash,
-            data
-          ),
-        ],
+        params: [this.getSendTransactionParams(account, constractHash, data)],
       })
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(O3_TOKEN, claimable, hash, VaultTransactionType.claim);
+        this.handleTx(
+          O3_TOKEN,
+          new BigNumber(addressInfo.amount).shiftedBy(-18).toFixed(),
+          hash,
+          VaultTransactionType.claim
+        );
         return hash;
       })
       .catch((error) => {
@@ -623,6 +655,19 @@ export class VaultdMetaMaskWalletApiService {
       });
   }
   //#endregion
+
+  getAirdropListJson(): Promise<any> {
+    if (this.airdropListJson) {
+      return of(this.airdropListJson).toPromise();
+    }
+    return this.http
+      .get('assets/datas/airdropList.json')
+      .toPromise()
+      .then((res) => {
+        this.airdropListJson = res;
+        return res;
+      });
+  }
 
   //#region private function
   private handleDapiError(error): void {
@@ -771,7 +816,6 @@ export class VaultdMetaMaskWalletApiService {
       )
       .toPromise();
   }
-
   private getSendTransactionParams(
     from: string,
     to: string,
