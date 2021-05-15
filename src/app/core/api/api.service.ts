@@ -417,17 +417,9 @@ export class ApiService {
    * @param amount LP amount
    * @return promise
    */
-  getSingleOutGivenPoolIn(
-    fromToken: Token,
-    amount: string,
-    isUsdtLp = true
-  ): Promise<string> {
-    // let poolPUsdtHash = ETH_PUSDT_ASSET.ETH.assetID;
+  getSingleOutGivenPoolIn(fromToken: Token, amount: string): Promise<string> {
     const poolPUsdtHash = ETH_PUSDT_ASSET[fromToken.chain].assetID;
     const usdtToken = USD_TOKENS.find((item) => item.chain === fromToken.chain);
-    // if (isUsdtLp === false) {
-    //    usdtToken = USD_TOKENS.find((item) => item.chain === 'ETH');
-    // }
     amount = new BigNumber(amount).shiftedBy(18).toFixed();
     return this.http
       .get(

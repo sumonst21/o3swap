@@ -159,8 +159,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       this.removeLiquidityInputAmount[index] =
         await this.apiService.getSingleOutGivenPoolIn(
           this.addLiquidityTokens[index],
-          this.payAmount[index],
-          false
+          this.payAmount[index]
         );
     }
   }
