@@ -8,18 +8,15 @@
     <span class="close" (click)="close()">{{ 'Cancel' | translate: lang:langPageName }}</span>
   </div>
   <div class="token-amount-container">
-    <div class="content">
-      <div class="top">{{ 'Amount' | translate: lang:langPageName }}</div>
-      <div class="asset">
-        <img [src]="token.logo" alt="" class="asset-img">
-        <div class="asset-name">
-          {{ token.symbol }}
-        </div>
-        <div class="amount">
-          <input type="number" (input)="changeInputAmount($event)" [ngModel]="inputAmount" placeholder="0">
-        </div>
-      </div>
+    <p class="top">{{ 'Amount' | translate: lang:langPageName }}</p>
+    <div class="asset">
+      <img [src]="token.logo" alt="" class="asset-img">
+      <span class="asset-name">{{ token.symbol }}</span>
+      <input type="number" (input)="changeInputAmount($event)" [ngModel]="inputAmount" placeholder="0">
     </div>
+  </div>
+  <div class="balance recommend-stake-lp" *ngIf="recommendStakeLp">
+    {{ 'recommendStakeLp' | translate: lang:langPageName:[recommendStakeLp, token.symbol] }}
   </div>
   <div class="balance">
     {{ (isStake ? 'Balance' : 'Staked') | translate: lang:langPageName }}: {{ balance }} {{ token.symbol }}

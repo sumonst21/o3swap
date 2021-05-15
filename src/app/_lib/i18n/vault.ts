@@ -97,8 +97,14 @@ const vault = {
   },
   Airdrop: {
     en: 'Airdrop',
-    zh: '空投'
-  }
+    zh: '空投',
+  },
+  recommendStakeLp: {
+    en: (params: string[]) =>
+      `Stake ${params[0]} ${params[1]} in total to reach the max unlock speed`,
+    zh: (params: string[]) =>
+      `总质押 ${params[0]} ${params[1]}可达到最大解锁速度`,
+  },
 };
 
 export default vault;

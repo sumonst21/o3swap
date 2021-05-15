@@ -1,6 +1,7 @@
 @import "src/styles/variable.scss";
 section.wrapper {
-  height: 360px;
+  line-height: 1;
+  padding-bottom: 40px;
   .header {
     display: block;
   }
@@ -8,54 +9,46 @@ section.wrapper {
     display: none;
   }
   .token-amount-container {
-    margin-top: 20px;
-    padding: 0 30px;
-    .content {
-      padding: 0 20px 25px;
-      background: #303030;
-      border-radius: 20px;
-      .top {
-        font-size: 16px;
-        font-weight: 400;
-        color: #8aa1a1;
-        line-height: 60px;
+    margin: 0 30px;
+    margin-top: 34px;
+    padding: 20px;
+    background: #303030;
+    border-radius: 20px;
+    .top {
+      font-size: 16px;
+      font-weight: 400;
+      color: #8aa1a1;
+    }
+    .asset {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      img {
+        width: 30px;
+        height: 30px;
+        background: #ffffff;
+        border-radius: 50%;
       }
-      .asset {
-        display: flex;
-        align-items: center;
-        &-img {
-          width: 30px;
-          height: 30px;
-          background: #ffffff;
-          opacity: 0.7;
-          border-radius: 50%;
+      .asset-name {
+        margin: 0 5px;
+        width: 90px;
+        font-size: 18px;
+        color: #fff;
+      }
+      input {
+        height: 40px;
+        width: calc(100% - 130px);
+        border-radius: 10px;
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        text-align: right;
+        &::placeholder {
+          color: #4a4a4a;
         }
-        &-name {
-          width: 88px;
-          height: 60px;
-          line-height: 60px;
-          font-size: 16px;
-          color: #8aa1a1;
-          margin: 0 15px;
-        }
-        .amount {
-          input {
-            width: 100%;
-            height: 50px;
-            border-radius: 10px;
-            padding: 0 20px;
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            text-align: right;
-            &::placeholder {
-              color: #4a4a4a;
-            }
-            &.focus {
-              background: #2b312d;
-              border: 1px solid #46b069;
-            }
-          }
+        &.focus {
+          background: #2b312d;
+          border: 1px solid #46b069;
         }
       }
     }
@@ -63,12 +56,15 @@ section.wrapper {
   .balance {
     padding: 0 40px;
     color: #8aa1a1;
-    font-size: 14px;
-    line-height: 50px;
+    margin-top: 14px;
+    &.recommend-stake-lp {
+      padding: 0 35px;
+    }
   }
   .btn {
     cursor: pointer;
     margin: auto;
+    margin-top: 35px;
     width: 360px;
     height: 60px;
     background: #46b069;
@@ -91,8 +87,14 @@ section.wrapper {
       display: flex;
     }
     .token-amount-container {
+      margin: 0 5%;
       margin-top: 10px;
-      padding: 0 5%;
+      padding: 5%;
+      .asset {
+        .asset-name {
+          font-size: 16px;
+        }
+      }
     }
     .balance {
       padding: 0 5%;

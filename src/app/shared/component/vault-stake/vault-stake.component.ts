@@ -26,6 +26,7 @@ export class VaultStakeComponent implements OnInit, OnDestroy {
   @Input() balance = '0';
   @Input() isStake = true;
   @Input() token: Token;
+  @Input() recommendStakeLp?: string;
   @Output() closeThis = new EventEmitter();
 
   inputAmount = '';

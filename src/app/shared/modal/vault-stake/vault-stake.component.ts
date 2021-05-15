@@ -9,6 +9,7 @@ export class VaultStakeModalComponent implements OnInit {
   @Input() balance = '0';
   @Input() isStake = true;
   @Input() token: Token;
+  @Input() recommendStakeLp: string;
 
   constructor(private modal: NzModalRef) {}
 
