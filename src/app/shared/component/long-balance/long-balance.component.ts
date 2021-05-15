@@ -17,6 +17,7 @@ export class LongBalanceComponent implements OnInit, OnChanges {
   @Input() length = 12;
   @Input() balance: string;
   @Input() decimals = -1;
+  @Input() countInMillions = false;
 
   displayBalance: string;
   showTooltip = false;
@@ -35,6 +36,26 @@ export class LongBalanceComponent implements OnInit, OnChanges {
     }
     const stringValue = this.balance.toString();
     const dataGroup = stringValue.split('.');
+    if (this.countInMillions) {
+      if (dataGroup[0].length > 9) {
+        const millonNumber = dataGroup[0].slice(0, -9) + '.' + dataGroup[0].slice(-9);
+        this.showTooltip = true;
+        this.displayBalance = new BigNumber(millonNumber).dp(2).toFixed() + 'B';
+        return;
+      }
+      if (dataGroup[0].length > 6) {
+        const millonNumber = dataGroup[0].slice(0, -6) + '.' + dataGroup[0].slice(-6);
+        this.showTooltip = true;
+        this.displayBalance = new BigNumber(millonNumber).dp(2).toFixed() + 'M';
+        return;
+      }
+      // if (dataGroup[0].length > 3) {
+      //   const millonNumber = dataGroup[0].slice(0, -3) + '.' + dataGroup[0].slice(-3);
+      //   this.showTooltip = true;
+      //   this.displayBalance = new BigNumber(millonNumber).dp(2).toFixed() + 'K';
+      //   return;
+      // }
+    }
     if (dataGroup[0].length >= this.length) {
       this.displayBalance = dataGroup[0];
       this.showTooltip = true;
