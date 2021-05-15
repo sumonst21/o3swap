@@ -162,8 +162,12 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultdMetaMaskWalletApiService.getO3StakingSharePerBlock(item) ||
           '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
-          res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -180,8 +184,12 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultdMetaMaskWalletApiService.getO3StakingSharePerBlock(item) ||
           '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
-          res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -210,6 +218,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async initAridrop(): Promise<void> {
+    return;
     const address =
       this.vaultdMetaMaskWalletApiService.vaultWallet?.address || '';
     const airdropList = await this.vaultdMetaMaskWalletApiService.getAirdropListJson();
@@ -262,7 +271,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           token,
           balance,
           isStake,
-          recommendStakeLp: isStake ? this.o3Locked : '',
+          recommendStakeLp: isStake ? this.calculateUnlockStake() : '',
         },
       });
     } else {
@@ -276,7 +285,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           token,
           balance,
           isStake,
-          recommendStakeLp: isStake ? this.o3Locked : '',
+          recommendStakeLp: isStake ? this.calculateUnlockStake() : '',
         },
       });
     }
@@ -418,6 +427,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimAirdrop(): Promise<void> {
+    return;
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -539,8 +549,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     return true;
   }
   showApproveModal(token: Token, spender: string): void {
-    const walletName =
-      this.vaultdMetaMaskWalletApiService.vaultWallet.walletName;
+    const walletName = this.vaultdMetaMaskWalletApiService.vaultWallet
+      .walletName;
     const address = this.vaultdMetaMaskWalletApiService.vaultWallet.address;
     if (!this.commonService.isMobileWidth()) {
       this.modal.create({
@@ -572,5 +582,12 @@ export class VaultComponent implements OnInit, OnDestroy {
         },
       });
     }
+  }
+
+  calculateUnlockStake(): string {
+    const lockNum = new BigNumber(this.o3Locked);
+    const standerBalnce = new BigNumber(300000);
+    const standerLp = new BigNumber('0.387298334620740688');
+    return lockNum.div(standerBalnce).times(standerLp).dp(8).toFixed();
   }
 }
