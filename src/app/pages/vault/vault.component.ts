@@ -218,7 +218,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async initAridrop(): Promise<void> {
-    return;
     const address =
       this.vaultdMetaMaskWalletApiService.vaultWallet?.address || '';
     const airdropList = await this.vaultdMetaMaskWalletApiService.getAirdropListJson();
@@ -232,6 +231,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       !this.vaultdMetaMaskWalletApiService.vaultWallet ||
       !addressAirdropInfo
     ) {
+      this.airdropO3 = '0';
       return;
     }
     this.addressAirdropData = addressAirdropInfo;
@@ -427,7 +427,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async claimAirdrop(): Promise<void> {
-    return;
     if (!this.checkWalletConnect()) {
       return;
     }
