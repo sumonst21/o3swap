@@ -139,6 +139,10 @@ const swap = {
     en: 'Close',
     zh: '关闭',
   },
+  ReceiveAmount: {
+    en: 'Receive Amount',
+    zh: '收到金额',
+  },
 };
 
 export default swap;
