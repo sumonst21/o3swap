@@ -82,14 +82,16 @@ export class O3EthWalletApiService {
   }
 
   sendTransaction(data, chain?: CHAINS): Promise<any> {
-    return o3dapi[chain]
-      .request(data)
-      .then((hash) => {
-        return hash;
-      })
-      .catch((error) => {
-        this.commonService.log(error);
-        this.swapService.handleEthDapiError(error, this.myWalletName);
-      });
+    return new Promise((resolve) => {
+      o3dapi[chain]
+        .request(data)
+        .then((hash) => {
+          resolve(hash);
+        })
+        .catch((error) => {
+          this.commonService.log(error);
+          this.swapService.handleEthDapiError(error, this.myWalletName);
+        });
+    });
   }
 }

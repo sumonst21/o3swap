@@ -86,15 +86,17 @@ export class NeolineWalletApiService {
   //#endregion
 
   invoke(params): Promise<any> {
-    return this.neolineDapi
-      .invoke(params)
-      .then(({ txid }) => {
-        return txid;
-      })
-      .catch((error) => {
-        this.commonService.log(error);
-        this.swapService.handleNeoDapiError(error, this.myWalletName);
-      });
+    return new Promise((resolve) => {
+      this.neolineDapi
+        .invoke(params)
+        .then(({ txid }) => {
+          resolve(txid);
+        })
+        .catch((error) => {
+          this.commonService.log(error);
+          this.swapService.handleNeoDapiError(error, this.myWalletName);
+        });
+    });
   }
 
   //#region private function

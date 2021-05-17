@@ -62,13 +62,15 @@ export class O3NeoWalletApiService {
   //#endregion
 
   invoke(params): Promise<any> {
-    return o3dapi.NEO.invoke(params)
-      .then(({ txid }) => {
-        return txid;
-      })
-      .catch((error) => {
-        this.commonService.log(error);
-        this.swapService.handleNeoDapiError(error, this.myWalletName);
-      });
+    return new Promise((resolve) => {
+      o3dapi.NEO.invoke(params)
+        .then(({ txid }) => {
+          resolve(txid);
+        })
+        .catch((error) => {
+          this.commonService.log(error);
+          this.swapService.handleNeoDapiError(error, this.myWalletName);
+        });
+    });
   }
 }

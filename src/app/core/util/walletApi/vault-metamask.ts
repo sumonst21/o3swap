@@ -135,15 +135,17 @@ export class VaultdMetaMaskWalletApiService {
 
   sendTransaction(data, chain: CHAINS): Promise<any> {
     this.ethereum = (window as any).ethereum;
-    return this.ethereum
-      .request(data)
-      .then((hash) => {
-        return hash;
-      })
-      .catch((error) => {
-        this.commonService.log(error);
-        this.swapService.handleEthDapiError(error, this.myWalletName);
-      });
+    return new Promise((resolve) => {
+      this.ethereum
+        .request(data)
+        .then((hash) => {
+          resolve(hash);
+        })
+        .catch((error) => {
+          this.commonService.log(error);
+          this.swapService.handleEthDapiError(error, this.myWalletName);
+        });
+    });
   }
 
   //#region private function

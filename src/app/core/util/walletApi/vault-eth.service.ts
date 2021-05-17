@@ -634,6 +634,9 @@ export class VaultEthWalletApiService {
     txHash: string,
     transactionType: number
   ): void {
+    if (!txHash) {
+      return;
+    }
     const pendingTx: VaultTransaction = {
       txid: this.commonService.remove0xHash(txHash),
       isPending: true,
