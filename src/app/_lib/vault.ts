@@ -19,6 +19,6 @@ export interface VaultTransaction {
   isFailed?: boolean;
   // 0 stake 1 unstake 2 claim
   transactionType: number;
-  walletName: WalletName;
+  walletName?: WalletName;
   min: boolean;
 }

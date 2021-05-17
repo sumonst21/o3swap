@@ -1,14 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ApiService, CommonService, SwapService } from '@core';
-import { VaultdMetaMaskWalletApiService } from '@core/util/walletApi/vault-metamask';
+import { ApiService, CommonService, SwapService, VaultEthWalletApiService } from '@core';
 import { O3_TOKEN, Token, LP_TOKENS, USD_TOKENS, ETH_PUSDT_ASSET } from '@lib';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
 import { Unsubscribable, Observable, interval } from 'rxjs';
+import { VaultWallet } from 'src/app/_lib/vault';
 
 interface State {
   language: any;
   rates: any;
+  vault: any;
 }
 
 @Component({
@@ -26,6 +27,10 @@ export class HubPoolComponent implements OnInit, OnDestroy {
   rates$: Observable<any>;
   rates = {};
 
+  private vaultUnScribe: Unsubscribable;
+  private vault$: Observable<any>;
+  private vaultWallet: VaultWallet;
+
   LPToken: any = LP_TOKENS.filter((item) => item.chain === 'ETH')[0];
   LPAPY = '--';
 
@@ -34,7 +39,7 @@ export class HubPoolComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<State>,
-    private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
+    private vaultEthWalletApiService: VaultEthWalletApiService,
     private commonService: CommonService,
     private swapService: SwapService,
     private apiService: ApiService
@@ -48,6 +53,10 @@ export class HubPoolComponent implements OnInit, OnDestroy {
       this.rates = state.rates;
       this.initAPY();
     });
+    this.vault$ = store.select('vault');
+    this.vaultUnScribe = this.vault$.subscribe((state) => {
+      this.vaultWallet = state.vaultWallet;
+    });
   }
   ngOnDestroy(): void {
     if (this.langUnScribe) {
@@ -58,6 +67,9 @@ export class HubPoolComponent implements OnInit, OnDestroy {
     }
     if (this.getallUsdtInterval) {
       this.getallUsdtInterval.unsubscribe();
+    }
+    if (this.vaultUnScribe) {
+      this.vaultUnScribe.unsubscribe();
     }
   }
 
@@ -92,14 +104,14 @@ export class HubPoolComponent implements OnInit, OnDestroy {
     Promise.all([
       this.swapService.getEthBalancByHash(
         this.LPToken,
-        this.vaultdMetaMaskWalletApiService.vaultWallet?.address || ''
+        this.vaultWallet?.address || ''
       ) || '--',
-      this.vaultdMetaMaskWalletApiService.getO3StakingTotalStaing(
+      this.vaultEthWalletApiService.getO3StakingTotalStaing(
         this.LPToken
       ) || '--',
-      this.vaultdMetaMaskWalletApiService.getO3StakingStaked(this.LPToken) ||
+      this.vaultEthWalletApiService.getO3StakingStaked(this.LPToken) ||
         '--',
-      this.vaultdMetaMaskWalletApiService.getO3StakingSharePerBlock(
+      this.vaultEthWalletApiService.getO3StakingSharePerBlock(
         this.LPToken
       ) || '0',
     ]).then((res) => {

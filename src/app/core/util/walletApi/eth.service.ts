@@ -18,6 +18,8 @@ import {
   CHAINS,
   POLY_WRAPPER_CONTRACT_HASH,
   O3_TOKEN,
+  METAMASK_CHAIN_ID,
+  MESSAGE,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
@@ -29,6 +31,8 @@ import { map } from 'rxjs/operators';
 import { RpcApiService } from '../../api/rpc.service';
 import { MetaMaskWalletApiService } from './metamask';
 import { O3EthWalletApiService } from './o3-eth';
+import { HttpClient } from '@angular/common/http';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 interface State {
   swap: SwapStateType;
@@ -47,14 +51,23 @@ export class EthApiService {
   private bridgeeTransaction: SwapTransaction;
   private liquidityTransaction: SwapTransaction;
 
+  private language$: Observable<any>;
+  private lang: string;
+
   constructor(
     private store: Store<State>,
     private swapService: SwapService,
     private commonService: CommonService,
     private rpcApiService: RpcApiService,
     private o3EthWalletApiService: O3EthWalletApiService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService
+    private metaMaskWalletApiService: MetaMaskWalletApiService,
+    private http: HttpClient,
+    private nzMessage: NzMessageService
   ) {
+    this.language$ = store.select('language');
+    this.language$.subscribe((state) => {
+      this.lang = state.language;
+    });
     this.swap$ = store.select('swap');
     this.swap$.subscribe((state) => {
       this.walletName.ETH = state.ethWalletName;
@@ -77,6 +90,33 @@ export class EthApiService {
       UPDATE_LIQUIDITY_PENDING_TX,
       'liquidity'
     );
+  }
+
+  getPreExecutionResult(
+    data: any[],
+    fromToken: Token
+  ): Promise<boolean> {
+    this.commonService.log('------pre execution');
+    data.push('latest');
+    return this.http
+      .post(this.rpcApiService.getEthRpcHost(fromToken.chain), {
+        jsonrpc: '2.0',
+        id: METAMASK_CHAIN_ID[fromToken.chain],
+        method: 'eth_call',
+        params: data,
+      })
+      .pipe(
+        map((res: any) => {
+          if (res.error) {
+            this.nzMessage.error(
+              res.error.message || MESSAGE.contractPreExecutionError[this.lang]
+            );
+            return false;
+          }
+          return true;
+        })
+      )
+      .toPromise();
   }
 
   //#region network
@@ -234,6 +274,11 @@ export class EthApiService {
         ),
       ],
     };
+    if (
+      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+    ) {
+      return;
+    }
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {
@@ -302,6 +347,11 @@ export class EthApiService {
         ),
       ],
     };
+    if (
+      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+    ) {
+      return;
+    }
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {
@@ -375,6 +425,11 @@ export class EthApiService {
         ),
       ],
     };
+    if (
+      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+    ) {
+      return;
+    }
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {
@@ -448,6 +503,11 @@ export class EthApiService {
         ),
       ],
     };
+    if (
+      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+    ) {
+      return;
+    }
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {
@@ -521,6 +581,11 @@ export class EthApiService {
         ),
       ],
     };
+    if (
+      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+    ) {
+      return;
+    }
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {
@@ -615,6 +680,11 @@ export class EthApiService {
         ),
       ],
     };
+    if (
+      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+    ) {
+      return;
+    }
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {
@@ -708,6 +778,11 @@ export class EthApiService {
         ),
       ],
     };
+    if (
+      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+    ) {
+      return;
+    }
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {
@@ -782,6 +857,11 @@ export class EthApiService {
         ),
       ],
     };
+    if (
+      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+    ) {
+      return;
+    }
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {
@@ -855,6 +935,11 @@ export class EthApiService {
         ),
       ],
     };
+    if (
+      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+    ) {
+      return;
+    }
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {

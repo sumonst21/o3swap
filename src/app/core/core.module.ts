@@ -12,6 +12,7 @@ import { O3EthWalletApiService } from './util/walletApi/o3-eth';
 import { VaultdMetaMaskWalletApiService } from './util/walletApi/vault-metamask';
 import { EthApiService } from './util/walletApi/eth.service';
 import { NeoApiService } from './util/walletApi/neo.service';
+import { VaultEthWalletApiService } from './util/walletApi/vault-eth.service';
 
 const SERVICES = [
   ApiService,
@@ -25,6 +26,7 @@ const SERVICES = [
   VaultdMetaMaskWalletApiService,
   EthApiService,
   NeoApiService,
+  VaultEthWalletApiService,
 ];
 //#endregion
 

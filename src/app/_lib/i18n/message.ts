@@ -71,4 +71,8 @@ export const MESSAGE = {
     en: (params: string[]) => `you will receive 0 ${params[0]}`,
     zh: (params: string[]) => `你将收到 0 ${params[0]}`,
   },
+  contractPreExecutionError: {
+    en: 'Transaction Error. Exception thrown in contract code.',
+    zh: '交易出错。合约代码执行异常。',
+  },
 };

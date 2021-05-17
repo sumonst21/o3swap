@@ -4,7 +4,7 @@ import {
   CommonService,
   EthApiService,
   SwapService,
-  VaultdMetaMaskWalletApiService,
+  VaultEthWalletApiService,
 } from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -95,7 +95,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     private drawerService: NzDrawerService,
     private ethApiService: EthApiService,
     private swapService: SwapService,
-    private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService
+    private vaultEthWalletApiService: VaultEthWalletApiService
   ) {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
@@ -595,11 +595,11 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         this.LPToken,
         this.ethAccountAddress
       ) || '0',
-      this.vaultdMetaMaskWalletApiService.getO3StakingStaked(
+      this.vaultEthWalletApiService.getO3StakingStaked(
         this.LPToken,
         this.ethAccountAddress
       ) || '--',
-      this.vaultdMetaMaskWalletApiService.getO3StakingTotalProfit(
+      this.vaultEthWalletApiService.getO3StakingTotalProfit(
         this.LPToken,
         this.ethAccountAddress
       ) || '--',

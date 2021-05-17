@@ -9,3 +9,4 @@ export * from './util/walletApi/o3-eth';
 export * from './util/walletApi/vault-metamask';
 export * from './util/walletApi/eth.service';
 export * from './util/walletApi/neo.service';
+export * from './util/walletApi/vault-eth.service';
