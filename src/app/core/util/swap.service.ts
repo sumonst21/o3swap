@@ -181,7 +181,7 @@ export class SwapService {
     if ((!this.accountAddress[token.chain] && !address) || address === '') {
       return;
     }
-    const data = this.getReqBalanceData(token, address);
+    const data = await this.getReqBalanceData(token, address);
     return this.rpcApiService.getEthTokenBalance(data, token).then((res) => {
       if (res) {
         return res;
