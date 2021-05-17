@@ -16,10 +16,12 @@
     </div>
   </div>
   <div class="balance recommend-stake-lp" *ngIf="recommendStakeLp">
+    <img  class="tip" src="/assets/images/dashboard/tip.png" alt="">
     {{ 'recommendStakeLp' | translate: lang:langPageName:[recommendStakeLp, token.symbol] }}
   </div>
   <div class="balance">
     {{ (isStake ? 'Balance' : 'Staked') | translate: lang:langPageName }}: {{ balance }} {{ token.symbol }}
+    <span class="max" (click)="maxStake()">MAX</span>
   </div>
   <div class="btn" (click)="confirm()">{{'Confirm' | translate: lang:langPageName}}</div>
 </section>

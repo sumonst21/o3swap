@@ -60,8 +60,19 @@ section.wrapper {
     color: #8aa1a1;
     margin-top: 14px;
     font-family: "fontRegular";
+    display: flex;
+    span.max {
+      color: #6162ef;
+      margin-left: 13px;
+      cursor: pointer;
+    }
     &.recommend-stake-lp {
       padding: 0 40px;
+      img {
+        width: 14px;
+        height: 14px;
+        margin-right: 5px;
+      }
     }
   }
   .btn {

@@ -55,6 +55,10 @@ export class VaultStakeComponent implements OnInit, OnDestroy {
     this.inputAmount = $event.target.value;
   }
 
+  maxStake(): void {
+    this.inputAmount = this.balance;
+  }
+
   close(): void {
     this.closeThis.emit();
   }
