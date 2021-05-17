@@ -54,6 +54,8 @@ import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { LottieModule } from 'ngx-lottie';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { NzTableModule } from 'ng-zorro-antd/table';
+import { VaultUnlockCalculatorComponent } from './component/vault-unlock-calculator/vault-unlock-calculator.component';
+import { VaultUnlockCalculatorModalComponent } from './modal/vault-unlock-calculator/vault-unlock-calculator.component';
 
 const COMPONENTS = [
   LoadingComponent,
@@ -78,8 +80,10 @@ const COMPONENTS = [
   SwapExchangeDrawerComponent,
   SwapExchangeModalComponent,
   VaultStakeComponent,
+  VaultUnlockCalculatorComponent,
   VaultStakeDrawerComponent,
   VaultStakeModalComponent,
+  VaultUnlockCalculatorModalComponent,
   ApproveComponent,
   ApproveDrawerComponent,
   ApproveModalComponent,

@@ -1,0 +1,10 @@
+@import "src/styles/variable.scss";
+section.wrapper {
+  line-height: 1;
+  padding-bottom: 40px;
+}
+
+@media screen and (max-width: $mobileMinWidth) {
+  section.wrapper {
+  }
+}
