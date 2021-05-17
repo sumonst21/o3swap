@@ -68,7 +68,7 @@ export class O3EthWalletApiService {
         this.nzMessage.success(MESSAGE.ConnectionSucceeded[this.lang]);
         this.walletName[chain] = this.myWalletName;
         this.swapService.listenEthBlockNumber();
-        this.swapService.getEthBalance(chain as CHAINS, false, address);
+        this.swapService.getEthBalance(chain as CHAINS, address);
         this.swapService.updateAccount(chain, address, this.myWalletName);
         return address;
       })

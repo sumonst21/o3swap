@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 import {
   NEOLINE_TX_HOST,
@@ -13,7 +12,6 @@ import {
   NETWORK,
   CommonHttpResponse,
   Token,
-  ETH_SOURCE_ASSET_HASH,
   NeoWalletName,
   WalletName,
 } from '@lib';
@@ -23,24 +21,25 @@ import { BigNumber } from 'bignumber.js';
 
 @Injectable()
 export class RpcApiService {
-  apiDo = environment.apiDomain;
-  headers = { Network: NETWORK.toLowerCase() };
+  private headers = { Network: NETWORK.toLowerCase() };
 
   constructor(private http: HttpClient, private commonService: CommonService) {}
 
-  //#region balances
-  getEthTokenBalance(params, token: Token): Promise<any> {
-    let method = 'eth_call';
-    if (token.assetID === ETH_SOURCE_ASSET_HASH) {
-      method = 'eth_getBalance';
+  getEthRpcHost(chain: CHAINS): string {
+    switch (chain) {
+      case 'ETH':
+        return ETH_RPC_HOST;
+      case 'BSC':
+        return BSC_RPC_HOST;
+      case 'HECO':
+        return HECO_RPC_HOST;
     }
+  }
+
+  //#region balances
+  getEthTokenBalance(data, token: Token): Promise<any> {
     return this.http
-      .post(this.getEthRpcHost(token.chain), {
-        jsonrpc: '2.0',
-        id: METAMASK_CHAIN_ID[token.chain],
-        method,
-        params,
-      })
+      .post(this.getEthRpcHost(token.chain), data)
       .pipe(
         map((response: any) => {
           const balance = response.result;
@@ -219,16 +218,6 @@ export class RpcApiService {
         })
       )
       .toPromise();
-  }
-  private getEthRpcHost(chain: CHAINS): string {
-    switch (chain) {
-      case 'ETH':
-        return ETH_RPC_HOST;
-      case 'BSC':
-        return BSC_RPC_HOST;
-      case 'HECO':
-        return HECO_RPC_HOST;
-    }
   }
   //#endregion
 }

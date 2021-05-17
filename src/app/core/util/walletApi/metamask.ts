@@ -122,7 +122,7 @@ export class MetaMaskWalletApiService {
           this.nzMessage.success(MESSAGE.ConnectionSucceeded[this.lang]);
         }
         this.swapService.listenEthBlockNumber();
-        this.swapService.getEthBalance(chain as CHAINS, false, address);
+        this.swapService.getEthBalance(chain as CHAINS, address);
         this.swapService.updateAccount(chain, address, this.myWalletName);
         this.addListener();
         return address;

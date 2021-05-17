@@ -21,10 +21,11 @@ import {
   UPDATE_NEO_BALANCES,
   UPDATE_NEO_ACCOUNT,
   UPDATE_NEO_WALLET_NAME,
+  METAMASK_CHAIN_ID,
 } from '@lib';
 import { CommonService } from './common.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { interval, Observable, of, Unsubscribable } from 'rxjs';
+import { forkJoin, interval, Observable, of, Unsubscribable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { getMessageFromCode } from 'eth-rpc-errors';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -115,41 +116,46 @@ export class SwapService {
         }
       });
   }
-  async getEthBalance(
-    chain: CHAINS,
-    isUpdate = true,
-    address?: string
-  ): Promise<boolean> {
+  async getEthBalance(chain: CHAINS, address?: string): Promise<void> {
     if (!this.accountAddress[chain] && !address) {
       return;
     }
     const tempTokenBalance: Token[] = JSON.parse(
       JSON.stringify(this.chainTokens[chain])
     );
-    return new Promise(async (resolve, reject) => {
+    const httpReqs = [];
+    for (const item of tempTokenBalance) {
+      const data = await this.getReqBalanceData(item, address);
+      httpReqs.push(
+        this.http.post(this.rpcApiService.getEthRpcHost(item.chain), data)
+      );
+    }
+    forkJoin(httpReqs).subscribe((res: any[]) => {
       const result = {};
-      for (const item of tempTokenBalance) {
-        const tempAmount = await this.getEthBalancByHash(item, address);
-        if (tempAmount) {
-          result[item.assetID] = JSON.parse(JSON.stringify(item));
-          result[item.assetID].amount = tempAmount;
-          if (isUpdate === false) {
-            this.dispatchUpdateBalance(chain, result);
-          }
+      res.forEach((resItem, index) => {
+        const balance = resItem.result;
+        if (
+          balance &&
+          !new BigNumber(balance).isNaN() &&
+          new BigNumber(balance).comparedTo(0) > 0
+        ) {
+          const token = tempTokenBalance[index];
+          result[token.assetID] = JSON.parse(JSON.stringify(token));
+          result[token.assetID].amount = new BigNumber(balance)
+            .shiftedBy(-token.decimals)
+            .toFixed();
         }
-      }
-      if (isUpdate === true) {
-        this.dispatchUpdateBalance(chain, result);
-      }
-      resolve(true);
+      });
+      this.dispatchUpdateBalance(chain, result);
     });
   }
-  async getEthBalancByHash(token: Token, address?: string): Promise<string> {
-    if ((!this.accountAddress[token.chain] && !address) || address === '') {
-      return;
-    }
+  private async getReqBalanceData(
+    token: Token,
+    address?: string
+  ): Promise<any> {
     address = address || this.accountAddress[token.chain];
-    let params;
+    let params: any[];
+    let method = 'eth_call';
     if (token.assetID !== ETH_SOURCE_ASSET_HASH) {
       const json = await this.getSwapJson('ethErc20');
       const ethErc20Contract = new this.web3.eth.Contract(json, token.assetID);
@@ -161,9 +167,22 @@ export class SwapService {
         'latest',
       ];
     } else {
+      method = 'eth_getBalance';
       params = [address, 'latest'];
     }
-    return this.rpcApiService.getEthTokenBalance(params, token).then((res) => {
+    return {
+      jsonrpc: '2.0',
+      id: METAMASK_CHAIN_ID[token.chain],
+      method,
+      params,
+    };
+  }
+  async getEthBalancByHash(token: Token, address?: string): Promise<string> {
+    if ((!this.accountAddress[token.chain] && !address) || address === '') {
+      return;
+    }
+    const data = this.getReqBalanceData(token, address);
+    return this.rpcApiService.getEthTokenBalance(data, token).then((res) => {
       if (res) {
         return res;
       }
