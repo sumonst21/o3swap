@@ -93,6 +93,7 @@ export class VaultUnlockCalculatorComponent implements OnInit, OnDestroy {
     this.o3Value = lpBigNumber
       .div(this.standerLp)
       .times(this.standerO3Amount)
+      .div(2)
       .dp(8)
       .toFixed();
     this.calculateO3Price();
@@ -106,6 +107,7 @@ export class VaultUnlockCalculatorComponent implements OnInit, OnDestroy {
     }
     this.lpValue = o3BigNumber
       .div(this.standerO3Amount)
+      .times(2)
       .times(this.standerLp)
       .dp(8)
       .toFixed();

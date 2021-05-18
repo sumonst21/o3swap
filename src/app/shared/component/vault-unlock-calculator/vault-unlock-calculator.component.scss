@@ -68,6 +68,7 @@ section.wrapper {
         justify-items: center;
         margin-left: 30px;
         padding-right: 20px;
+        flex-direction: column;
         .input-box {
           display: flex;
           input {
@@ -78,6 +79,13 @@ section.wrapper {
         span {
           align-items: center;
           display: flex;
+          padding-bottom: 15px;
+          padding-left: 15px;
+          flex: 1;
+          background: #303030;
+          border-radius: 10px;
+          color: 4a4a4a;
+          text-align: center;
         }
       }
       .exchange-img {
