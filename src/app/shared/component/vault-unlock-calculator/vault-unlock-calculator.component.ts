@@ -6,13 +6,14 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
-import { SwapStateType, Token } from '@lib';
+import { CommonService } from '@core/util/common.service';
+import { O3_TOKEN, Token } from '@lib';
 import { Store } from '@ngrx/store';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import BigNumber from 'bignumber.js';
 import { Unsubscribable, Observable } from 'rxjs';
 
 interface State {
-  swap: SwapStateType;
+  rates: any;
   language: any;
 }
 
@@ -25,34 +26,134 @@ export class VaultUnlockCalculatorComponent implements OnInit, OnDestroy {
   @Input() LPToken: Token;
   @Output() closeThis = new EventEmitter();
 
-  inputAmount = '';
+  lockedValue = '';
+  lpValue = '';
+  o3Value = '';
+  UsdtValue = '';
+
+  unlockSpeed = '--';
+  unlockTime = '--';
 
   langPageName = 'vault';
   langUnScribe: Unsubscribable;
   language$: Observable<any>;
   lang: string;
 
-  constructor(store: Store<State>, private nzMessage: NzMessageService) {
+  ratesUnScribe: Unsubscribable;
+  rates$: Observable<any>;
+  rates = {};
+
+  private unlockBlockGap = new BigNumber(15000);
+  private standerLp = new BigNumber('0.387298334620740688');
+  private standerO3Amount = new BigNumber('300000');
+  private blockTime = new BigNumber(13.2);
+  private K = new BigNumber(20).div(this.standerLp); // O3/LP/Block;
+
+  constructor(store: Store<State>, private commonService: CommonService) {
     this.language$ = store.select('language');
+    this.rates$ = store.select('rates');
     this.langUnScribe = this.language$.subscribe((state) => {
       this.lang = state.language;
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.ratesUnScribe = this.rates$.subscribe((state) => {
+      this.rates = state.rates;
+      console.log(this.rates);
+    });
+  }
 
   ngOnDestroy(): void {
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();
     }
+    if (this.ratesUnScribe) {
+      this.ratesUnScribe.unsubscribe();
+    }
   }
 
-  changeInputAmount($event): void {
-    this.inputAmount = $event.target.value;
+  changeLockedValue($event): void {
+    this.lockedValue = $event.target.value;
+    const lockNum = new BigNumber(this.lockedValue);
+    this.lpValue = lockNum
+      .div(this.standerO3Amount)
+      .times(this.standerLp)
+      .dp(8)
+      .toFixed();
+    this.calculateO3();
+    this.calculateSpeed();
+  }
+  calculateO3(): void {
+    const lpBigNumber = new BigNumber(this.lpValue);
+    if (lpBigNumber.isNaN()) {
+      this.o3Value = '';
+      return;
+    }
+    this.o3Value = lpBigNumber
+      .div(this.standerLp)
+      .times(this.standerO3Amount)
+      .dp(8)
+      .toFixed();
+    this.calculateO3Price();
+    this.calculateSpeed();
+  }
+  calculateLPValue(): void {
+    const o3BigNumber = new BigNumber(this.o3Value);
+    if (o3BigNumber.isNaN()) {
+      this.lpValue = '';
+      return;
+    }
+    this.lpValue = o3BigNumber
+      .div(this.standerO3Amount)
+      .times(this.standerLp)
+      .dp(8)
+      .toFixed();
+    const lockNum = new BigNumber(this.lockedValue);
+    this.calculateO3Price();
+    if (lockNum.isNaN()) {
+      return;
+    }
+    this.calculateSpeed();
+  }
+
+  calculateSpeed(): void {
+    const lockNum = new BigNumber(this.lockedValue);
+    if (lockNum.isNaN()) {
+      this.unlockSpeed = '--';
+      this.unlockTime = '--';
+      return;
+    }
+    const lpNum = new BigNumber(this.lpValue);
+    const currentSpeed = lpNum.times(this.K);
+    const maxSpeed = lockNum.div(this.unlockBlockGap);
+    if (currentSpeed.comparedTo(maxSpeed) === 1) {
+      this.unlockSpeed = maxSpeed.dp(8).toFixed();
+    } else {
+      this.unlockSpeed = currentSpeed.dp(8).toFixed();
+    }
+    this.unlockTime = lockNum
+      .div(this.unlockSpeed)
+      .times(this.blockTime)
+      .div(new BigNumber('3600'))
+      .dp(4)
+      .toFixed();
+  }
+
+  calculateO3Price(): void {
+    const o3Price = this.commonService.getAssetRate(this.rates, O3_TOKEN);
+    this.UsdtValue = new BigNumber(o3Price)
+      .times(new BigNumber(this.o3Value))
+      .dp(8)
+      .toFixed();
   }
 
   close(): void {
     this.closeThis.emit();
   }
-  confirm(): void {}
+  getLp(): void {
+    window.open(
+      `https://app.uniswap.org/#/add/v2/${this.LPToken.pairTokens[0]}/${this.LPToken.pairTokens[1]}`
+    );
+  }
 }

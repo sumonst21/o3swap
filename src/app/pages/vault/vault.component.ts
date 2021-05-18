@@ -13,6 +13,7 @@ import {
   ApproveDrawerComponent,
   VaultStakeDrawerComponent,
   VaultStakeModalComponent,
+  VaultUnlockCalculatorModalComponent,
 } from '@shared';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
@@ -164,8 +165,12 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
-          res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -180,8 +185,12 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
-          res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -563,6 +572,21 @@ export class VaultComponent implements OnInit, OnDestroy {
           fromAddress: address,
           walletName,
           spender,
+        },
+      });
+    }
+  }
+
+  showCalculator(): void {
+    if (!this.commonService.isMobileWidth()) {
+      this.modal.create({
+        nzContent: VaultUnlockCalculatorModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzClassName: 'custom-modal',
+        nzComponentParams: {
+          LPToken: this.stakeUnlockTokenList[0],
         },
       });
     }

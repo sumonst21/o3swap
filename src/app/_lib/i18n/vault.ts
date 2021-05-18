@@ -105,6 +105,34 @@ const vault = {
     zh: (params: string[]) =>
       `总质押 ${params[0]} ${params[1]}可达到最大解锁速度`,
   },
+  UnlockCalculator: {
+    en: 'Unlock Calculator',
+    zh: '解锁计算器',
+  },
+  LockedAmount: {
+    en: 'Locked amount',
+    zh: '待解锁数量',
+  },
+  RecommendedLP: {
+    en: 'Recommended LP',
+    zh: '推荐LP',
+  },
+  UnlockSpeed: {
+    en: 'Unlock speed',
+    zh: '解锁速度',
+  },
+  UnlockTime: {
+    en: 'Unlock time',
+    zh: '解锁时间',
+  },
+  O3Block: {
+    en: 'O3/block',
+    zh: 'O3/每区块',
+  },
+  hours: {
+    en: 'hours',
+    zh: '小时',
+  },
 };
 
 export default vault;

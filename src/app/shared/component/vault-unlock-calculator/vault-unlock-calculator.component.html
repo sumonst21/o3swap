@@ -1,2 +1,50 @@
 <section class="wrapper modal-content">
+  <div class="header padding">
+    <span class="title">{{ 'UnlockCalculator' | translate: lang:langPageName }}</span>
+    <img (click)="close()" class="close" src="/assets/images/swap/close.png" alt="">
+  </div>
+  <div class="content">
+    <div class="locked-amount-box">
+      <span>{{ 'LockedAmount' | translate: lang:langPageName }}</span>
+      <div class="input-box">
+        <input type="number" (input)="changeLockedValue($event)" [(ngModel)]="lockedValue" placeholder="0">
+      </div>
+    </div>
+    <p class="required-lp-label">{{ 'RecommendedLP' | translate: lang:langPageName }}</p>
+    <div class="result-box">
+      <div class="left-box">
+        <div class="input-box">
+          <input (input)="calculateO3()" [(ngModel)]="lpValue" type="number" placeholder="0">
+        </div>
+        <span>UNI-LP</span>
+      </div>
+      <img class="exchange-img" src="/assets/images/vault/exchange.png" alt="">
+      <div class="right-box">
+        <div>
+          <div class="input-box">
+            <input type="number" (input)="calculateLPValue()" [(ngModel)]="o3Value" placeholder="0">
+          </div>O3
+        </div>
+        <div>
+          <span>
+            <app-long-balance [balance]="UsdtValue  || '--'" [countInMillions]="true">
+            </app-long-balance>
+          </span> USDT
+        </div>
+        <img src="/assets/images/vault/add.png" alt="">
+      </div>
+    </div>
+  </div>
+  <p class="line"></p>
+  <p class="unlock-speed-box calculate-result-box">
+    {{ 'UnlockSpeed' | translate: lang:langPageName }} <span class="value">{{ unlockSpeed }}</span>
+    {{ 'O3Block' | translate: lang:langPageName }}
+  </p>
+  <p class="unlock-time-box calculate-result-box">
+    {{ 'UnlockTime' | translate: lang:langPageName }} <span class="value">{{ unlockTime }}</span>
+    {{ 'hours' | translate: lang:langPageName }}
+  </p>
+  <div class="get-lp-btn" (click)="getLp()">
+    <img src="/assets/images/vault/get-lp.png" alt="">{{ 'GetLP' | translate: lang:langPageName }}
+  </div>
 </section>

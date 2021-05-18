@@ -1,7 +1,170 @@
 @import "src/styles/variable.scss";
+
 section.wrapper {
   line-height: 1;
   padding-bottom: 40px;
+  .header {
+    display: block;
+  }
+  .input-box {
+    flex: 1;
+    input {
+      width: 100%;
+      padding-left: 15px;
+      font-family: "fontMedium";
+      font-size: 18px;
+      border: none;
+      color: #fff;
+      text-align: right;
+      &::placeholder {
+        color: #4a4a4a;
+      }
+      &.focus {
+        background: #2b312d;
+        border: 1px solid #46b069;
+      }
+    }
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    .locked-amount-box {
+      background-color: #303030;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 30px;
+      margin-left: 30px;
+      margin-right: 30px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      span {
+        color: #8aa1a1;
+        font-size: 14px;
+        font-family: "fontRegular";
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+    }
+    .required-lp-label {
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-family: "fontRegular";
+      margin-left: 40px;
+      color: #8aa1a1;
+    }
+
+    .result-box {
+      display: flex;
+      align-items: center;
+      .left-box {
+        background: #303030;
+        border-radius: 10px;
+        min-height: 100px;
+        display: flex;
+        flex: 1;
+        justify-content: center;
+        justify-items: center;
+        margin-left: 30px;
+        padding-right: 20px;
+        .input-box {
+          display: flex;
+          input {
+            text-align: left;
+            padding-right: 15px;
+          }
+        }
+        span {
+          align-items: center;
+          display: flex;
+        }
+      }
+      .exchange-img {
+        height: 18px;
+        width: 18px;
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+      .right-box {
+        height: 100px;
+        border: 1px solid #353535;
+        display: flex;
+        flex: 1;
+        position: relative;
+        border-radius: 10px;
+        flex-direction: column;
+        margin-right: 30px;
+        img {
+          height: 25px;
+          width: 25px;
+          position: absolute;
+          top: calc(50% - 12.5px);
+          left: calc(50% - 12.5px);
+        }
+        > div {
+          flex: 1;
+          justify-content: center;
+          align-items: center;
+          display: flex;
+          padding-right: 20px;
+          font-family: "fontRegular";
+          font-size: 16px;
+          input {
+            text-align: left;
+          }
+          &:nth-child(2) {
+            background: #303030;
+            border-radius: 10px;
+            justify-content: space-between;
+            padding-left: 15px;
+            color: #4a4a4a;
+            span {
+              max-width: 60px;
+              max-height: 50px;
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
+          }
+        }
+      }
+    }
+  }
+  .line {
+    height: 1px;
+    background: #353535;
+    margin: 20px 30px;
+  }
+  .calculate-result-box {
+    font-size: 14px;
+    color: white;
+    font-family: "fontRegular";
+    margin-bottom: 15px;
+    margin-left: 40px;
+    .value {
+      color: #46b069;
+    }
+  }
+  .get-lp-btn {
+    background-color: #2b312d;
+    border-radius: 15px;
+    padding: 10px;
+    color: #46b069;
+    font-size: 12px;
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    cursor: pointer;
+    img {
+      height: 16px;
+      width: 16px;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+    &:hover {
+      opacity: 0.7;
+    }
+  }
 }
 
 @media screen and (max-width: $mobileMinWidth) {
