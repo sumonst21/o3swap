@@ -5,8 +5,6 @@ import {
   NEOLINE_TX_HOST,
   O3_TX_HOST,
   ETH_RPC_HOST,
-  BSC_RPC_HOST,
-  HECO_RPC_HOST,
   METAMASK_CHAIN_ID,
   CHAINS,
   NETWORK,
@@ -25,21 +23,10 @@ export class RpcApiService {
 
   constructor(private http: HttpClient, private commonService: CommonService) {}
 
-  getEthRpcHost(chain: CHAINS): string {
-    switch (chain) {
-      case 'ETH':
-        return ETH_RPC_HOST;
-      case 'BSC':
-        return BSC_RPC_HOST;
-      case 'HECO':
-        return HECO_RPC_HOST;
-    }
-  }
-
   //#region balances
   getEthTokenBalance(data, token: Token): Promise<any> {
     return this.http
-      .post(this.getEthRpcHost(token.chain), data)
+      .post(ETH_RPC_HOST[token.chain], data)
       .pipe(
         map((response: any) => {
           const balance = response.result;
@@ -67,7 +54,7 @@ export class RpcApiService {
   getEthCall(params, token: Token, isDefault: boolean = false): Promise<any> {
     const method = 'eth_call';
     return this.http
-      .post(this.getEthRpcHost(token.chain), {
+      .post(ETH_RPC_HOST[token.chain], {
         jsonrpc: '2.0',
         id: METAMASK_CHAIN_ID[token.chain],
         method,
@@ -95,7 +82,7 @@ export class RpcApiService {
   //#region transaction
   getEthTxReceipt(txHash: string, chain: CHAINS): Observable<any> {
     return this.http
-      .post(this.getEthRpcHost(chain), {
+      .post(ETH_RPC_HOST[chain], {
         jsonrpc: '2.0',
         id: METAMASK_CHAIN_ID[chain],
         method: 'eth_getTransactionReceipt',

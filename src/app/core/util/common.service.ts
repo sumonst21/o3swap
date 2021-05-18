@@ -1,13 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
-import { MESSAGE, METAMASK_CHAIN_ID, Token } from '@lib';
+import { ETH_RPC_HOST, MESSAGE, METAMASK_CHAIN_ID, Token } from '@lib';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RpcApiService } from '../api/rpc.service';
 interface State {
   language: any;
 }
@@ -22,8 +21,7 @@ export class CommonService {
   constructor(
     public store: Store<State>,
     private nzMessage: NzMessageService,
-    private http: HttpClient,
-    private rpcApiService: RpcApiService
+    private http: HttpClient
   ) {
     this.language$ = store.select('language');
     this.language$.subscribe((state) => {
@@ -154,7 +152,7 @@ export class CommonService {
     this.log('------pre execution');
     data.push('latest');
     return this.http
-      .post(this.rpcApiService.getEthRpcHost(fromToken.chain), {
+      .post(ETH_RPC_HOST[fromToken.chain], {
         jsonrpc: '2.0',
         id: METAMASK_CHAIN_ID[fromToken.chain],
         method: 'eth_call',
