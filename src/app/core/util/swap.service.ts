@@ -22,6 +22,7 @@ import {
   UPDATE_NEO_ACCOUNT,
   UPDATE_NEO_WALLET_NAME,
   METAMASK_CHAIN_ID,
+  ETH_RPC_HOST,
 } from '@lib';
 import { CommonService } from './common.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -126,9 +127,7 @@ export class SwapService {
     const httpReqs = [];
     for (const item of tempTokenBalance) {
       const data = await this.getReqBalanceData(item, address);
-      httpReqs.push(
-        this.http.post(this.rpcApiService.getEthRpcHost(item.chain), data)
-      );
+      httpReqs.push(this.http.post(ETH_RPC_HOST[item.chain], data));
     }
     forkJoin(httpReqs).subscribe((res: any[]) => {
       const result = {};
