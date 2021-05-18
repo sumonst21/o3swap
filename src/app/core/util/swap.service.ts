@@ -149,38 +149,6 @@ export class SwapService {
       this.dispatchUpdateBalance(chain, result);
     });
   }
-  private async getReqBalanceData(
-    token: Token,
-    address?: string
-  ): Promise<any> {
-    address = address || this.accountAddress[token.chain];
-    let params: any[];
-    let method = 'eth_call';
-    if (token.assetID !== ETH_SOURCE_ASSET_HASH) {
-      const json = await this.getSwapJson('ethErc20');
-      const ethErc20Contract = new this.web3.eth.Contract(json, token.assetID);
-      const data = await ethErc20Contract.methods
-        .balanceOf(address)
-        .encodeABI();
-      params = [
-        this.commonService.getSendTransactionParams(
-          address,
-          token.assetID,
-          data
-        ),
-        'latest',
-      ];
-    } else {
-      method = 'eth_getBalance';
-      params = [address, 'latest'];
-    }
-    return {
-      jsonrpc: '2.0',
-      id: METAMASK_CHAIN_ID[token.chain],
-      method,
-      params,
-    };
-  }
   async getEthBalancByHash(token: Token, address?: string): Promise<string> {
     if ((!this.accountAddress[token.chain] && !address) || address === '') {
       return;
@@ -439,6 +407,38 @@ export class SwapService {
       type: dispatchBalanceType,
       data: balances,
     });
+  }
+  private async getReqBalanceData(
+    token: Token,
+    address?: string
+  ): Promise<any> {
+    address = address || this.accountAddress[token.chain];
+    let params: any[];
+    let method = 'eth_call';
+    if (token.assetID !== ETH_SOURCE_ASSET_HASH) {
+      const json = await this.getSwapJson('ethErc20');
+      const ethErc20Contract = new this.web3.eth.Contract(json, token.assetID);
+      const data = await ethErc20Contract.methods
+        .balanceOf(address)
+        .encodeABI();
+      params = [
+        this.commonService.getSendTransactionParams(
+          address,
+          token.assetID,
+          data
+        ),
+        'latest',
+      ];
+    } else {
+      method = 'eth_getBalance';
+      params = [address, 'latest'];
+    }
+    return {
+      jsonrpc: '2.0',
+      id: METAMASK_CHAIN_ID[token.chain],
+      method,
+      params,
+    };
   }
   //#endregion
 }

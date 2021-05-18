@@ -23,7 +23,7 @@ export class CommonService {
     public store: Store<State>,
     private nzMessage: NzMessageService,
     private http: HttpClient,
-    private rpcApiService: RpcApiService,
+    private rpcApiService: RpcApiService
   ) {
     this.language$ = store.select('language');
     this.language$.subscribe((state) => {
@@ -31,12 +31,12 @@ export class CommonService {
     });
   }
 
+  //#region global
   log(value: any): void {
     if (this.isProduction === false) {
       console.log(value);
     }
   }
-
   copy(value: string): void {
     const input = document.createElement('input');
     document.body.appendChild(input);
@@ -48,19 +48,12 @@ export class CommonService {
     }
     document.body.removeChild(input);
   }
-
-  decimalToInteger(value, decimals: number): string {
-    if (new BigNumber(value).isNaN()) {
-      return '';
-    }
-    return new BigNumber(value).shiftedBy(decimals).dp(0).toFixed();
+  isMobileWidth(): boolean {
+    return window.document.getElementsByTagName('body')[0].clientWidth <= 750;
   }
+  //#endregion
 
-  isNeoAddress(address: string): boolean {
-    const isAddressPattern = new RegExp(/^A([0-9a-zA-Z]{33})$/);
-    return isAddressPattern.test(address);
-  }
-
+  //#region asset
   getAssetRate(rates: {}, token: Token): string {
     let chain = token.chain.toLowerCase();
     if (chain === 'neo') {
@@ -84,7 +77,6 @@ export class CommonService {
     }
     return;
   }
-
   getAssetRateByHash(rates: {}, hash: string, chainType: string): string {
     let chain = chainType.toLowerCase();
     if (chain === 'neo') {
@@ -105,19 +97,21 @@ export class CommonService {
       return '0';
     }
   }
+  judgeAssetHash(hash: string, anotherHash: string): boolean {
+    return (
+      this.remove0xHash(hash).toLowerCase() ===
+      this.remove0xHash(anotherHash).toLowerCase()
+    );
+  }
+  //#endregion
 
+  //#region handle number, string
   add0xHash(hash: string): string {
     if ((hash || '').startsWith('0x')) {
       return hash;
     } else {
       return `0x${hash}`;
     }
-  }
-  judgeAssetHash(hash: string, anotherHash: string): boolean {
-    return (
-      this.remove0xHash(hash).toLowerCase() ===
-      this.remove0xHash(anotherHash).toLowerCase()
-    );
   }
   remove0xHash(hash: string): string {
     if ((hash || '').startsWith('0x')) {
@@ -126,9 +120,15 @@ export class CommonService {
       return hash || '';
     }
   }
-  isMobileWidth(): boolean {
-    return window.document.getElementsByTagName('body')[0].clientWidth <= 750;
+  decimalToInteger(value, decimals: number): string {
+    if (new BigNumber(value).isNaN()) {
+      return '';
+    }
+    return new BigNumber(value).shiftedBy(decimals).dp(0).toFixed();
   }
+  //#endregion
+
+  //#region eth dapi
   getSendTransactionParams(
     from: string,
     to: string,
@@ -173,4 +173,5 @@ export class CommonService {
       )
       .toPromise();
   }
+  //#endregion
 }
