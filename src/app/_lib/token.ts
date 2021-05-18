@@ -25,6 +25,8 @@ export const WETH_ASSET_HASH = {
   ETH: {
     standardTokenSymbol: 'ETH',
     symbol: 'WETH',
+    decimals: 18,
+    chain: 'ETH',
     assetID:
       NETWORK === 'MainNet'
         ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
@@ -37,6 +39,8 @@ export const WETH_ASSET_HASH = {
   BSC: {
     standardTokenSymbol: 'BNB',
     symbol: 'WBNB',
+    decimals: 18,
+    chain: 'BSC',
     assetID:
       NETWORK === 'MainNet'
         ? '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
@@ -49,6 +53,8 @@ export const WETH_ASSET_HASH = {
   HECO: {
     standardTokenSymbol: 'HT',
     symbol: 'WHT',
+    decimals: 18,
+    chain: 'HECO',
     assetID:
       NETWORK === 'MainNet'
         ? '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f'
