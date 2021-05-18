@@ -18,8 +18,6 @@ import {
   CHAINS,
   POLY_WRAPPER_CONTRACT_HASH,
   O3_TOKEN,
-  METAMASK_CHAIN_ID,
-  MESSAGE,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
@@ -31,12 +29,9 @@ import { map } from 'rxjs/operators';
 import { RpcApiService } from '../../api/rpc.service';
 import { MetaMaskWalletApiService } from './metamask';
 import { O3EthWalletApiService } from './o3-eth';
-import { HttpClient } from '@angular/common/http';
-import { NzMessageService } from 'ng-zorro-antd/message';
 
 interface State {
   swap: SwapStateType;
-  language: any;
 }
 @Injectable()
 export class EthApiService {
@@ -51,23 +46,14 @@ export class EthApiService {
   private bridgeeTransaction: SwapTransaction;
   private liquidityTransaction: SwapTransaction;
 
-  private language$: Observable<any>;
-  private lang: string;
-
   constructor(
     private store: Store<State>,
     private swapService: SwapService,
     private commonService: CommonService,
     private rpcApiService: RpcApiService,
     private o3EthWalletApiService: O3EthWalletApiService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private http: HttpClient,
-    private nzMessage: NzMessageService
+    private metaMaskWalletApiService: MetaMaskWalletApiService
   ) {
-    this.language$ = store.select('language');
-    this.language$.subscribe((state) => {
-      this.lang = state.language;
-    });
     this.swap$ = store.select('swap');
     this.swap$.subscribe((state) => {
       this.walletName.ETH = state.ethWalletName;
@@ -90,33 +76,6 @@ export class EthApiService {
       UPDATE_LIQUIDITY_PENDING_TX,
       'liquidity'
     );
-  }
-
-  getPreExecutionResult(
-    data: any[],
-    fromToken: Token
-  ): Promise<boolean> {
-    this.commonService.log('------pre execution');
-    data.push('latest');
-    return this.http
-      .post(this.rpcApiService.getEthRpcHost(fromToken.chain), {
-        jsonrpc: '2.0',
-        id: METAMASK_CHAIN_ID[fromToken.chain],
-        method: 'eth_call',
-        params: data,
-      })
-      .pipe(
-        map((res: any) => {
-          if (res.error) {
-            this.nzMessage.error(
-              res.error.message || MESSAGE.contractPreExecutionError[this.lang]
-            );
-            return false;
-          }
-          return true;
-        })
-      )
-      .toPromise();
   }
 
   //#region network
@@ -145,7 +104,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           fromAddress,
           WETH_ASSET_HASH[fromToken.chain].assetID,
           data,
@@ -189,7 +148,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           fromAddress,
           WETH_ASSET_HASH[fromToken.chain].assetID,
           data
@@ -266,7 +225,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           fromAddress,
           ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain],
           data,
@@ -275,7 +234,10 @@ export class EthApiService {
       ],
     };
     if (
-      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+      (await this.commonService.getPreExecutionResult(
+        requestData.params,
+        fromToken
+      )) !== true
     ) {
       return;
     }
@@ -340,7 +302,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           fromAddress,
           POLY_WRAPPER_CONTRACT_HASH[fromToken.chain],
           data
@@ -348,7 +310,10 @@ export class EthApiService {
       ],
     };
     if (
-      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+      (await this.commonService.getPreExecutionResult(
+        requestData.params,
+        fromToken
+      )) !== true
     ) {
       return;
     }
@@ -418,7 +383,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           fromAddress,
           AGGREGATOR_CONTRACT[fromToken.chain][chooseSwapPath.aggregator],
           data
@@ -426,7 +391,10 @@ export class EthApiService {
       ],
     };
     if (
-      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+      (await this.commonService.getPreExecutionResult(
+        requestData.params,
+        fromToken
+      )) !== true
     ) {
       return;
     }
@@ -495,7 +463,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           fromAddress,
           AGGREGATOR_CONTRACT[fromToken.chain][chooseSwapPath.aggregator],
           data,
@@ -504,7 +472,10 @@ export class EthApiService {
       ],
     };
     if (
-      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+      (await this.commonService.getPreExecutionResult(
+        requestData.params,
+        fromToken
+      )) !== true
     ) {
       return;
     }
@@ -574,7 +545,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           fromAddress,
           AGGREGATOR_CONTRACT[fromToken.chain][chooseSwapPath.aggregator],
           data
@@ -582,7 +553,10 @@ export class EthApiService {
       ],
     };
     if (
-      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+      (await this.commonService.getPreExecutionResult(
+        requestData.params,
+        fromToken
+      )) !== true
     ) {
       return;
     }
@@ -672,7 +646,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           fromAddress,
           AGGREGATOR_CONTRACT[fromToken.chain][chooseSwapPath.aggregator],
           data,
@@ -681,7 +655,10 @@ export class EthApiService {
       ],
     };
     if (
-      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+      (await this.commonService.getPreExecutionResult(
+        requestData.params,
+        fromToken
+      )) !== true
     ) {
       return;
     }
@@ -770,7 +747,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           fromAddress,
           AGGREGATOR_CONTRACT[fromToken.chain][chooseSwapPath.aggregator],
           data,
@@ -779,7 +756,10 @@ export class EthApiService {
       ],
     };
     if (
-      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+      (await this.commonService.getPreExecutionResult(
+        requestData.params,
+        fromToken
+      )) !== true
     ) {
       return;
     }
@@ -849,7 +829,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           address,
           ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain],
           data,
@@ -858,7 +838,10 @@ export class EthApiService {
       ],
     };
     if (
-      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+      (await this.commonService.getPreExecutionResult(
+        requestData.params,
+        fromToken
+      )) !== true
     ) {
       return;
     }
@@ -927,7 +910,7 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           address,
           ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain],
           data,
@@ -936,7 +919,10 @@ export class EthApiService {
       ],
     };
     if (
-      (await this.getPreExecutionResult(requestData.params, fromToken)) !== true
+      (await this.commonService.getPreExecutionResult(
+        requestData.params,
+        fromToken
+      )) !== true
     ) {
       return;
     }
@@ -984,7 +970,11 @@ export class EthApiService {
     const requestData = {
       method: 'eth_call',
       params: [
-        this.swapService.getSendTransactionParams(fromAddress, tokenhash, data),
+        this.commonService.getSendTransactionParams(
+          fromAddress,
+          tokenhash,
+          data
+        ),
         'latest',
       ],
     };
@@ -1029,7 +1019,11 @@ export class EthApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(fromAddress, tokenhash, data),
+        this.commonService.getSendTransactionParams(
+          fromAddress,
+          tokenhash,
+          data
+        ),
       ],
     };
     return this.metaMaskWalletApiService

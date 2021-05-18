@@ -1,11 +1,13 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
-import { MESSAGE, Token } from '@lib';
+import { MESSAGE, METAMASK_CHAIN_ID, Token } from '@lib';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Observable } from 'rxjs';
-
+import { map } from 'rxjs/operators';
+import { RpcApiService } from '../api/rpc.service';
 interface State {
   language: any;
 }
@@ -17,7 +19,12 @@ export class CommonService {
   private language$: Observable<any>;
   private lang: string;
 
-  constructor(public store: Store<State>, private nzMessage: NzMessageService) {
+  constructor(
+    public store: Store<State>,
+    private nzMessage: NzMessageService,
+    private http: HttpClient,
+    private rpcApiService: RpcApiService,
+  ) {
     this.language$ = store.select('language');
     this.language$.subscribe((state) => {
       this.lang = state.language;
@@ -121,5 +128,49 @@ export class CommonService {
   }
   isMobileWidth(): boolean {
     return window.document.getElementsByTagName('body')[0].clientWidth <= 750;
+  }
+  getSendTransactionParams(
+    from: string,
+    to: string,
+    data: string,
+    value?: string,
+    gas?: string,
+    gasPrice?: string
+  ): object {
+    if (value && !value.startsWith('0x')) {
+      value = '0x' + new BigNumber(value).toString(16);
+    }
+    to = this.add0xHash(to);
+    return {
+      from,
+      to,
+      value,
+      gas,
+      gasPrice,
+      data,
+    };
+  }
+  getPreExecutionResult(data: any[], fromToken: Token): Promise<boolean> {
+    this.log('------pre execution');
+    data.push('latest');
+    return this.http
+      .post(this.rpcApiService.getEthRpcHost(fromToken.chain), {
+        jsonrpc: '2.0',
+        id: METAMASK_CHAIN_ID[fromToken.chain],
+        method: 'eth_call',
+        params: data,
+      })
+      .pipe(
+        map((res: any) => {
+          if (res.error) {
+            this.nzMessage.error(
+              res.error.message || MESSAGE.contractPreExecutionError[this.lang]
+            );
+            return false;
+          }
+          return true;
+        })
+      )
+      .toPromise();
   }
 }

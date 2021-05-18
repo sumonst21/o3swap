@@ -11,7 +11,6 @@ import {
 import { Store } from '@ngrx/store';
 import { interval, Observable, of, Unsubscribable } from 'rxjs';
 import { CommonService } from '../common.service';
-import { SwapService } from '../swap.service';
 import Web3 from 'web3';
 import {
   VaultTransaction,
@@ -24,7 +23,6 @@ import BigNumber from 'bignumber.js';
 import { RpcApiService } from '@core/api/rpc.service';
 import BalanceTree from '../markle/balance-tree';
 import { VaultdMetaMaskWalletApiService } from './vault-metamask';
-import { EthApiService } from './eth.service';
 interface State {
   vault: any;
 }
@@ -41,11 +39,9 @@ export class VaultEthWalletApiService {
   constructor(
     private http: HttpClient,
     private store: Store<State>,
-    private swapService: SwapService,
     private commonService: CommonService,
     private rpcApiService: RpcApiService,
-    private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
-    private ethApiService: EthApiService
+    private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService
   ) {
     this.vault$ = store.select('vault');
     this.vault$.subscribe((state) => {
@@ -129,7 +125,7 @@ export class VaultEthWalletApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           address || this.vaultWallet.address,
           o3StakingContractHash,
           data
@@ -137,7 +133,7 @@ export class VaultEthWalletApiService {
       ],
     };
     if (
-      (await this.ethApiService.getPreExecutionResult(
+      (await this.commonService.getPreExecutionResult(
         requestData.params,
         token
       )) !== true
@@ -167,7 +163,7 @@ export class VaultEthWalletApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           this.vaultWallet.address,
           o3StakingContractHash,
           data
@@ -175,7 +171,7 @@ export class VaultEthWalletApiService {
       ],
     };
     if (
-      (await this.ethApiService.getPreExecutionResult(
+      (await this.commonService.getPreExecutionResult(
         requestData.params,
         token
       )) !== true
@@ -205,7 +201,7 @@ export class VaultEthWalletApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           address || this.vaultWallet.address,
           o3StakingContractHash,
           data
@@ -213,7 +209,7 @@ export class VaultEthWalletApiService {
       ],
     };
     if (
-      (await this.ethApiService.getPreExecutionResult(
+      (await this.commonService.getPreExecutionResult(
         requestData.params,
         token
       )) !== true
@@ -235,7 +231,7 @@ export class VaultEthWalletApiService {
     const o3Contract = new this.web3.eth.Contract(json, contractHash);
     const data = await o3Contract.methods.totalStaked().encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         this.vaultWallet?.address || contractHash,
         contractHash,
         data
@@ -255,7 +251,7 @@ export class VaultEthWalletApiService {
     const o3Contract = new this.web3.eth.Contract(json, contractHash);
     const data = await o3Contract.methods.getSharePerBlock().encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         this.vaultWallet?.address || contractHash,
         contractHash,
         data
@@ -283,7 +279,7 @@ export class VaultEthWalletApiService {
       .getTotalProfit(address || this.vaultWallet.address)
       .encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         address || this.vaultWallet.address,
         contractHash,
         data
@@ -308,7 +304,7 @@ export class VaultEthWalletApiService {
       .getStakingAmount(address || this.vaultWallet.address)
       .encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         address || this.vaultWallet.address,
         contractHash,
         data
@@ -336,7 +332,7 @@ export class VaultEthWalletApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           this.vaultWallet.address,
           O3TOKEN_CONTRACT,
           data
@@ -344,7 +340,7 @@ export class VaultEthWalletApiService {
       ],
     };
     if (
-      (await this.ethApiService.getPreExecutionResult(
+      (await this.commonService.getPreExecutionResult(
         requestData.params,
         token
       )) !== true
@@ -371,7 +367,7 @@ export class VaultEthWalletApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           this.vaultWallet.address,
           O3TOKEN_CONTRACT,
           data
@@ -379,7 +375,7 @@ export class VaultEthWalletApiService {
       ],
     };
     if (
-      (await this.ethApiService.getPreExecutionResult(
+      (await this.commonService.getPreExecutionResult(
         requestData.params,
         token
       )) !== true
@@ -401,7 +397,7 @@ export class VaultEthWalletApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(
+        this.commonService.getSendTransactionParams(
           this.vaultWallet.address,
           O3TOKEN_CONTRACT,
           data
@@ -409,7 +405,7 @@ export class VaultEthWalletApiService {
       ],
     };
     if (
-      (await this.ethApiService.getPreExecutionResult(
+      (await this.commonService.getPreExecutionResult(
         requestData.params,
         token
       )) !== true
@@ -436,7 +432,7 @@ export class VaultEthWalletApiService {
       .unlockedOf(this.vaultWallet.address)
       .encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         this.vaultWallet.address,
         O3TOKEN_CONTRACT,
         data
@@ -461,7 +457,7 @@ export class VaultEthWalletApiService {
       .lockedOf(this.vaultWallet.address)
       .encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         this.vaultWallet.address,
         O3TOKEN_CONTRACT,
         data
@@ -483,7 +479,7 @@ export class VaultEthWalletApiService {
     const o3Contract = new this.web3.eth.Contract(json, O3TOKEN_CONTRACT);
     const data = await o3Contract.methods.getStaked(token.assetID).encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         this.vaultWallet.address,
         O3TOKEN_CONTRACT,
         data
@@ -510,7 +506,7 @@ export class VaultEthWalletApiService {
       .getUnlockSpeed(this.vaultWallet.address, token.assetID)
       .encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         this.vaultWallet.address,
         O3TOKEN_CONTRACT,
         data
@@ -534,7 +530,7 @@ export class VaultEthWalletApiService {
       .claimableUnlocked(token.assetID)
       .encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         this.vaultWallet.address,
         O3TOKEN_CONTRACT,
         data
@@ -558,7 +554,7 @@ export class VaultEthWalletApiService {
     const o3Contract = new this.web3.eth.Contract(json, constractHash);
     const data = await o3Contract.methods.isClaimed(index).encodeABI();
     params = [
-      this.swapService.getSendTransactionParams(
+      this.commonService.getSendTransactionParams(
         this.vaultWallet.address,
         constractHash,
         data
@@ -610,7 +606,11 @@ export class VaultEthWalletApiService {
     const requestData = {
       method: 'eth_sendTransaction',
       params: [
-        this.swapService.getSendTransactionParams(account, constractHash, data),
+        this.commonService.getSendTransactionParams(
+          account,
+          constractHash,
+          data
+        ),
       ],
     };
     return this.vaultdMetaMaskWalletApiService

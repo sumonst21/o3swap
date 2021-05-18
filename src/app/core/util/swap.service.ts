@@ -163,7 +163,11 @@ export class SwapService {
         .balanceOf(address)
         .encodeABI();
       params = [
-        this.getSendTransactionParams(address, token.assetID, data),
+        this.commonService.getSendTransactionParams(
+          address,
+          token.assetID,
+          data
+        ),
         'latest',
       ];
     } else {
@@ -271,27 +275,6 @@ export class SwapService {
   getHash160FromAddress(text: string): any {
     text = this.commonService.remove0xHash(text);
     return this.reverseHex(text);
-  }
-  getSendTransactionParams(
-    from: string,
-    to: string,
-    data: string,
-    value?: string,
-    gas?: string,
-    gasPrice?: string
-  ): object {
-    if (value && !value.startsWith('0x')) {
-      value = '0x' + new BigNumber(value).toString(16);
-    }
-    to = this.commonService.add0xHash(to);
-    return {
-      from,
-      to,
-      value,
-      gas,
-      gasPrice,
-      data,
-    };
   }
   updateAccount(chain: string, address: string, walletName: WalletName): void {
     let dispatchAccountType;
