@@ -663,6 +663,10 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     ) {
       spender = POLY_WRAPPER_CONTRACT_HASH[this.fromToken.chain];
     }
+    let approveToken = this.fromToken;
+    if (this.fromToken.assetID === ETH_SOURCE_ASSET_HASH) {
+      approveToken = WETH_ASSET_HASH[this.fromToken.chain];
+    }
     if (!this.commonService.isMobileWidth()) {
       this.modal.create({
         nzContent: ApproveModalComponent,
@@ -672,7 +676,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         nzMaskClosable: false,
         nzClassName: 'custom-modal',
         nzComponentParams: {
-          fromToken: this.fromToken,
+          fromToken: approveToken,
           fromAddress: this.fromAddress,
           aggregator: this.chooseSwapPath.aggregator,
           walletName,
@@ -687,7 +691,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         nzPlacement: 'bottom',
         nzWrapClassName: 'custom-drawer approve',
         nzContentParams: {
-          fromToken: this.fromToken,
+          fromToken: approveToken,
           fromAddress: this.fromAddress,
           aggregator: this.chooseSwapPath.aggregator,
           walletName,
@@ -703,10 +707,12 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       return false;
     }
     if (
-      WETH_ASSET_HASH[this.fromToken.chain] &&
-      ((this.fromToken.assetID ===
-        WETH_ASSET_HASH[this.fromToken.chain].assetID &&
+      (WETH_ASSET_HASH[this.fromToken.chain] &&
+        this.fromToken.assetID ===
+          WETH_ASSET_HASH[this.fromToken.chain].assetID &&
         this.toToken.assetID === ETH_SOURCE_ASSET_HASH) ||
+      (WETH_ASSET_HASH[this.toToken.chain] &&
+        this.toToken.assetID === WETH_ASSET_HASH[this.toToken.chain].assetID &&
         this.fromToken.assetID === ETH_SOURCE_ASSET_HASH)
     ) {
       this.commonService.log('check show approve return');
