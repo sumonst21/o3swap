@@ -25,44 +25,26 @@ export const WETH_ASSET_HASH = {
   ETH: {
     standardTokenSymbol: 'ETH',
     symbol: 'WETH',
-    decimals: 18,
-    chain: 'ETH',
     assetID:
       NETWORK === 'MainNet'
         ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
         : '0xc778417e063141139fce010982780140aa0cd5ab',
-    logo:
-      NETWORK === 'MainNet'
-        ? `https://img.o3.network/logo/eth/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png`
-        : 'https://img.o3.network/logo/eth/0xc778417e063141139fce010982780140aa0cd5ab.png',
   },
   BSC: {
     standardTokenSymbol: 'BNB',
     symbol: 'WBNB',
-    decimals: 18,
-    chain: 'BSC',
     assetID:
       NETWORK === 'MainNet'
         ? '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
         : '0x094616f0bdfb0b526bd735bf66eca0ad254ca81f',
-    logo:
-      NETWORK === 'MainNet'
-        ? `https://img.o3.network/logo/bsc/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c.png`
-        : 'https://img.o3.network/logo/bsc/0x094616f0bdfb0b526bd735bf66eca0ad254ca81f.png',
   },
   HECO: {
     standardTokenSymbol: 'HT',
     symbol: 'WHT',
-    decimals: 18,
-    chain: 'HECO',
     assetID:
       NETWORK === 'MainNet'
         ? '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f'
         : '0x2550d9439a1c19f91f19316b5bd343180c12e315',
-    logo:
-      NETWORK === 'MainNet'
-        ? `https://img.o3.network/logo/heco/0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f.png`
-        : 'https://img.o3.network/logo/heco/0x2550d9439a1c19f91f19316b5bd343180c12e315.png',
   },
 };
 export const ETH_PUSDT_ASSET = {

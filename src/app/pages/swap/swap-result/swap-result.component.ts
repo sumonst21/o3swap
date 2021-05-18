@@ -24,6 +24,7 @@ import {
   MESSAGE,
   O3_TOKEN,
   POLY_WRAPPER_CONTRACT_HASH,
+  INIT_CHAIN_TOKENS,
 } from '@lib';
 import { ApiService, CommonService, EthApiService, NeoApiService } from '@core';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -45,6 +46,7 @@ interface State {
   setting: any;
   rates: any;
   language: any;
+  tokens: any;
 }
 
 @Component({
@@ -119,6 +121,10 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   language$: Observable<any>;
   lang: string;
 
+  tokensUnScribe: Unsubscribable;
+  tokens$: Observable<any>;
+  chainTokens = INIT_CHAIN_TOKENS;
+
   constructor(
     public store: Store<State>,
     private apiService: ApiService,
@@ -136,6 +142,10 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     this.swap$ = store.select('swap');
     this.setting$ = store.select('setting');
     this.rates$ = store.select('rates');
+    this.tokens$ = store.select('tokens');
+    this.tokensUnScribe = this.tokens$.subscribe((state) => {
+      this.chainTokens = state.chainTokens;
+    });
   }
 
   ngOnInit(): void {
@@ -184,6 +194,9 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     }
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();
+    }
+    if (this.tokensUnScribe) {
+      this.tokensUnScribe.unsubscribe();
     }
   }
 
@@ -665,7 +678,10 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     }
     let approveToken = this.fromToken;
     if (this.fromToken.assetID === ETH_SOURCE_ASSET_HASH) {
-      approveToken = WETH_ASSET_HASH[this.fromToken.chain];
+      approveToken = this.chainTokens[this.fromToken.chain].find(
+        (item: Token) =>
+          item.assetID === WETH_ASSET_HASH[this.fromToken.chain].assetID
+      );
     }
     if (!this.commonService.isMobileWidth()) {
       this.modal.create({
