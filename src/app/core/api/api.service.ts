@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '@env/environment';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
@@ -45,12 +44,10 @@ interface State {
 
 @Injectable()
 export class ApiService {
-  apiDo = environment.apiDomain;
-  RATE_HOST = 'https://hub.o3.network/v1';
-  TOTAL_DATA_HOST = 'https://monitor.api.o3swap.com';
+  private RATE_HOST = 'https://hub.o3.network/v1';
+  private TOTAL_DATA_HOST = 'https://monitor.api.o3swap.com';
 
-  tokens$: Observable<any>;
-  chainTokens = INIT_CHAIN_TOKENS;
+  private chainTokens = INIT_CHAIN_TOKENS;
 
   constructor(
     private http: HttpClient,

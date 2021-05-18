@@ -4,6 +4,7 @@ import {
   NeolineWalletApiService,
   MetaMaskWalletApiService,
   VaultdMetaMaskWalletApiService,
+  VaultEthWalletApiService,
   ApiService,
   EthApiService,
   NeoApiService,
@@ -42,6 +43,7 @@ export class AppComponent implements OnInit {
     private metaMaskWalletApiService: MetaMaskWalletApiService,
     private neolineWalletApiService: NeolineWalletApiService,
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
+    private vaultEthWalletApiService: VaultEthWalletApiService,
     private modal: NzModalService,
     private apiService: ApiService,
     private ethApiService: EthApiService,
@@ -76,11 +78,12 @@ export class AppComponent implements OnInit {
       this.showRisk = sessionShowRisk === 'false' ? false : true;
     }
     if (location.pathname !== '/' && location.pathname !== '/home') {
-      this.neolineWalletApiService.init();
-      this.metaMaskWalletApiService.init();
-      this.vaultdMetaMaskWalletApiService.init();
+      this.neolineWalletApiService.initConnect();
+      this.metaMaskWalletApiService.initConnect();
+      this.vaultdMetaMaskWalletApiService.initConnect();
       this.ethApiService.initTxs();
       this.neoApiService.initTx();
+      this.vaultEthWalletApiService.initTx();
     }
   }
 

@@ -627,6 +627,7 @@ export class VaultEthWalletApiService {
       });
   }
   //#endregion
+
   //#region private function
   private handleTx(
     fromToken: Token,

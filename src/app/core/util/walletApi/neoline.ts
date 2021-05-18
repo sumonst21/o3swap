@@ -40,7 +40,7 @@ export class NeolineWalletApiService {
   }
 
   //#region connect
-  init(): void {
+  initConnect(): void {
     const sessionNeoWalletName = sessionStorage.getItem(
       'neoWalletName'
     ) as NeoWalletName;

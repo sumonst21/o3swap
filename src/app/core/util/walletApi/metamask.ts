@@ -64,7 +64,7 @@ export class MetaMaskWalletApiService {
   }
 
   //#region connect
-  init(): void {
+  initConnect(): void {
     const intervalReq = interval(1000)
       .pipe(take(5))
       .subscribe(() => {
