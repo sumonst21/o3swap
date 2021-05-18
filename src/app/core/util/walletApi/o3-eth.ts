@@ -91,6 +91,7 @@ export class O3EthWalletApiService {
         .catch((error) => {
           this.commonService.log(error);
           this.swapService.handleEthDapiError(error, this.myWalletName);
+          resolve(undefined);
         });
     });
   }

@@ -70,6 +70,7 @@ export class O3NeoWalletApiService {
         .catch((error) => {
           this.commonService.log(error);
           this.swapService.handleNeoDapiError(error, this.myWalletName);
+          resolve(undefined);
         });
     });
   }

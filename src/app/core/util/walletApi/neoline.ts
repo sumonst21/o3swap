@@ -95,6 +95,7 @@ export class NeolineWalletApiService {
         .catch((error) => {
           this.commonService.log(error);
           this.swapService.handleNeoDapiError(error, this.myWalletName);
+          resolve(undefined);
         });
     });
   }

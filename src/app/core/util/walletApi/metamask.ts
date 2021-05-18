@@ -156,6 +156,7 @@ export class MetaMaskWalletApiService {
         .catch((error) => {
           this.commonService.log(error);
           this.swapService.handleEthDapiError(error, this.myWalletName);
+          resolve(undefined);
         });
     });
   }
