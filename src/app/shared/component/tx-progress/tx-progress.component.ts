@@ -13,6 +13,7 @@ import {
   EthWalletName,
   UPDATE_VAULT_STAKE_PENDING_TX,
   SwapTransactionType,
+  MESSAGE,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -92,6 +93,7 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     this.language$ = store.select('language');
     this.langUnScribe = this.language$.subscribe((state) => {
       this.lang = state.language;
+      this.getMinMessage();
     });
     this.swap$ = store.select('swap');
     this.vault$ = store.select('vault');
@@ -251,37 +253,41 @@ export class TxProgressComponent implements OnInit, OnDestroy {
 
   //#region private function
   getMinMessage(): void {
-    let message = 'Swap';
+    let message: string;
     switch (this.txAtPage) {
       case 'vault':
         message =
           this.vaultTransaction.transactionType === 2
-            ? 'Claim'
+            ? MESSAGE.Claim[this.lang]
             : this.vaultTransaction.transactionType === 1
-            ? 'Unstake'
-            : 'Stake';
+            ? MESSAGE.Unstake[this.lang]
+            : MESSAGE.Stake[this.lang];
         message += ` ${this.vaultTransaction?.amount} ${this.vaultTransaction?.fromToken?.symbol}`;
         if (this.vaultTransaction.transactionType === 3) {
-          message = `Approve ${this.vaultTransaction?.fromToken?.symbol}`;
+          message = `${MESSAGE.Approve[this.lang]} ${
+            this.vaultTransaction?.fromToken?.symbol
+          }`;
         }
         break;
       default:
         switch (this.transaction?.transactionType) {
           case SwapTransactionType.deposit:
-            message = 'Deposit';
+            message = MESSAGE.Deposit[this.lang];
             break;
           case SwapTransactionType.withdraw:
-            message = 'Withdraw';
+            message = MESSAGE.Withdraw[this.lang];
             break;
-          case SwapTransactionType.approve:
-            message = 'Approve';
+          case SwapTransactionType.swap:
+            message = MESSAGE.Swap[this.lang];
             break;
         }
         message += ` ${this.transaction?.amount} ${this.transaction?.fromToken?.symbol} for ${this.transaction?.receiveAmount} ${this.transaction?.toToken?.symbol}`;
         if (
-          this.transaction.transactionType === this.swapTransactionType.approve
+          this.transaction?.transactionType === this.swapTransactionType.approve
         ) {
-          message = `Approve ${this.transaction?.fromToken?.symbol}`;
+          message = `${MESSAGE.Approve[this.lang]} ${
+            this.transaction?.fromToken?.symbol
+          }`;
         }
     }
     if (message.length > 18) {

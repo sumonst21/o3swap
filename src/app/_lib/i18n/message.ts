@@ -79,4 +79,32 @@ export const MESSAGE = {
     en: 'Please wait for approval completed',
     zh: '请等授权完成',
   },
+  Swap: {
+    en: 'Swap',
+    zh: '兑换',
+  },
+  Deposit: {
+    en: 'Deposit',
+    zh: '存入',
+  },
+  Withdraw: {
+    en: 'Withdraw',
+    zh: '提取',
+  },
+  Stake: {
+    en: 'Stake',
+    zh: '质押',
+  },
+  Unstake: {
+    en: 'Unstake',
+    zh: '解锁',
+  },
+  Claim: {
+    en: 'Claim',
+    zh: '领取',
+  },
+  Approve: {
+    en: 'Approve',
+    zh: '授权',
+  },
 };
