@@ -25,6 +25,10 @@ import {
   O3_TOKEN,
   POLY_WRAPPER_CONTRACT_HASH,
   INIT_CHAIN_TOKENS,
+  SwapTransaction,
+  ETH_CROSS_SWAP_CONTRACT_HASH,
+  AGGREGATOR_CONTRACT,
+  SwapTransactionType,
 } from '@lib';
 import { ApiService, CommonService, EthApiService, NeoApiService } from '@core';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -92,6 +96,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   bscWalletName: EthWalletName;
   hecoWalletName: EthWalletName;
   tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
+  transaction: SwapTransaction;
 
   TOKENS: Token[] = []; // 所有的 tokens
   O3_AGGREGATOR_FEE = O3_AGGREGATOR_FEE;
@@ -167,6 +172,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.tokenBalance.ETH = state.ethBalances;
       this.tokenBalance.BSC = state.bscBalances;
       this.tokenBalance.HECO = state.hecoBalances;
+      this.transaction = state.transaction;
       this.getFromAndToAddress();
     });
     this.settingUnScribe = this.setting$.subscribe((state) => {
@@ -316,6 +322,9 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     if (showApprove === true) {
       this.inquiryInterval.unsubscribe();
       this.showApproveModal();
+      return;
+    }
+    if (showApprove === 'error') {
       return;
     }
     if (this.inquiryInterval) {
@@ -697,6 +706,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
           aggregator: this.chooseSwapPath.aggregator,
           walletName,
           spender,
+          txAtPage: 'swap',
         },
       });
     } else {
@@ -712,11 +722,12 @@ export class SwapResultComponent implements OnInit, OnDestroy {
           aggregator: this.chooseSwapPath.aggregator,
           walletName,
           spender,
+          txAtPage: 'swap',
         },
       });
     }
   }
-  async checkShowApprove(): Promise<boolean> {
+  async checkShowApprove(): Promise<any> {
     this.commonService.log('check show approve');
     if (this.fromToken.chain === 'NEO' || this.toToken.chain === 'NEO') {
       this.commonService.log('check show approve return');
@@ -734,17 +745,34 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.commonService.log('check show approve return');
       return false;
     }
-    let spender;
+    let spender = ETH_CROSS_SWAP_CONTRACT_HASH[this.fromToken.chain];
+    if (this.chooseSwapPath.aggregator) {
+      spender =
+        AGGREGATOR_CONTRACT[this.fromToken.chain][
+          this.chooseSwapPath.aggregator
+        ];
+    }
     if (
       this.fromToken.assetID === O3_TOKEN.assetID &&
       this.toToken.assetID === O3_TOKEN.assetID
     ) {
       spender = POLY_WRAPPER_CONTRACT_HASH[this.fromToken.chain];
     }
+    if (
+      this.transaction &&
+      this.transaction.transactionType === SwapTransactionType.approve &&
+      this.transaction.isPending &&
+      this.transaction.contract === spender &&
+      this.transaction.fromAddress === this.fromAddress &&
+      this.transaction.fromToken.assetID === this.fromToken.assetID &&
+      this.transaction.fromToken.chain === this.fromToken.chain
+    ) {
+      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+      return 'error';
+    }
     const balance = await this.ethApiService.getAllowance(
       this.fromToken,
       this.fromAddress,
-      this.chooseSwapPath.aggregator,
       spender
     );
     if (

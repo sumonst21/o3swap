@@ -10,6 +10,7 @@ export enum VaultTransactionType {
   stake = 0,
   unstake = 1,
   claim = 2,
+  approve = 3,
 }
 export interface VaultTransaction {
   txid: string;
@@ -17,8 +18,10 @@ export interface VaultTransaction {
   fromToken: Token;
   amount: string;
   isFailed?: boolean;
-  // 0 stake 1 unstake 2 claim
+  // 0 stake 1 unstake 2 claim 3 approve
   transactionType: number;
   walletName?: WalletName;
   min: boolean;
+  contract?: string;
+  fromAddress?: string;
 }

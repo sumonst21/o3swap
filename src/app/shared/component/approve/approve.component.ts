@@ -6,7 +6,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { Token } from '@lib';
+import { Token, TxAtPage } from '@lib';
 import { interval, Observable, Unsubscribable } from 'rxjs';
 import { EthApiService } from '@core';
 import { Store } from '@ngrx/store';
@@ -26,10 +26,10 @@ export class ApproveComponent implements OnInit, OnDestroy {
   @Input() fromToken: Token;
   @Input() fromAddress: string;
   @Input() walletName: string;
+  @Input() txAtPage: TxAtPage;
   @Output() closeThis = new EventEmitter();
 
   isApproveLoading = false;
-  approveInterval: Unsubscribable;
 
   langPageName = 'app';
   langUnScribe: Unsubscribable;
@@ -54,25 +54,18 @@ export class ApproveComponent implements OnInit, OnDestroy {
   ngOnInit(): void {}
 
   approve(): void {
-    if (this.approveInterval) {
-      this.approveInterval.unsubscribe();
-    }
     this.isApproveLoading = true;
     this.ethApiService
-      .approve(this.fromToken, this.fromAddress, this.aggregator, this.spender)
+      .approve(
+        this.txAtPage,
+        this.fromToken,
+        this.fromAddress,
+        this.aggregator,
+        this.spender
+      )
       .then((hash) => {
         if (hash) {
-          this.approveInterval = interval(5000).subscribe(async () => {
-            const receipt = await this.ethApiService.getReceipt(
-              hash,
-              this.fromToken.chain
-            );
-            if (receipt !== null) {
-              this.approveInterval.unsubscribe();
-              this.isApproveLoading = false;
-              this.close();
-            }
-          });
+          this.close();
         } else {
           this.isApproveLoading = false;
         }

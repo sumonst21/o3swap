@@ -30,7 +30,11 @@ import {
   USD_TOKENS,
 } from '@lib';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
-import { VaultWallet } from 'src/app/_lib/vault';
+import {
+  VaultTransaction,
+  VaultTransactionType,
+  VaultWallet,
+} from 'src/app/_lib/vault';
 interface State {
   language: any;
 }
@@ -53,6 +57,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   private vault$: Observable<any>;
   private vaultUnScribe: Unsubscribable;
   private vaultWallet: VaultWallet;
+  private vaultTransaction: VaultTransaction;
   isCanClick = true;
 
   ratesUnScribe: Unsubscribable;
@@ -99,6 +104,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.initO3Data();
     this.vaultUnScribe = this.vault$.subscribe((state) => {
       this.vaultWallet = state.vaultWallet;
+      this.vaultTransaction = state.vaultTransaction;
       this.initO3Data();
       this.initAridrop();
     });
@@ -165,12 +171,8 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [
-          item.balance,
-          item.totalStaking,
-          item.staked,
-          item.sharePerBlock,
-        ] = res;
+        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
+          res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -185,12 +187,8 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [
-          item.balance,
-          item.totalStaking,
-          item.staked,
-          item.sharePerBlock,
-        ] = res;
+        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
+          res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -302,6 +300,9 @@ export class VaultComponent implements OnInit, OnDestroy {
           this.showApproveModal(token, O3TOKEN_CONTRACT);
           return;
         }
+        if (showApprove === 'error') {
+          return;
+        }
         if (isStake) {
           this.vaultEthWalletApiService.stakeO3(token, res);
         } else {
@@ -364,6 +365,9 @@ export class VaultComponent implements OnInit, OnDestroy {
         );
         if (showApprove === true) {
           this.showApproveModal(token, contractHash);
+          return;
+        }
+        if (showApprove === 'error') {
           return;
         }
         if (isStake) {
@@ -513,11 +517,22 @@ export class VaultComponent implements OnInit, OnDestroy {
     address: string,
     inputAmount: string,
     spender: string
-  ): Promise<boolean> {
+  ): Promise<any> {
+    if (
+      this.vaultTransaction &&
+      this.vaultTransaction.transactionType === VaultTransactionType.approve &&
+      this.vaultTransaction.isPending &&
+      this.vaultTransaction.contract === spender &&
+      this.vaultTransaction.fromAddress === address &&
+      this.vaultTransaction.fromToken.assetID === token.assetID &&
+      this.vaultTransaction.fromToken.chain === token.chain
+    ) {
+      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+      return 'error';
+    }
     const balance = await this.ethApiService.getAllowance(
       token,
       address,
-      null,
       spender
     );
     if (new BigNumber(balance).comparedTo(new BigNumber(inputAmount)) >= 0) {
@@ -558,6 +573,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           fromAddress: address,
           walletName,
           spender,
+          txAtPage: 'vault',
         },
       });
     } else {
@@ -572,6 +588,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           fromAddress: address,
           walletName,
           spender,
+          txAtPage: 'vault',
         },
       });
     }

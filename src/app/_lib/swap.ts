@@ -8,6 +8,12 @@ export type TxProgress = {
   step3: { hash: string; status: 0 | 1 | 2 }; // 0 = 未开始, 1 = 进行中, 2 = 已完成
 };
 
+export enum SwapTransactionType {
+  swap = 'swap',
+  withdraw = 'withdraw',
+  deposit = 'deposit',
+  approve = 'approve',
+}
 export interface SwapTransaction {
   txid: string;
   isPending: boolean;
@@ -19,6 +25,9 @@ export interface SwapTransaction {
   progress?: TxProgress;
   isFailed?: boolean;
   walletName?: WalletName;
+  transactionType: SwapTransactionType;
+  contract?: string;
+  fromAddress?: string;
 }
 
 export interface SwapStateType {

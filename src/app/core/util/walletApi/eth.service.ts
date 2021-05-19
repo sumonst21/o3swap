@@ -15,9 +15,10 @@ import {
   BRIDGE_SLIPVALUE,
   WETH_ASSET_HASH,
   AGGREGATOR_CONTRACT,
-  CHAINS,
   POLY_WRAPPER_CONTRACT_HASH,
   O3_TOKEN,
+  INIT_CHAIN_TOKENS,
+  SwapTransactionType,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
@@ -25,13 +26,15 @@ import { interval, Observable, Unsubscribable } from 'rxjs';
 import { CommonService } from '../common.service';
 import { SwapService } from '../swap.service';
 import Web3 from 'web3';
-import { map } from 'rxjs/operators';
 import { RpcApiService } from '../../api/rpc.service';
 import { MetaMaskWalletApiService } from './metamask';
 import { O3EthWalletApiService } from './o3-eth';
+import { VaultEthWalletApiService } from './vault-eth.service';
+import { VaultTransactionType } from 'src/app/_lib/vault';
 
 interface State {
   swap: SwapStateType;
+  tokens: any;
 }
 @Injectable()
 export class EthApiService {
@@ -46,13 +49,18 @@ export class EthApiService {
   private bridgeeTransaction: SwapTransaction;
   private liquidityTransaction: SwapTransaction;
 
+  tokensUnScribe: Unsubscribable;
+  tokens$: Observable<any>;
+  chainTokens = INIT_CHAIN_TOKENS;
+
   constructor(
     private store: Store<State>,
     private swapService: SwapService,
     private commonService: CommonService,
     private rpcApiService: RpcApiService,
     private o3EthWalletApiService: O3EthWalletApiService,
-    private metaMaskWalletApiService: MetaMaskWalletApiService
+    private metaMaskWalletApiService: MetaMaskWalletApiService,
+    private vaultEthWalletApiService: VaultEthWalletApiService
   ) {
     this.swap$ = store.select('swap');
     this.swap$.subscribe((state) => {
@@ -62,6 +70,10 @@ export class EthApiService {
       this.transaction = Object.assign({}, state.transaction);
       this.bridgeeTransaction = Object.assign({}, state.bridgeeTransaction);
       this.liquidityTransaction = Object.assign({}, state.liquidityTransaction);
+    });
+    this.tokens$ = store.select('tokens');
+    this.tokensUnScribe = this.tokens$.subscribe((state) => {
+      this.chainTokens = state.chainTokens;
     });
   }
 
@@ -123,6 +135,7 @@ export class EthApiService {
           new BigNumber(inputAmount).shiftedBy(toToken.decimals).toFixed(),
           hash,
           'swap',
+          SwapTransactionType.swap,
           false
         );
         return hash;
@@ -165,6 +178,7 @@ export class EthApiService {
           new BigNumber(inputAmount).shiftedBy(toToken.decimals).toFixed(),
           hash,
           'swap',
+          SwapTransactionType.swap,
           false
         );
         return hash;
@@ -250,7 +264,8 @@ export class EthApiService {
           inputAmount,
           receiveAmount,
           hash,
-          txAtPage
+          txAtPage,
+          SwapTransactionType.swap
         );
         return hash;
       });
@@ -326,7 +341,8 @@ export class EthApiService {
           inputAmount,
           receiveAmount,
           hash,
-          txAtPage
+          txAtPage,
+          SwapTransactionType.swap
         );
         return hash;
       });
@@ -409,6 +425,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'swap',
+          SwapTransactionType.swap,
           false
         );
         return hash;
@@ -490,6 +507,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'swap',
+          SwapTransactionType.swap,
           false
         );
         return hash;
@@ -571,6 +589,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'swap',
+          SwapTransactionType.swap,
           false
         );
         return hash;
@@ -672,7 +691,8 @@ export class EthApiService {
           inputAmount,
           receiveAmount,
           hash,
-          'swap'
+          'swap',
+          SwapTransactionType.swap
         );
         return hash;
       });
@@ -773,7 +793,8 @@ export class EthApiService {
           inputAmount,
           receiveAmount,
           hash,
-          'swap'
+          'swap',
+          SwapTransactionType.swap
         );
         return hash;
       });
@@ -855,7 +876,8 @@ export class EthApiService {
           inputAmount,
           receiveAmount,
           hash,
-          'liquidity'
+          'liquidity',
+          SwapTransactionType.deposit
         );
         return hash;
       });
@@ -936,7 +958,8 @@ export class EthApiService {
           inputAmount,
           receiveAmount,
           hash,
-          'liquidity'
+          'liquidity',
+          SwapTransactionType.withdraw
         );
         return hash;
       });
@@ -947,8 +970,7 @@ export class EthApiService {
   async getAllowance(
     fromToken: Token,
     fromAddress: string,
-    aggregator?: string,
-    spender?: string
+    spender: string
   ): Promise<any> {
     this.commonService.log('\u001b[32m  ✓ start get allowance \u001b[0m');
     let tokenhash = fromToken.assetID;
@@ -957,15 +979,8 @@ export class EthApiService {
     }
     const json = await this.swapService.getSwapJson('ethErc20');
     const ethErc20Contract = new this.web3.eth.Contract(json, tokenhash);
-    let contract = ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain];
-    if (aggregator) {
-      contract = AGGREGATOR_CONTRACT[fromToken.chain][aggregator];
-    }
-    if (spender) {
-      contract = spender;
-    }
     const data = ethErc20Contract.methods
-      .allowance(fromAddress, contract)
+      .allowance(fromAddress, spender)
       .encodeABI();
     const requestData = {
       method: 'eth_call',
@@ -982,7 +997,6 @@ export class EthApiService {
       .sendTransaction(requestData, fromToken.chain)
       .then((result) => {
         this.commonService.log('allowance: ' + result);
-        this.commonService.log('aggregator: ' + aggregator);
         if (new BigNumber(result, 16).isNaN()) {
           return 0;
         }
@@ -992,14 +1006,18 @@ export class EthApiService {
       });
   }
   async approve(
+    txAtPage: TxAtPage,
     fromToken: Token,
     fromAddress: string,
     aggregator?: string,
     spender?: string
   ): Promise<any> {
-    let tokenhash = fromToken.assetID;
+    let approveToken = fromToken;
     if (fromToken.assetID === ETH_SOURCE_ASSET_HASH) {
-      tokenhash = WETH_ASSET_HASH[fromToken.chain].assetID;
+      approveToken = this.chainTokens[fromToken.chain].find(
+        (item: Token) =>
+          item.assetID === WETH_ASSET_HASH[fromToken.chain].assetID
+      );
     }
     let contract = ETH_CROSS_SWAP_CONTRACT_HASH[fromToken.chain];
     if (aggregator) {
@@ -1009,7 +1027,10 @@ export class EthApiService {
       contract = spender;
     }
     const json = await this.swapService.getSwapJson('ethErc20');
-    const ethErc20Contract = new this.web3.eth.Contract(json, tokenhash);
+    const ethErc20Contract = new this.web3.eth.Contract(
+      json,
+      approveToken.assetID
+    );
     const data = ethErc20Contract.methods
       .approve(
         contract,
@@ -1021,7 +1042,7 @@ export class EthApiService {
       params: [
         this.commonService.getSendTransactionParams(
           fromAddress,
-          tokenhash,
+          approveToken.assetID,
           data
         ),
       ],
@@ -1029,25 +1050,31 @@ export class EthApiService {
     return this.metaMaskWalletApiService
       .sendTransaction(requestData, fromToken.chain)
       .then((hash) => {
+        if (txAtPage === 'vault') {
+          this.vaultEthWalletApiService.handleTx(
+            approveToken,
+            '0',
+            hash,
+            VaultTransactionType.approve,
+            contract,
+            fromAddress
+          );
+        } else {
+          this.handleTx(
+            approveToken,
+            approveToken,
+            '0',
+            '0',
+            hash,
+            txAtPage,
+            SwapTransactionType.approve,
+            false,
+            contract,
+            fromAddress
+          );
+        }
         return hash;
       });
-  }
-  getReceipt(hash: string, chain?: CHAINS): Promise<any> {
-    return this.rpcApiService
-      .getEthTxReceipt(hash, chain)
-      .pipe(
-        map((receipt) => {
-          if (receipt) {
-            if (new BigNumber(receipt.status, 16).isZero()) {
-              return false;
-            } else {
-              return true;
-            }
-          }
-          return null;
-        })
-      )
-      .toPromise();
   }
   //#endregion
 
@@ -1093,7 +1120,10 @@ export class EthApiService {
     receiveAmount: string,
     txHash: string,
     txAtPage: TxAtPage,
-    hasCrossChain = true
+    transactionType: SwapTransactionType,
+    hasCrossChain = true,
+    contract?: string,
+    fromAddress?: string
   ): void {
     if (!txHash) {
       return;
@@ -1109,6 +1139,9 @@ export class EthApiService {
       receiveAmount: new BigNumber(receiveAmount)
         .shiftedBy(-toToken.decimals)
         .toFixed(),
+      transactionType,
+      contract,
+      fromAddress,
     };
     if (hasCrossChain) {
       pendingTx.progress = {

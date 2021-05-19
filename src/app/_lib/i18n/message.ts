@@ -75,4 +75,8 @@ export const MESSAGE = {
     en: 'Transaction Error. Exception thrown in contract code.',
     zh: '交易出错。合约代码执行异常。',
   },
+  waitApprove: {
+    en: 'Please wait for approval completed',
+    zh: '请等授权完成',
+  },
 };

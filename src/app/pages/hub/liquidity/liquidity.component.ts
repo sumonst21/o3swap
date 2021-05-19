@@ -8,7 +8,11 @@ import {
 } from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { SwapStateType } from 'src/app/_lib/swap';
+import {
+  SwapStateType,
+  SwapTransaction,
+  SwapTransactionType,
+} from 'src/app/_lib/swap';
 import {
   SWAP_CONTRACT_CHAIN_ID,
   BRIDGE_SLIPVALUE,
@@ -20,6 +24,7 @@ import {
   SOURCE_TOKEN_SYMBOL,
   MESSAGE,
   O3_TOKEN,
+  ETH_CROSS_SWAP_CONTRACT_HASH,
 } from '@lib';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -73,6 +78,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
   private bscWalletName: EthWalletName;
   private hecoWalletName: EthWalletName;
   private tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
+  private liquidityTransaction: SwapTransaction;
 
   private ratesUnScribe: Unsubscribable;
   private rates$: Observable<any>;
@@ -128,6 +134,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.ethWalletName = state.ethWalletName;
       this.bscWalletName = state.bscWalletName;
       this.hecoWalletName = state.hecoWalletName;
+      this.liquidityTransaction = state.liquidityTransaction;
       this.handleAccountBalance(state);
       this.initLPData();
       this.changeDetectorRef.detectChanges();
@@ -208,9 +215,8 @@ export class LiquidityComponent implements OnInit, OnDestroy {
 
   async maxAddLiquidityInput(index: number): Promise<void> {
     if (!new BigNumber(this.addLiquidityTokens[index].amount).isNaN()) {
-      this.addLiquidityInputAmount[index] = this.addLiquidityTokens[
-        index
-      ].amount;
+      this.addLiquidityInputAmount[index] =
+        this.addLiquidityTokens[index].amount;
       this.receiveAmount[index] = await this.apiService.getPoolOutGivenSingleIn(
         this.addLiquidityTokens[index],
         this.addLiquidityInputAmount[index]
@@ -229,12 +235,11 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       !new BigNumber(this.LPToken.amount).isZero()
     ) {
       this.payAmount[index] = this.LPToken.amount;
-      this.removeLiquidityInputAmount[
-        index
-      ] = await this.apiService.getSingleOutGivenPoolIn(
-        this.addLiquidityTokens[index],
-        this.payAmount[index]
-      );
+      this.removeLiquidityInputAmount[index] =
+        await this.apiService.getSingleOutGivenPoolIn(
+          this.addLiquidityTokens[index],
+          this.payAmount[index]
+        );
       this.removePolyFee[index] = await this.apiService.getFromEthPolyFee(
         this.LPToken,
         this.addLiquidityTokens[index]
@@ -268,12 +273,16 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return;
     }
-    const allowance = await this.ethApiService.getAllowance(
+    const showApprove = await this.checkShowApprove(
       token,
+      tokenAmount,
       this.getFromTokenAddress(token)
     );
-    if (new BigNumber(allowance).comparedTo(tokenAmount) < 0) {
+    if (showApprove === true) {
       this.showApproveModal(token);
+      return;
+    }
+    if (showApprove === 'error') {
       return;
     }
     if (this.isSwapCanClick) {
@@ -338,12 +347,16 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.receive0[this.lang]([token.symbol]));
       return;
     }
-    const allowance = await this.ethApiService.getAllowance(
+    const showApprove = await this.checkShowApprove(
       this.LPToken,
+      lpPayAmount,
       this.getFromTokenAddress(token)
     );
-    if (new BigNumber(allowance).comparedTo(lpPayAmount) < 0) {
+    if (showApprove === true) {
       this.showApproveModal(this.LPToken);
+      return;
+    }
+    if (showApprove === 'error') {
       return;
     }
     if (this.isSwapCanClick) {
@@ -382,99 +395,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       });
   }
 
-  // async showStakingStake(
-  //   token: Token,
-  //   balance: string,
-  //   isStake: boolean = true
-  // ): Promise<void> {
-  //   if (this.checkWalletConnect(token) === false) {
-  //     return;
-  //   }
-  //   if (this.ethApiService.checkNetwork(token) === false) {
-  //     return;
-  //   }
-  //   const contractHash = O3STAKING_CONTRACT[token.assetID];
-  //   let modal;
-  //   if (!this.commonService.isMobileWidth()) {
-  //     modal = this.modal.create({
-  //       nzContent: VaultStakeModalComponent,
-  //       nzFooter: null,
-  //       nzTitle: null,
-  //       nzClosable: false,
-  //       nzClassName: 'custom-modal custom-stake-modal',
-  //       nzComponentParams: {
-  //         token,
-  //         balance,
-  //         isStake,
-  //       },
-  //     });
-  //   } else {
-  //     modal = this.drawerService.create({
-  //       nzContent: VaultStakeDrawerComponent,
-  //       nzTitle: null,
-  //       nzClosable: false,
-  //       nzPlacement: 'bottom',
-  //       nzWrapClassName: 'custom-drawer',
-  //       nzContentParams: {
-  //         token,
-  //         balance,
-  //         isStake,
-  //       },
-  //     });
-  //   }
-  //   modal.afterClose.subscribe(async (res) => {
-  //     if (res) {
-  //       if (!this.checkBalance(balance, res)) {
-  //         return;
-  //       }
-  //       const showApprove = await this.checkShowApprove(
-  //         token,
-  //         this.ethAccountAddress,
-  //         res,
-  //         contractHash
-  //       );
-  //       if (showApprove === true) {
-  //         this.showApproveModal(token, contractHash);
-  //         return;
-  //       }
-  //       if (isStake) {
-  //         this.vaultdMetaMaskWalletApiService.o3StakingStake(
-  //           token,
-  //           res,
-  //           this.ethAccountAddress
-  //         );
-  //       }
-  //     }
-  //   });
-  // }
-
-  // async claimProfit(token: any): Promise<void> {
-  //   if (this.checkWalletConnect(token) === false) {
-  //     return;
-  //   }
-  //   if (this.ethApiService.checkNetwork(token) === false) {
-  //     return;
-  //   }
-  //   if (this.isCanClick) {
-  //     this.isCanClick = false;
-  //     setTimeout(() => {
-  //       this.isCanClick = true;
-  //     }, 4000);
-  //   } else {
-  //     return;
-  //   }
-  //   const claimable = new BigNumber(this.LPEarned);
-  //   if (claimable.isNaN() || claimable.isZero()) {
-  //     return;
-  //   }
-  //   const contractHash = O3STAKING_CONTRACT[token.assetID];
-  //   this.vaultdMetaMaskWalletApiService.o3StakingClaimProfit(
-  //     token,
-  //     this.LPEarned,
-  //     this.ethAccountAddress
-  //   );
-  // }
-
   //#region
   checkInputAmountDecimal(amount: string, decimals: number): boolean {
     const decimalPart = amount && amount.split('.')[1];
@@ -484,19 +404,31 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     }
     return true;
   }
-  async checkShowApprove(
+  private async checkShowApprove(
     token: Token,
-    address: string,
-    inputAmount: string,
-    spender: string
-  ): Promise<boolean> {
-    const balance = await this.ethApiService.getAllowance(
+    amount,
+    address: string
+  ): Promise<any> {
+    const spender = ETH_CROSS_SWAP_CONTRACT_HASH[token.chain];
+    if (
+      this.liquidityTransaction &&
+      this.liquidityTransaction.transactionType ===
+        SwapTransactionType.approve &&
+      this.liquidityTransaction.isPending &&
+      this.liquidityTransaction.contract === spender &&
+      this.liquidityTransaction.fromAddress === address &&
+      this.liquidityTransaction.fromToken.assetID === token.assetID &&
+      this.liquidityTransaction.fromToken.chain === token.chain
+    ) {
+      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+      return 'error';
+    }
+    const allowance = await this.ethApiService.getAllowance(
       token,
       address,
-      null,
       spender
     );
-    if (new BigNumber(balance).comparedTo(new BigNumber(inputAmount)) >= 0) {
+    if (new BigNumber(allowance).comparedTo(new BigNumber(amount)) >= 0) {
       return false;
     } else {
       return true;
@@ -538,6 +470,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
           fromAddress: this.getFromTokenAddress(token),
           walletName,
           spender,
+          txAtPage: 'liquidity',
         },
       });
     } else {
@@ -551,6 +484,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
           fromToken: token,
           fromAddress: this.getFromTokenAddress(token),
           walletName,
+          txAtPage: 'liquidity',
         },
       });
     }
@@ -646,25 +580,14 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       token.chain
     );
   }
-
-  private checkBalance(balance: string, input: string): boolean {
-    const balanceNumber = new BigNumber(balance);
-    const inputNumber = new BigNumber(input);
-    if (balanceNumber.comparedTo(input) < 0 || balanceNumber.isNaN()) {
-      this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
-      return false;
-    }
-    return true;
-  }
   private handleAccountBalance(state): void {
     this.tokenBalance.ETH = state.ethBalances;
     this.tokenBalance.BSC = state.bscBalances;
     this.tokenBalance.HECO = state.hecoBalances;
     this.addLiquidityTokens.forEach((item, index) => {
       if (this.tokenBalance[item.chain][item.assetID]) {
-        this.addLiquidityTokens[index].amount = this.tokenBalance[item.chain][
-          item.assetID
-        ].amount;
+        this.addLiquidityTokens[index].amount =
+          this.tokenBalance[item.chain][item.assetID].amount;
       } else {
         if (
           (item.chain === 'ETH' && this.ethAccountAddress) ||

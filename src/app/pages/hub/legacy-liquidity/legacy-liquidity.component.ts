@@ -2,7 +2,11 @@ import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ApiService, CommonService, EthApiService, SwapService } from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { SwapStateType } from 'src/app/_lib/swap';
+import {
+  SwapStateType,
+  SwapTransaction,
+  SwapTransactionType,
+} from 'src/app/_lib/swap';
 import {
   SWAP_CONTRACT_CHAIN_ID,
   METAMASK_CHAIN,
@@ -13,6 +17,7 @@ import {
   ConnectChainType,
   EthWalletName,
   MESSAGE,
+  ETH_CROSS_SWAP_CONTRACT_HASH,
 } from '@lib';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -56,6 +61,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   private hecoWalletName: EthWalletName;
   private metamaskNetworkId: number;
   private tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
+  private liquidityTransaction: SwapTransaction;
 
   private ratesUnScribe: Unsubscribable;
   private rates$: Observable<any>;
@@ -103,6 +109,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       this.bscWalletName = state.bscWalletName;
       this.hecoWalletName = state.hecoWalletName;
       this.metamaskNetworkId = state.metamaskNetworkId;
+      this.liquidityTransaction = state.liquidityTransaction;
       this.getCurrentChain();
       this.handleAccountBalance(state);
       this.handleCurrentAddress();
@@ -193,13 +200,12 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.receive0[this.lang]([token.symbol]));
       return;
     }
-    const allowance = await this.ethApiService.getAllowance(
-      this.LPToken,
-      this.currentAddress
-    );
-    if (new BigNumber(allowance).comparedTo(lpPayAmount) < 0) {
-      // await swapApi.approve(this.LPToken, this.currentAddress);
+    const showApprove = await this.checkShowApprove(this.LPToken, lpPayAmount);
+    if (showApprove === true) {
       this.showApproveModal(this.LPToken);
+      return;
+    }
+    if (showApprove === 'error') {
       return;
     }
     const amountOut = new BigNumber(this.removeLiquidityInputAmount[index])
@@ -226,6 +232,32 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   }
 
   //#region
+  private async checkShowApprove(token: Token, amount): Promise<any> {
+    const spender = ETH_CROSS_SWAP_CONTRACT_HASH[token.chain];
+    if (
+      this.liquidityTransaction &&
+      this.liquidityTransaction.transactionType ===
+        SwapTransactionType.approve &&
+      this.liquidityTransaction.isPending &&
+      this.liquidityTransaction.contract === spender &&
+      this.liquidityTransaction.fromAddress === this.currentAddress &&
+      this.liquidityTransaction.fromToken.assetID === token.assetID &&
+      this.liquidityTransaction.fromToken.chain === token.chain
+    ) {
+      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+      return 'error';
+    }
+    const allowance = await this.ethApiService.getAllowance(
+      token,
+      this.currentAddress,
+      spender
+    );
+    if (new BigNumber(allowance).comparedTo(new BigNumber(amount)) >= 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
   checkInputAmountDecimal(amount: string, decimals: number): boolean {
     const decimalPart = amount && amount.split('.')[1];
     if (decimalPart && decimalPart.length > decimals) {
@@ -260,6 +292,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
           fromToken: token,
           fromAddress: this.currentAddress,
           walletName,
+          txAtPage: 'liquidity',
         },
       });
     } else {
@@ -273,6 +306,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
           fromToken: token,
           fromAddress: this.currentAddress,
           walletName,
+          txAtPage: 'liquidity',
         },
       });
     }

@@ -12,6 +12,7 @@ import {
   TxAtPage,
   EthWalletName,
   UPDATE_VAULT_STAKE_PENDING_TX,
+  SwapTransactionType,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -56,6 +57,7 @@ export class TxProgressComponent implements OnInit, OnDestroy {
   showTxDetail = false;
   hasTransaction = false;
 
+  swapTransactionType = SwapTransactionType;
   swap$: Observable<any>;
   swapUnScribe: Unsubscribable;
   transaction: SwapTransaction;
@@ -259,15 +261,28 @@ export class TxProgressComponent implements OnInit, OnDestroy {
             ? 'Unstake'
             : 'Stake';
         message += ` ${this.vaultTransaction?.amount} ${this.vaultTransaction?.fromToken?.symbol}`;
+        if (this.vaultTransaction.transactionType === 3) {
+          message = `Approve ${this.vaultTransaction?.fromToken?.symbol}`;
+        }
         break;
       default:
-        if (this.txAtPage === 'liquidity') {
-          message =
-            this.transaction?.fromToken.symbol === 'LP'
-              ? 'Withdraw'
-              : 'Deposit';
+        switch (this.transaction?.transactionType) {
+          case SwapTransactionType.deposit:
+            message = 'Deposit';
+            break;
+          case SwapTransactionType.withdraw:
+            message = 'Withdraw';
+            break;
+          case SwapTransactionType.approve:
+            message = 'Approve';
+            break;
         }
         message += ` ${this.transaction?.amount} ${this.transaction?.fromToken?.symbol} for ${this.transaction?.receiveAmount} ${this.transaction?.toToken?.symbol}`;
+        if (
+          this.transaction.transactionType === this.swapTransactionType.approve
+        ) {
+          message = `Approve ${this.transaction?.fromToken?.symbol}`;
+        }
     }
     if (message.length > 18) {
       message = message.slice(0, 15) + '...';

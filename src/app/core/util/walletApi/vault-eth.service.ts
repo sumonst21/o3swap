@@ -629,11 +629,13 @@ export class VaultEthWalletApiService {
   //#endregion
 
   //#region private function
-  private handleTx(
+  handleTx(
     fromToken: Token,
     inputAmount: string,
     txHash: string,
-    transactionType: number
+    transactionType: number,
+    contract?: string,
+    fromAddress?: string
   ): void {
     if (!txHash) {
       return;
@@ -646,6 +648,8 @@ export class VaultEthWalletApiService {
       amount: inputAmount,
       transactionType,
       min: false,
+      contract,
+      fromAddress,
     };
     this.vaultTransaction = pendingTx;
     this.store.dispatch({

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Token } from '@lib';
+import { Token, TxAtPage } from '@lib';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
 @Component({
@@ -11,6 +11,7 @@ export class ApproveModalComponent implements OnInit {
   @Input() fromToken: Token;
   @Input() fromAddress: string;
   @Input() walletName: string;
+  @Input() txAtPage: TxAtPage;
 
   constructor(private modal: NzModalRef) {}
 

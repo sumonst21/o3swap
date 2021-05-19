@@ -12,6 +12,9 @@ import {
   CONST_BRIDGE_TOKENS,
   INIT_CHAIN_TOKENS,
   MESSAGE,
+  ETH_CROSS_SWAP_CONTRACT_HASH,
+  SwapTransaction,
+  SwapTransactionType,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -60,6 +63,7 @@ export class HubComponent implements OnInit, OnDestroy {
   bscWalletName: EthWalletName;
   hecoWalletName: EthWalletName;
   tokenBalances = { ETH: {}, BSC: {}, HECO: {} };
+  bridgeeTransaction: SwapTransaction;
 
   tokensUnScribe: Unsubscribable;
   tokens$: Observable<any>;
@@ -128,6 +132,7 @@ export class HubComponent implements OnInit, OnDestroy {
       this.ethWalletName = state.ethWalletName;
       this.bscWalletName = state.bscWalletName;
       this.hecoWalletName = state.hecoWalletName;
+      this.bridgeeTransaction = state.bridgeeTransaction;
       this.getFromAndToAddress();
       this.handleAccountBalance(state);
     });
@@ -288,6 +293,9 @@ export class HubComponent implements OnInit, OnDestroy {
       this.showApproveModal();
       return;
     }
+    if (showApprove === 'error') {
+      return;
+    }
     const bigNumberReceive = new BigNumber(this.receiveAmount)
       .shiftedBy(this.toToken.decimals)
       .dp(0)
@@ -346,6 +354,7 @@ export class HubComponent implements OnInit, OnDestroy {
           fromToken: this.fromToken,
           fromAddress: this.fromAddress,
           walletName,
+          txAtPage: 'bridge',
         },
       });
     } else {
@@ -359,6 +368,7 @@ export class HubComponent implements OnInit, OnDestroy {
           fromToken: this.fromToken,
           fromAddress: this.fromAddress,
           walletName,
+          txAtPage: 'bridge',
         },
       });
     }
@@ -445,10 +455,24 @@ export class HubComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  async checkShowApprove(): Promise<boolean> {
+  async checkShowApprove(): Promise<any> {
+    const spender = ETH_CROSS_SWAP_CONTRACT_HASH[this.fromToken.chain];
+    if (
+      this.bridgeeTransaction &&
+      this.bridgeeTransaction.transactionType === SwapTransactionType.approve &&
+      this.bridgeeTransaction.isPending &&
+      this.bridgeeTransaction.contract === spender &&
+      this.bridgeeTransaction.fromAddress === this.fromAddress &&
+      this.bridgeeTransaction.fromToken.assetID === this.fromToken.assetID &&
+      this.bridgeeTransaction.fromToken.chain === this.fromToken.chain
+    ) {
+      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+      return 'error';
+    }
     const balance = await this.ethApiService.getAllowance(
       this.fromToken,
-      this.fromAddress
+      this.fromAddress,
+      spender
     );
     if (
       new BigNumber(balance).comparedTo(new BigNumber(this.inputAmount)) >= 0

@@ -22,10 +22,16 @@
         <p class="status" *ngIf='!transaction?.isFailed && !transaction?.isPending'>
           {{ 'Success' | translate: lang:langPageName }}</p>
         <p class="status" *ngIf='transaction?.isFailed'>{{ 'Failed' | translate: lang:langPageName }}</p>
-        <div class="desc">
-          <span *ngIf="txAtPage!=='liquidity'">{{ 'Swap' | translate: lang:langPageName }}</span>
+        <div class="desc" *ngIf="transaction.transactionType === swapTransactionType.approve">
+          <span>{{ 'Approve' | translate: lang:'app' }}</span>&nbsp;{{ transaction?.fromToken?.symbol }}
+        </div>
+        <div class="desc" *ngIf="transaction.transactionType !== swapTransactionType.approve">
           <span
-            *ngIf="txAtPage==='liquidity'">{{ transaction?.fromToken.symbol==='LP' ? 'Withdraw' : 'Deposit' }}</span>
+            *ngIf="transaction.transactionType === swapTransactionType.swap">{{ 'Swap' | translate: lang:langPageName }}</span>
+          <span
+            *ngIf="transaction.transactionType === swapTransactionType.withdraw">{{ 'Withdraw' | translate: lang:langPageName }}</span>
+          <span
+            *ngIf="transaction.transactionType === swapTransactionType.deposit">{{ 'Deposit' | translate: lang:langPageName }}</span>
           &nbsp;<app-long-balance [balance]="transaction?.amount"></app-long-balance>
           &nbsp;{{ transaction?.fromToken?.symbol }}&nbsp;for&nbsp;<app-long-balance
             [balance]="transaction?.receiveAmount"></app-long-balance>&nbsp;{{ transaction?.toToken?.symbol }}
@@ -189,8 +195,14 @@
           {{ 'Success' | translate: lang:langPageName }}</p>
         <p class="status" *ngIf='vaultTransaction?.isFailed'>{{ 'Failed' | translate: lang:langPageName }}</p>
         <div class="desc">
-          <span>{{ (vaultTransaction.transactionType === vaultTransactionType.claim ? 'Claim' : (vaultTransaction.transactionType === vaultTransactionType.stake ? 'Stake' : 'Unstake')) | translate: lang:'vault' }}
-          </span>
+          <span
+            *ngIf="vaultTransaction.transactionType === vaultTransactionType.approve">{{ 'Approve' | translate: lang:'app' }}</span>
+          <span
+            *ngIf="vaultTransaction.transactionType === vaultTransactionType.claim">{{ 'Claim' | translate: lang:'vault' }}</span>
+          <span
+            *ngIf="vaultTransaction.transactionType === vaultTransactionType.stake">{{ 'Stake' | translate: lang:'vault' }}</span>
+          <span
+            *ngIf="vaultTransaction.transactionType === vaultTransactionType.unstake">{{ 'Unstake' | translate: lang:'vault' }}</span>
           &nbsp;<app-long-balance [balance]="vaultTransaction?.amount"></app-long-balance>
           &nbsp;{{ vaultTransaction?.fromToken?.symbol }}
         </div>
@@ -255,10 +267,16 @@
         <p class="status" *ngIf='!transaction?.isFailed && !transaction?.isPending'>
           {{ 'Success' | translate: lang:langPageName }}</p>
         <p class="status" *ngIf='transaction?.isFailed'>{{ 'Failed' | translate: lang:langPageName }}</p>
-        <div class="desc">
-          <span *ngIf="txAtPage!=='liquidity'">{{ 'Swap' | translate: lang:langPageName }}</span>
+        <div class="desc" *ngIf="transaction.transactionType === swapTransactionType.approve">
+          <span>{{ 'Approve' | translate: lang:'app' }}</span>&nbsp;{{ transaction?.fromToken?.symbol }}
+        </div>
+        <div class="desc" *ngIf="transaction.transactionType !== swapTransactionType.approve">
           <span
-            *ngIf="txAtPage==='liquidity'">{{ transaction?.fromToken.symbol==='LP' ? 'Withdraw' : 'Deposit' }}</span>
+            *ngIf="transaction.transactionType === swapTransactionType.swap">{{ 'Swap' | translate: lang:langPageName }}</span>
+          <span
+            *ngIf="transaction.transactionType === swapTransactionType.withdraw">{{ 'Withdraw' | translate: lang:langPageName }}</span>
+          <span
+            *ngIf="transaction.transactionType === swapTransactionType.deposit">{{ 'Deposit' | translate: lang:langPageName }}</span>ƒ
           &nbsp;<app-long-balance [balance]="transaction?.amount"></app-long-balance>
           &nbsp;{{ transaction?.fromToken?.symbol }}&nbsp;for&nbsp;<app-long-balance
             [balance]="transaction?.receiveAmount"></app-long-balance>&nbsp;{{ transaction?.toToken?.symbol }}
@@ -422,7 +440,14 @@
           {{ 'Success' | translate: lang:langPageName }}</p>
         <p class="status" *ngIf='vaultTransaction?.isFailed'>{{ 'Failed' | translate: lang:langPageName }}</p>
         <div class="desc">
-          <span>{{ (vaultTransaction.transactionType === vaultTransactionType.claim ? 'Claim' : (vaultTransaction.transactionType === vaultTransactionType.stake ? 'Stake' : 'Unstake')) | translate: lang:'vault' }}</span>
+          <span
+            *ngIf="vaultTransaction.transactionType === vaultTransactionType.approve">{{ 'Approve' | translate: lang:'app' }}</span>
+          <span
+            *ngIf="vaultTransaction.transactionType === vaultTransactionType.claim">{{ 'Claim' | translate: lang:'vault' }}</span>
+          <span
+            *ngIf="vaultTransaction.transactionType === vaultTransactionType.stake">{{ 'Stake' | translate: lang:'vault' }}</span>
+          <span
+            *ngIf="vaultTransaction.transactionType === vaultTransactionType.unstake">{{ 'Unstake' | translate: lang:'vault' }}</span>
           &nbsp;<app-long-balance [balance]="vaultTransaction?.amount"></app-long-balance>
           &nbsp;{{ vaultTransaction?.fromToken?.symbol }}
         </div>

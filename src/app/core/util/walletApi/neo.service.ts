@@ -17,6 +17,7 @@ import {
   NETWORK,
   SWAP_CONTRACT_CHAIN_ID,
   MESSAGE,
+  SwapTransactionType,
 } from '@lib';
 import { interval, Observable, Unsubscribable } from 'rxjs';
 import { wallet } from '@cityofzion/neon-js';
@@ -424,6 +425,7 @@ export class NeoApiService {
         .shiftedBy(-toToken.decimals)
         .toFixed(),
       walletName,
+      transactionType: SwapTransactionType.swap,
     };
     if (addLister === false) {
       pendingTx.progress = {
@@ -462,7 +464,9 @@ export class NeoApiService {
               type: UPDATE_PENDING_TX,
               data: this.transaction,
             });
-            this.swapService.getNeoBalances(this.transaction.walletName as NeoWalletName);
+            this.swapService.getNeoBalances(
+              this.transaction.walletName as NeoWalletName
+            );
           }
         })
         .catch((error) => {
