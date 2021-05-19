@@ -686,7 +686,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         nzFooter: null,
         nzTitle: null,
         nzClosable: false,
-        nzClassName: 'custom-modal',
+        nzClassName: 'custom-modal calculator',
         nzComponentParams: {
           LPToken: this.stakeUnlockTokenList[0],
         },

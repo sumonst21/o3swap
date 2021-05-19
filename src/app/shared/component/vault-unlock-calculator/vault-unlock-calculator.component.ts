@@ -138,7 +138,7 @@ export class VaultUnlockCalculatorComponent implements OnInit, OnDestroy {
       .div(this.unlockSpeed)
       .times(this.blockTime)
       .div(new BigNumber('3600'))
-      .dp(4)
+      .dp(2)
       .toFixed();
   }
 

@@ -6,6 +6,9 @@
   color: #fff;
   top: 260px;
   line-height: 1;
+  &.calculator {
+    width: 450px !important;
+  }
   &.tx-modal {
     width: 360px !important;
   }
