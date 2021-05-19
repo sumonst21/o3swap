@@ -6,7 +6,7 @@ import {
   SwapService,
   EthApiService,
 } from '@core';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { Unsubscribable, Observable, interval } from 'rxjs';
 import {
   ApproveModalComponent,
@@ -76,6 +76,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   o3StakingTokenList: any[] = TOKEN_STAKING_TOKENS;
   lpstakingTokenList: any[] = LP_STAKING_TOKENS;
 
+  private loader: NzModalRef = null;
   private getDataInterval: Unsubscribable;
 
   constructor(
@@ -128,6 +129,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (this.getDataInterval) {
       this.getDataInterval.unsubscribe();
     }
+    this.loader?.close();
   }
 
   async initO3Data(): Promise<void> {
@@ -171,8 +173,12 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
-          res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -187,8 +193,12 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
-          res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -303,10 +313,25 @@ export class VaultComponent implements OnInit, OnDestroy {
         if (showApprove === 'error') {
           return;
         }
+        this.loader = this.commonService.loading();
         if (isStake) {
-          this.vaultEthWalletApiService.stakeO3(token, res);
+          this.vaultEthWalletApiService
+            .stakeO3(token, res)
+            .then((_) => {
+              this.loader.close();
+            })
+            .catch((_) => {
+              this.loader.close();
+            });
         } else {
-          this.vaultEthWalletApiService.unstakeO3(token, res);
+          this.vaultEthWalletApiService
+            .unstakeO3(token, res)
+            .then((_) => {
+              this.loader.close();
+            })
+            .catch((_) => {
+              this.loader.close();
+            });
         }
       }
     });
@@ -370,10 +395,25 @@ export class VaultComponent implements OnInit, OnDestroy {
         if (showApprove === 'error') {
           return;
         }
+        this.loader = this.commonService.loading();
         if (isStake) {
-          this.vaultEthWalletApiService.o3StakingStake(token, res);
+          this.vaultEthWalletApiService
+            .o3StakingStake(token, res)
+            .then((_) => {
+              this.loader.close();
+            })
+            .catch((_) => {
+              this.loader.close();
+            });
         } else {
-          this.vaultEthWalletApiService.o3StakingUnStake(token, res);
+          this.vaultEthWalletApiService
+            .o3StakingUnStake(token, res)
+            .then((_) => {
+              this.loader.close();
+            })
+            .catch((_) => {
+              this.loader.close();
+            });
         }
       }
     });
@@ -399,7 +439,15 @@ export class VaultComponent implements OnInit, OnDestroy {
       return;
     }
     const contractHash = O3TOKEN_CONTRACT;
-    this.vaultEthWalletApiService.claimUnlocked(token, token.claimable);
+    this.loader = this.commonService.loading();
+    this.vaultEthWalletApiService
+      .claimUnlocked(token, token.claimable)
+      .then((_) => {
+        this.loader.close();
+      })
+      .catch((_) => {
+        this.loader.close();
+      });
   }
 
   async claimProfit(token: any): Promise<void> {
@@ -422,7 +470,15 @@ export class VaultComponent implements OnInit, OnDestroy {
       return;
     }
     const contractHash = O3STAKING_CONTRACT[token.assetID];
-    this.vaultEthWalletApiService.o3StakingClaimProfit(token, token.profit);
+    this.loader = this.commonService.loading();
+    this.vaultEthWalletApiService
+      .o3StakingClaimProfit(token, token.profit)
+      .then((_) => {
+        this.loader.close();
+      })
+      .catch((_) => {
+        this.loader.close();
+      });
   }
 
   async claimAirdrop(): Promise<void> {
@@ -444,7 +500,15 @@ export class VaultComponent implements OnInit, OnDestroy {
     } else {
       return;
     }
-    this.vaultEthWalletApiService.claimAirdrop();
+    this.loader = this.commonService.loading();
+    this.vaultEthWalletApiService
+      .claimAirdrop()
+      .then((_) => {
+        this.loader.close();
+      })
+      .catch((_) => {
+        this.loader.close();
+      });
   }
 
   getStakingAYP(token: any): string {
