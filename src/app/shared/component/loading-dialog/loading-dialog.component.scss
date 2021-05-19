@@ -1,0 +1,45 @@
+@import "src/styles/variable.scss";
+
+section.wrapper {
+  line-height: 1;
+  padding-bottom: 40px;
+  .loading-json {
+    width: 90px;
+    display: block;
+    margin: 0 auto;
+    margin-top: 10px;
+  }
+  .loading-title {
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    margin-top: 32px;
+    margin-left: 15px;
+    margin-right: 15px;
+    font-family: "fontDemiBold";
+  }
+  .loading-content {
+    color: #8aa1a1;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 16px;
+    margin-left: 15px;
+    margin-right: 15px;
+    font-family: "fontRegular";
+  }
+
+  .loading-tips {
+    color: #4a4a4a;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 58px;
+    margin-left: 15px;
+    margin-right: 15px;
+    font-family: "fontRegular";
+  }
+}
+
+@media screen and (max-width: $mobileMinWidth) {
+  section.wrapper {
+  }
+}

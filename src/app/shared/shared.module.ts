@@ -56,9 +56,13 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { VaultUnlockCalculatorComponent } from './component/vault-unlock-calculator/vault-unlock-calculator.component';
 import { VaultUnlockCalculatorModalComponent } from './modal/vault-unlock-calculator/vault-unlock-calculator.component';
+import { LoadingDialogComponent } from './component/loading-dialog/loading-dialog.component';
+import { LoadingDialogModalComponent } from './modal/loading-dialog/loading-dialog.component';
 
 const COMPONENTS = [
   LoadingComponent,
+  LoadingDialogComponent,
+  LoadingDialogModalComponent,
   TxProgressComponent,
   ExchartLiquidfillComponent,
   HeaderConnectComponent,

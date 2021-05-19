@@ -3,8 +3,10 @@ import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
 import { ETH_RPC_HOST, MESSAGE, METAMASK_CHAIN_ID, Token } from '@lib';
 import { Store } from '@ngrx/store';
+import { LoadingDialogModalComponent } from '@shared/modal/loading-dialog/loading-dialog.component';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 interface State {
@@ -17,15 +19,30 @@ export class CommonService {
 
   private language$: Observable<any>;
   private lang: string;
-
   constructor(
     public store: Store<State>,
     private nzMessage: NzMessageService,
-    private http: HttpClient
+    private http: HttpClient,
+    private modal: NzModalService
   ) {
     this.language$ = store.select('language');
     this.language$.subscribe((state) => {
       this.lang = state.language;
+    });
+  }
+
+  loading(transactionType?, params?): NzModalRef {
+    return this.modal.create({
+      nzContent: LoadingDialogModalComponent,
+      nzFooter: null,
+      nzTitle: null,
+      nzClosable: false,
+      nzWidth: 320,
+      nzClassName: 'custom-modal',
+      nzComponentParams: {
+        transactionType,
+        params,
+      },
     });
   }
 

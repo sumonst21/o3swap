@@ -1,0 +1,9 @@
+<section class="wrapper modal-content">
+  <div class="header padding">
+    <img (click)="close()" class="close" src="/assets/images/swap/close.png" alt="">
+  </div>
+  <ng-lottie class="loading-json" [options]="loadingOptions"></ng-lottie>
+  <p class="loading-title">Waiting For Confirmation</p>
+  <p class="loading-content">{{ message }}</p>
+  <p class="loading-tips">Confirm this transaction in your wallet</p>
+</section>

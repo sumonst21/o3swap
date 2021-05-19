@@ -3,6 +3,7 @@ export { SwapExchangeModalComponent } from './modal/swap-exchange/swap-exchange.
 export { SwapSettingModalComponent } from './modal/swap-setting/swap-setting.component';
 export { VaultStakeModalComponent } from './modal/vault-stake/vault-stake.component';
 export { VaultUnlockCalculatorModalComponent } from './modal/vault-unlock-calculator/vault-unlock-calculator.component';
+export { LoadingDialogModalComponent } from './modal/loading-dialog/loading-dialog.component';
 export { ApproveModalComponent } from './modal/approve/approve.component';
 export { RiskWarningComponent } from './modal/risk-warning/risk-warning.component';
 export { AccountComponent } from './modal/account/account.component';
