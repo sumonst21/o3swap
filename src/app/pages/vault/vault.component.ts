@@ -452,7 +452,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     const contractHash = O3TOKEN_CONTRACT;
     this.loader = this.commonService.loading(VaultTransactionType.claim, {
-      symbol1: token.symbol,
+      symbol1: 'O3',
       value1: token.claimable,
     });
     this.vaultEthWalletApiService
