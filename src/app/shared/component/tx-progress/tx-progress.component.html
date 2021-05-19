@@ -29,9 +29,9 @@
           <span
             *ngIf="transaction.transactionType === swapTransactionType.swap">{{ 'Swap' | translate: lang:langPageName }}</span>
           <span
-            *ngIf="transaction.transactionType === swapTransactionType.withdraw">{{ 'Withdraw' | translate: lang:langPageName }}</span>
+            *ngIf="transaction.transactionType === swapTransactionType.withdraw">{{ 'Withdraw' | translate: lang:'liquidity' }}</span>
           <span
-            *ngIf="transaction.transactionType === swapTransactionType.deposit">{{ 'Deposit' | translate: lang:langPageName }}</span>
+            *ngIf="transaction.transactionType === swapTransactionType.deposit">{{ 'Deposit' | translate: lang:'liquidity' }}</span>
           &nbsp;<app-long-balance [balance]="transaction?.amount"></app-long-balance>
           &nbsp;{{ transaction?.fromToken?.symbol }}&nbsp;for&nbsp;<app-long-balance
             [balance]="transaction?.receiveAmount"></app-long-balance>&nbsp;{{ transaction?.toToken?.symbol }}
@@ -274,9 +274,9 @@
           <span
             *ngIf="transaction.transactionType === swapTransactionType.swap">{{ 'Swap' | translate: lang:langPageName }}</span>
           <span
-            *ngIf="transaction.transactionType === swapTransactionType.withdraw">{{ 'Withdraw' | translate: lang:langPageName }}</span>
+            *ngIf="transaction.transactionType === swapTransactionType.withdraw">{{ 'Withdraw' | translate: lang:'liquidity' }}</span>
           <span
-            *ngIf="transaction.transactionType === swapTransactionType.deposit">{{ 'Deposit' | translate: lang:langPageName }}</span>ƒ
+            *ngIf="transaction.transactionType === swapTransactionType.deposit">{{ 'Deposit' | translate: lang:'liquidity' }}</span>ƒ
           &nbsp;<app-long-balance [balance]="transaction?.amount"></app-long-balance>
           &nbsp;{{ transaction?.fromToken?.symbol }}&nbsp;for&nbsp;<app-long-balance
             [balance]="transaction?.receiveAmount"></app-long-balance>&nbsp;{{ transaction?.toToken?.symbol }}
