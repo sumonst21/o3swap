@@ -29,7 +29,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NavigationEnd, Router, RouterEvent } from '@angular/router';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { ApproveDrawerComponent, ApproveModalComponent } from '@shared';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
@@ -89,6 +89,8 @@ export class LiquidityComponent implements OnInit, OnDestroy {
   private langUnScribe: Unsubscribable;
   private language$: Observable<any>;
   public lang: string;
+
+  private loader: NzModalRef = null;
 
   constructor(
     private apiService: ApiService,
@@ -215,8 +217,9 @@ export class LiquidityComponent implements OnInit, OnDestroy {
 
   async maxAddLiquidityInput(index: number): Promise<void> {
     if (!new BigNumber(this.addLiquidityTokens[index].amount).isNaN()) {
-      this.addLiquidityInputAmount[index] =
-        this.addLiquidityTokens[index].amount;
+      this.addLiquidityInputAmount[index] = this.addLiquidityTokens[
+        index
+      ].amount;
       this.receiveAmount[index] = await this.apiService.getPoolOutGivenSingleIn(
         this.addLiquidityTokens[index],
         this.addLiquidityInputAmount[index]
@@ -235,11 +238,12 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       !new BigNumber(this.LPToken.amount).isZero()
     ) {
       this.payAmount[index] = this.LPToken.amount;
-      this.removeLiquidityInputAmount[index] =
-        await this.apiService.getSingleOutGivenPoolIn(
-          this.addLiquidityTokens[index],
-          this.payAmount[index]
-        );
+      this.removeLiquidityInputAmount[
+        index
+      ] = await this.apiService.getSingleOutGivenPoolIn(
+        this.addLiquidityTokens[index],
+        this.payAmount[index]
+      );
       this.removePolyFee[index] = await this.apiService.getFromEthPolyFee(
         this.LPToken,
         this.addLiquidityTokens[index]
@@ -303,6 +307,12 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         this.LPToken
       );
     }
+    this.loader = this.commonService.loading(SwapTransactionType.deposit, {
+      symbol1: token.symbol,
+      symbol2: this.LPToken.symbol,
+      value1: this.addLiquidityInputAmount[index],
+      value2: this.receiveAmount[index],
+    });
     this.ethApiService
       .addLiquidity(
         token,
@@ -315,9 +325,11 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       )
       .then((res) => {
         this.commonService.log(res);
+        this.loader.close();
       })
       .catch((error) => {
         this.nzMessage.error(error);
+        this.loader.close();
       });
   }
 
@@ -377,6 +389,12 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         token
       );
     }
+    this.loader = this.commonService.loading(SwapTransactionType.withdraw, {
+      symbol1: this.LPToken.symbol,
+      symbol2: token.symbol,
+      value1: this.payAmount[index],
+      value2: this.removeLiquidityInputAmount[index],
+    });
     this.ethApiService
       .removeLiquidity(
         this.LPToken,
@@ -389,9 +407,11 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       )
       .then((res) => {
         this.commonService.log(res);
+        this.loader.close();
       })
       .catch((error) => {
         this.nzMessage.error(error);
+        this.loader.close();
       });
   }
 
@@ -586,8 +606,9 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     this.tokenBalance.HECO = state.hecoBalances;
     this.addLiquidityTokens.forEach((item, index) => {
       if (this.tokenBalance[item.chain][item.assetID]) {
-        this.addLiquidityTokens[index].amount =
-          this.tokenBalance[item.chain][item.assetID].amount;
+        this.addLiquidityTokens[index].amount = this.tokenBalance[item.chain][
+          item.assetID
+        ].amount;
       } else {
         if (
           (item.chain === 'ETH' && this.ethAccountAddress) ||

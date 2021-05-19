@@ -35,7 +35,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import BigNumber from 'bignumber.js';
 import { interval, Observable, timer, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import {
   ApproveModalComponent,
   ApproveDrawerComponent,
@@ -130,6 +130,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   tokens$: Observable<any>;
   chainTokens = INIT_CHAIN_TOKENS;
 
+  private loader: NzModalRef = null;
   constructor(
     public store: Store<State>,
     private apiService: ApiService,
@@ -204,6 +205,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     if (this.tokensUnScribe) {
       this.tokensUnScribe.unsubscribe();
     }
+    this.loader.destroy();
   }
 
   init(): void {
@@ -338,6 +340,13 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     } else {
       return;
     }
+
+    this.loader = this.commonService.loading(SwapTransactionType.swap, {
+      symbol1: this.fromToken.symbol,
+      symbol2: this.toToken.symbol,
+      value1: this.inputAmount,
+      value2: this.chooseSwapPath?.receiveAmount,
+    });
     // neo 同链
     if (this.fromToken.chain === 'NEO' && this.toToken.chain === 'NEO') {
       if (
@@ -444,6 +453,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -459,6 +469,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -478,6 +489,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -496,6 +508,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -507,6 +520,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -523,6 +537,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -542,6 +557,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -561,6 +577,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -580,6 +597,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -600,6 +618,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
   swapExactTokensForTokensCrossChain(): void {
@@ -619,6 +638,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -640,6 +660,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
 
@@ -660,6 +681,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         if (res) {
           this.closePage.emit();
         }
+        this.loader.close();
       });
   }
   //#endregion

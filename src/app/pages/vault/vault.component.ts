@@ -313,7 +313,13 @@ export class VaultComponent implements OnInit, OnDestroy {
         if (showApprove === 'error') {
           return;
         }
-        this.loader = this.commonService.loading();
+        this.loader = this.commonService.loading(
+          isStake ? VaultTransactionType.stake : VaultTransactionType.unstake,
+          {
+            symbol1: token.symbol,
+            value1: res,
+          }
+        );
         if (isStake) {
           this.vaultEthWalletApiService
             .stakeO3(token, res)
@@ -395,7 +401,13 @@ export class VaultComponent implements OnInit, OnDestroy {
         if (showApprove === 'error') {
           return;
         }
-        this.loader = this.commonService.loading();
+        this.loader = this.commonService.loading(
+          isStake ? VaultTransactionType.stake : VaultTransactionType.unstake,
+          {
+            symbol1: token.symbol,
+            value1: res,
+          }
+        );
         if (isStake) {
           this.vaultEthWalletApiService
             .o3StakingStake(token, res)
@@ -439,7 +451,10 @@ export class VaultComponent implements OnInit, OnDestroy {
       return;
     }
     const contractHash = O3TOKEN_CONTRACT;
-    this.loader = this.commonService.loading();
+    this.loader = this.commonService.loading(VaultTransactionType.claim, {
+      symbol1: token.symbol,
+      value1: token.claimable,
+    });
     this.vaultEthWalletApiService
       .claimUnlocked(token, token.claimable)
       .then((_) => {
@@ -470,7 +485,10 @@ export class VaultComponent implements OnInit, OnDestroy {
       return;
     }
     const contractHash = O3STAKING_CONTRACT[token.assetID];
-    this.loader = this.commonService.loading();
+    this.loader = this.commonService.loading(VaultTransactionType.claim, {
+      symbol1: token.symbol,
+      value1: token.profit,
+    });
     this.vaultEthWalletApiService
       .o3StakingClaimProfit(token, token.profit)
       .then((_) => {
@@ -500,7 +518,10 @@ export class VaultComponent implements OnInit, OnDestroy {
     } else {
       return;
     }
-    this.loader = this.commonService.loading();
+    this.loader = this.commonService.loading(VaultTransactionType.claim, {
+      symbol1: 'O3',
+      value1: this.airdropO3,
+    });
     this.vaultEthWalletApiService
       .claimAirdrop()
       .then((_) => {

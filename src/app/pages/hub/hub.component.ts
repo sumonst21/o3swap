@@ -18,7 +18,7 @@ import {
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import BigNumber from 'bignumber.js';
 import { interval, Observable, Unsubscribable } from 'rxjs';
 import {
@@ -90,6 +90,7 @@ export class HubComponent implements OnInit, OnDestroy {
   language$: Observable<any>;
   lang: string;
 
+  private loader: NzModalRef = null;
   constructor(
     public store: Store<State>,
     private apiService: ApiService,
@@ -300,6 +301,12 @@ export class HubComponent implements OnInit, OnDestroy {
       .shiftedBy(this.toToken.decimals)
       .dp(0)
       .toFixed();
+    this.loader = this.commonService.loading(SwapTransactionType.swap, {
+      symbol1: this.fromToken.symbol,
+      symbol2: this.toToken.symbol,
+      value1: this.inputAmount,
+      value2: this.receiveAmount,
+    });
     this.ethApiService
       .swapCrossChain(
         this.fromToken,
@@ -316,6 +323,7 @@ export class HubComponent implements OnInit, OnDestroy {
         if (res) {
           this.resetSwapData();
         }
+        this.loader.close();
       });
   }
 
@@ -396,8 +404,9 @@ export class HubComponent implements OnInit, OnDestroy {
     }
     this.fromToken.amount = '0';
     if (this.tokenBalances[this.fromToken.chain][this.fromToken.assetID]) {
-      this.fromToken.amount =
-        this.tokenBalances[this.fromToken.chain][this.fromToken.assetID].amount;
+      this.fromToken.amount = this.tokenBalances[this.fromToken.chain][
+        this.fromToken.assetID
+      ].amount;
     }
     this.changeDetectorRef.detectChanges();
   }
