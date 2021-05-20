@@ -27,13 +27,16 @@
           </span> O3</div>
       </div>
     </div>
-    <section class="airdrop" *ngIf="airdropO3 != '0'">
-      <div class="left">
-        <span class="airdrop-title">{{ 'Airdrop' | translate: lang:langPageName }}:&nbsp;</span>
-        {{ airdropO3 }}
-      </div>
-      <button (click)="claimAirdrop()">{{ 'CLAIM' | translate: lang:langPageName }}</button>
-    </section>
+    <div *ngFor="let item of airdropO3; let i = index;">
+      <section class="airdrop" *ngIf="item !== '0'">
+        <div class="left">
+          <span class="airdrop-title">{{ 'Airdrop' | translate: lang:langPageName }}:&nbsp;</span>
+          {{ item }}
+        </div>
+        <button (click)="claimAirdrop(i)">{{ 'CLAIM' | translate: lang:langPageName }}</button>
+      </section>
+    </div>
+
     <div class="item-container row-2">
       <div class="list-container">
         <div class="list-head">

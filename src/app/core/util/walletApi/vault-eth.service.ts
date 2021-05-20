@@ -31,6 +31,7 @@ export class VaultEthWalletApiService {
   private requestTxStatusInterval: Unsubscribable;
   private web3: Web3 = new Web3();
   private contractJson = {};
+  private airdropListJson = [];
 
   private vault$: Observable<any>;
   private vaultWallet: VaultWallet;
@@ -73,9 +74,7 @@ export class VaultEthWalletApiService {
     return this.vaultdMetaMaskWalletApiService.checkNetwork(fromToken);
   }
 
-  getContractJson(
-    type: 'o3Json' | 'o3Staking' | 'airdrop' | 'airdropList'
-  ): Promise<any> {
+  getContractJson(type: 'o3Json' | 'o3Staking' | 'airdrop'): Promise<any> {
     if (this.contractJson[type]) {
       return of(this.contractJson[type]).toPromise();
     }
@@ -90,9 +89,6 @@ export class VaultEthWalletApiService {
       case 'airdrop':
         path = 'assets/contracts-json/Airdrop.json';
         break;
-      case 'airdropList':
-        path = 'assets/datas/airdropList.json';
-        break;
     }
     return this.http
       .get(path)
@@ -104,7 +100,21 @@ export class VaultEthWalletApiService {
       )
       .toPromise();
   }
-
+  getAirdropListJson(airdropIndex: number): Promise<any> {
+    if (this.airdropListJson[airdropIndex]) {
+      return of(this.airdropListJson[airdropIndex]).toPromise();
+    }
+    const path = `assets/datas/airdropList${airdropIndex}.json`;
+    return this.http
+      .get(path)
+      .pipe(
+        map((res) => {
+          this.airdropListJson[airdropIndex] = res;
+          return res;
+        })
+      )
+      .toPromise();
+  }
   //#region vault staking
   async o3StakingStake(
     token: Token,
@@ -544,12 +554,15 @@ export class VaultEthWalletApiService {
     });
   }
 
-  async isAirdropClaimed(index: number): Promise<boolean> {
+  async isAirdropClaimed(
+    index: number,
+    airdropIndex: number
+  ): Promise<boolean> {
     if (!this.vaultWallet) {
       return;
     }
     let params;
-    const constractHash = ETH_AIRDROP_CLAIM_CONTRACT;
+    const constractHash = ETH_AIRDROP_CLAIM_CONTRACT[airdropIndex];
     const json = await this.getContractJson('airdrop');
     const o3Contract = new this.web3.eth.Contract(json, constractHash);
     const data = await o3Contract.methods.isClaimed(index).encodeABI();
@@ -570,12 +583,12 @@ export class VaultEthWalletApiService {
     });
   }
 
-  async claimAirdrop(): Promise<string> {
+  async claimAirdrop(airdropIndex: number): Promise<string> {
     if (!this.vaultWallet) {
       return;
     }
-    const constractHash = ETH_AIRDROP_CLAIM_CONTRACT;
-    const list = await this.getContractJson('airdropList');
+    const constractHash = ETH_AIRDROP_CLAIM_CONTRACT[airdropIndex];
+    const list = await this.getAirdropListJson(airdropIndex);
     const listArr = [];
     for (const key in list) {
       if (Object.prototype.hasOwnProperty.call(list, key)) {

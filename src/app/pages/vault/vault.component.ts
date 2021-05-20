@@ -71,7 +71,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   o3Total = '--';
 
   totalProfit = '--';
-  airdropO3 = '0';
+  airdropO3 = ['0', '0'];
+  airdropNumber = 2;
   stakeUnlockTokenList: any[] = UNLOCK_LP_TOKENS;
   o3StakingTokenList: any[] = TOKEN_STAKING_TOKENS;
   lpstakingTokenList: any[] = LP_STAKING_TOKENS;
@@ -227,31 +228,36 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   async initAridrop(): Promise<void> {
     const address = this.vaultWallet?.address || '';
-    const airdropList = await this.vaultEthWalletApiService.getContractJson(
-      'airdropList'
-    );
-    const addressAirdropInfo =
-      airdropList[
-        Object.keys(airdropList).find(
-          (key) => key.toLowerCase() === address.toLowerCase()
-        )
-      ];
-    if (!this.vaultWallet || !addressAirdropInfo) {
-      this.airdropO3 = '0';
-      return;
+    for (let i = 0; i < this.airdropNumber; i++) {
+      const airdropList = await this.vaultEthWalletApiService.getAirdropListJson(
+        i
+      );
+      const addressAirdropInfo =
+        airdropList[
+          Object.keys(airdropList).find(
+            (key) => key.toLowerCase() === address.toLowerCase()
+          )
+        ];
+      if (!this.vaultWallet || !addressAirdropInfo) {
+        this.airdropO3[i] = '0';
+        continue;
+      }
+      this.addressAirdropData = addressAirdropInfo;
+      this.vaultEthWalletApiService
+        .isAirdropClaimed(addressAirdropInfo.index, i)
+        .then((res) => {
+          if (res) {
+            this.airdropO3[i] = '0';
+          } else {
+            this.airdropO3[i] = new BigNumber(
+              this.addressAirdropData?.amount,
+              16
+            )
+              .div(new BigNumber(10).pow(18))
+              .toFixed();
+          }
+        });
     }
-    this.addressAirdropData = addressAirdropInfo;
-    this.vaultEthWalletApiService
-      .isAirdropClaimed(addressAirdropInfo.index)
-      .then((res) => {
-        if (res) {
-          this.airdropO3 = '0';
-        } else {
-          this.airdropO3 = new BigNumber(this.addressAirdropData?.amount, 16)
-            .div(new BigNumber(10).pow(18))
-            .toFixed();
-        }
-      });
   }
 
   async showUnlockStake(
@@ -499,7 +505,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       });
   }
 
-  async claimAirdrop(): Promise<void> {
+  async claimAirdrop(airdropIndex: number): Promise<void> {
     if (!this.checkWalletConnect()) {
       return;
     }
@@ -523,7 +529,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       value1: this.airdropO3,
     });
     this.vaultEthWalletApiService
-      .claimAirdrop()
+      .claimAirdrop(airdropIndex)
       .then((_) => {
         this.loader.close();
       })

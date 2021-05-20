@@ -60,7 +60,6 @@ export class VaultUnlockCalculatorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.ratesUnScribe = this.rates$.subscribe((state) => {
       this.rates = state.rates;
-      console.log(this.rates);
     });
   }
 
