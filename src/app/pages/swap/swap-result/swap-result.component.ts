@@ -205,7 +205,6 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     if (this.tokensUnScribe) {
       this.tokensUnScribe.unsubscribe();
     }
-    this.loader.destroy();
   }
 
   init(): void {
