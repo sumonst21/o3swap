@@ -147,7 +147,7 @@ export class NeoApiService {
     }
     const utxoRes = await this.apiService.getUtxo(toAddress, inputAmount);
     if (utxoRes === false) {
-      this.nzMessage.error(MESSAGE.SystemBusy[this.lang]);
+      this.nzMessage.error(MESSAGE.UpstreamAggregatorError[this.lang]);
       return;
     }
     const params = {

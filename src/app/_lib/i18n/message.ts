@@ -30,6 +30,10 @@ export const MESSAGE = {
     en: `System busy`,
     zh: `系统繁忙`,
   },
+  UpstreamAggregatorError: {
+    en: `Upstream aggregator currently under maintenance`,
+    zh: `上游聚合器当前正在维护中`,
+  },
   O3DAPINotReady: {
     en: `O3 dAPI is not ready, please open O3 wallet before use.`,
     zh: `O3 dAPI 尚未准备好，请在使用前打开O3钱包`,
