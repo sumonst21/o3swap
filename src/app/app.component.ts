@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
   isHome = true;
   showRisk = false;
   showMobileMenu = false;
+  showTxList = false;
 
   updateRatesInterval: Unsubscribable;
 
@@ -93,10 +94,10 @@ export class AppComponent implements OnInit {
   }
 
   initLocalTxs(): void {
-    localStorage.removeItem('transaction');
-    localStorage.removeItem('bridgeeTransaction');
-    localStorage.removeItem('liquidityTransaction');
-    localStorage.removeItem('vaultTransaction');
+    // localStorage.removeItem('transaction');
+    // localStorage.removeItem('bridgeeTransaction');
+    // localStorage.removeItem('liquidityTransaction');
+    // localStorage.removeItem('vaultTransaction');
     let localTxs: any = localStorage.getItem(LOCAL_TRANSACTIONS_KEY);
     if (!localTxs) {
       return;

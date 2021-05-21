@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { CommonService } from '@core';
 import {
   TX_PAGES_PREFIX,
@@ -19,12 +25,14 @@ interface State {
   styleUrls: ['./tx-list.component.scss'],
 })
 export class TxListComponent implements OnInit, OnDestroy {
+  @Output() closeThis = new EventEmitter();
   public TX_PAGES_PREFIX = TX_PAGES_PREFIX;
   public TransactionType = TransactionType;
   public pendingMinOptions = {
     path: '/assets/json/pending-min.json',
   };
   public showList = false;
+  public showDrawer = false;
 
   private appUnScribe: Unsubscribable;
   private app$: Observable<any>;
@@ -37,13 +45,16 @@ export class TxListComponent implements OnInit, OnDestroy {
 
   constructor(
     public store: Store<State>,
-    private commonService: CommonService,
+    private commonService: CommonService
   ) {
     this.language$ = store.select('language');
     this.app$ = store.select('app');
   }
 
   ngOnInit(): void {
+    if (this.commonService.isMobileWidth()) {
+      this.showDrawer = true;
+    }
     this.langUnScribe = this.language$.subscribe((state) => {
       this.lang = state.language;
     });
@@ -77,5 +88,9 @@ export class TxListComponent implements OnInit, OnDestroy {
 
   stopPropagation(e): void {
     e.stopPropagation();
+  }
+
+  close(): void {
+    this.closeThis.emit();
   }
 }

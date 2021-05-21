@@ -1,6 +1,4 @@
-<img class="tx-list-icon" (click)="showList=true" src="/assets/images/tx-list.png" alt="">
-
-<section class="cover" *ngIf="showList" (click)="showList=false">
+<section class="cover" *ngIf="!showDrawer" (click)="close()">
   <div class="tx-container" (click)="stopPropagation($event)">
     <p class="title">{{ 'RecentTransactions' | translate: lang:langPageName }}<span *ngIf="transactions.length>0"
         class="clear" (click)="clearAll()">{{ 'clearAll' | translate: lang:langPageName }}</span></p>
@@ -48,3 +46,57 @@
     </ul>
   </div>
 </section>
+
+<nz-drawer *ngIf="showDrawer" [nzClosable]="false" [nzVisible]="true" nzPlacement="bottom" [nzTitle]="null"
+  (nzOnClose)="close()" nzWrapClassName="custom-drawer tx-progress">
+  <ng-container *nzDrawerContent>
+    <div class="tx-container" (click)="stopPropagation($event)">
+      <p class="title">{{ 'RecentTransactions' | translate: lang:langPageName }}<span class="clear"
+          (click)="close()">{{ 'Cancel' | translate: lang:langPageName }}</span></p>
+      <p class="no-data" *ngIf="transactions.length<=0">No more data</p>
+      <ul class="tx-list scroll">
+        <li *ngFor="let tx of transactions" (click)="showTxDetail(tx)">
+          <p class="hash">
+            <img class="logo" [src]="tx.fromToken.logo" alt="">{{ tx.txid | shortAddress: 6}}
+            <img class="copy" (click)="copy($event, tx?.txid)" src="/assets/images/swap/copy.png" alt="">
+          </p>
+          <div class="tx-desc">
+            <div class="tx-desc-left" *ngIf="tx.transactionType===TransactionType.approve">
+              <span>{{ 'Approve' | translate: lang:'app' }}</span>&nbsp;{{ tx?.fromToken?.symbol }}
+            </div>
+            <div class="tx-desc-left" *ngIf="tx?.receiveAmount && tx.transactionType!==TransactionType.approve">
+              <span *ngIf="tx.transactionType===TransactionType.swap">{{ 'Swap' | translate: lang:'swap' }}</span>
+              <span
+                *ngIf="tx.transactionType===TransactionType.withdraw">{{ 'Withdraw' | translate: lang:'liquidity' }}</span>
+              <span
+                *ngIf="tx.transactionType===TransactionType.deposit">{{ 'Deposit' | translate: lang:'liquidity' }}</span>
+              &nbsp;<app-long-balance [balance]="tx?.amount"></app-long-balance>
+              &nbsp;{{ tx?.fromToken?.symbol }}&nbsp;for&nbsp;<app-long-balance [balance]="tx?.receiveAmount">
+              </app-long-balance>&nbsp;{{ tx?.toToken?.symbol }}
+            </div>
+            <div class="tx-desc-left" *ngIf="!tx?.receiveAmount && tx.transactionType!==TransactionType.approve">
+              <span *ngIf="tx.transactionType===TransactionType.claim">{{ 'Claim' | translate: lang:'vault' }}</span>
+              <span *ngIf="tx.transactionType===TransactionType.stake">{{ 'Stake' | translate: lang:'vault' }}</span>
+              <span
+                *ngIf="tx.transactionType===TransactionType.unstake">{{ 'Unstake' | translate: lang:'vault' }}</span>&nbsp;
+              <app-long-balance [balance]="tx?.amount"></app-long-balance>&nbsp;{{ tx?.fromToken?.symbol }}
+            </div>
+            <div class="tx-desc-right">
+              <ng-lottie *ngIf="!tx?.isFailed && tx?.isPending" class="tx-status-icon" [options]="pendingMinOptions">
+              </ng-lottie>
+              <img class="tx-status-icon" *ngIf="!tx?.isFailed && !tx?.isPending"
+                src="/assets/images/swap-result/success-icon.png" alt="">
+              <img class="tx-status-icon" *ngIf="tx?.isFailed" src="/assets/images/swap-result/failed-icon.png" alt="">
+              <a target="_blank" (click)="stopPropagation($event)"
+                href="{{TX_PAGES_PREFIX[tx?.fromToken.chain]}}{{tx?.txid}}">
+                <span class="link"></span>
+              </a>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <button *ngIf="transactions.length>0" class="clear"
+        (click)="clearAll()">{{ 'clearAll' | translate: lang:langPageName }}</button>
+    </div>
+  </ng-container>
+</nz-drawer>

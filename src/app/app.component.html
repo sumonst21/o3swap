@@ -77,7 +77,8 @@
           <span class="line">|</span>
           <span class="canClick" [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">中文</span>
         </div>
-        <app-tx-list *ngIf="isHome===false"></app-tx-list>
+        <img *ngIf="isHome===false" class="tx-list-icon" (click)="showTxList=true" src="/assets/images/tx-list.png"
+          alt="">
       </div>
     </div>
   </header>
@@ -93,6 +94,10 @@
 
 <section class="cover" *ngIf="showMobileMenu" (click)="showMobileMenu=false">
   <ul class="mobile-menu scroll" *ngIf="showMobileMenu" (click)="stopPropagation($event)">
+    <li class="recent-tx">
+      <img (click)="showTxList=true" src="/assets/images/tx-list.png" alt="">
+      <span (click)="showTxList=true">{{ 'RecentTransactions' | translate:lang:langPageName}}</span>
+    </li>
     <li [ngClass]="{active: isHome}" (click)="toUrl('/')">
       {{ 'Home' | translate: lang:langPageName }}
     </li>
@@ -124,3 +129,5 @@
     </li>
   </ul>
 </section>
+
+<app-tx-list *ngIf="showTxList" (closeThis)="showTxList=false"></app-tx-list>

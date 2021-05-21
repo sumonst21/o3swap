@@ -195,8 +195,16 @@ header {
       }
     }
   }
-  .right .language {
-    display: inline-block;
+  .right {
+    .language {
+      display: inline-block;
+    }
+    img.tx-list-icon {
+      width: 24px;
+      height: 24px;
+      margin-left: 24px;
+      cursor: pointer;
+    }
   }
   @media screen and (max-width: 1680px) {
     ul.left-menu {
@@ -237,8 +245,13 @@ header {
     ul.left-menu {
       display: none;
     }
-    .right .language {
-      display: none;
+    .right {
+      .language {
+        display: none;
+      }
+      .tx-list-icon {
+        display: none;
+      }
     }
   }
   .risk-tip {
@@ -288,7 +301,7 @@ ul.mobile-menu {
   background: #303030;
   padding: 0;
   li {
-    height: 10%;
+    height: 9.5%;
     max-height: 84px;
     min-height: 50px;
     text-align: center;
@@ -297,6 +310,18 @@ ul.mobile-menu {
     display: flex;
     align-items: center;
     justify-content: center;
+    &.recent-tx {
+      justify-content: flex-start;
+      font-family: "fontMedium";
+      font-size: 16px;
+      padding-left: 22px;
+      max-height: 62px;
+      img {
+        width: 17px;
+        height: 17px;
+        margin-right: 11px;
+      }
+    }
     a {
       margin: 0;
       padding: 0;
