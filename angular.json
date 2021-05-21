@@ -43,7 +43,10 @@
               "@cityofzion/neon-js",
               "o3-dapi-eth",
               "echarts-liquidfill/dist/echarts-liquidfill.min",
-              "hash.js"
+              "hash.js",
+              "ethereumjs-util",
+              "o3-dapi-neo",
+              "o3-dapi-core"
             ]
           },
           "configurations": {
@@ -55,14 +58,13 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
               "budgets": [{
                   "type": "initial",
-                  "maximumWarning": "2mb",
+                  "maximumWarning": "8mb",
                   "maximumError": "8mb"
                 },
                 {
@@ -97,8 +99,7 @@
           "options": {
             "tsConfig": [
               "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
+              "tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**"
