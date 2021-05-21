@@ -11,7 +11,7 @@ export const NEO_SWAP_CONTRACT_HASH =
     ? '89fa00d894c9a1475f8f94e84c79724b3faf64db'
     : '812d7291e2f0c89255cf355c1027872257d1ca37';
 
-// from ETH (usdt, busd, husd 互转，添加去除流动性)
+// from ETH (usdt, busd, husd swap，deposit and withdraw)
 export const ETH_CROSS_SWAP_CONTRACT_HASH = {
   ETH:
     NETWORK === 'MainNet'

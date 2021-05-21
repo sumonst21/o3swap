@@ -22,7 +22,7 @@ export class SwapComponent implements OnInit, OnDestroy {
 
   fromToken: Token;
   toToken: Token;
-  inputAmount: string; // 支付的 token 数量
+  inputAmount: string;
 
   initResultData;
 

@@ -66,7 +66,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   SOURCE_TOKEN_SYMBOL = SOURCE_TOKEN_SYMBOL;
   @Input() fromToken: Token;
   @Input() toToken: Token;
-  @Input() inputAmount: string; // 支付的 token 数量
+  @Input() inputAmount: string; // Token amount
   @Input() initData: any;
   @Output() closePage = new EventEmitter<any>();
   @Output() swapFail = new EventEmitter();
@@ -95,20 +95,21 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   ethWalletName: EthWalletName;
   bscWalletName: EthWalletName;
   hecoWalletName: EthWalletName;
-  tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
+  tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} };
 
-  TOKENS: Token[] = []; // 所有的 tokens
+  TOKENS: Token[] = []; // All tokens
   O3_AGGREGATOR_FEE = O3_AGGREGATOR_FEE;
   showInquiry: boolean;
-  inquiryInterval: Unsubscribable; // 询价定时器
+  inquiryInterval: Unsubscribable; // inquiry timer
   seconds = 30;
   inquiryTime = this.seconds;
 
   chooseSwapPath: AssetQueryResponseItem;
   chooseSwapPathIndex: number;
   receiveSwapPathArray: AssetQueryResponse;
-  price: string; // swap 比
-  lnversePrice: string; // swap 反比
+  price: string; // Swap rate
+  lnversePrice: string; // Swap inverse Rate
+
   polyFee: string;
   showPolyFee = false;
   showO3SwapFee = false;
@@ -349,7 +350,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       value1: this.inputAmount,
       value2: this.chooseSwapPath?.receiveAmount,
     });
-    // neo 同链
+    // neo same chain
     if (this.fromToken.chain === 'NEO' && this.toToken.chain === 'NEO') {
       if (
         this.fromToken.assetID === NEO_TOKEN.assetID &&
@@ -368,11 +369,11 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.swapNeo();
       return;
     }
-    // neo 跨链
+    // neo cross chain
     if (this.fromToken.chain === 'NEO' && this.toToken.chain !== 'NEO') {
       return;
     }
-    // eth 同链
+    // eth same chain
     if (this.fromToken.chain === this.toToken.chain) {
       if (
         this.fromToken.assetID === ETH_SOURCE_ASSET_HASH &&
@@ -400,7 +401,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.swapExactTokensForTokens();
       return;
     }
-    // eth 跨链
+    // eth cross chain
     if (this.fromToken.chain !== this.toToken.chain) {
       if (
         this.fromToken.assetID === O3_TOKEN.assetID &&
@@ -442,7 +443,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     this.getNetworkFee();
     this.setInquiryInterval();
   }
-  //#region 合约调用
+  //#region Contract call
   depositWEth(): void {
     this.ethApiService
       .depositWEth(
@@ -850,7 +851,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       return;
     }
     this.receiveSwapPathArray.forEach((item, index) => {
-      // 计算法币价格
+      // calculate money
       this.receiveSwapPathArray[index].fiat = new BigNumber(item.receiveAmount)
         .multipliedBy(new BigNumber(price))
         .dp(2)
@@ -1055,7 +1056,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return false;
     }
-    // 有 poly fee，转非原生资产
+    // Have poly fee, swap token
     if (
       this.showPolyFee &&
       this.polyFee &&
@@ -1076,7 +1077,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
         return false;
       }
     }
-    // 有 poly fee，转原生资产(ETH, HT, BNB)
+    // Have poly fee, swap native assets
     if (
       this.showPolyFee &&
       this.polyFee &&

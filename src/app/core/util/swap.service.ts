@@ -282,7 +282,7 @@ export class SwapService {
     }
     this.ethBlockNumberInterval = interval(15000).subscribe(() => {
       if (
-        // 没有连接时不获取 balances
+        // Do not get balances
         !this.walletName.ETH &&
         !this.walletName.BSC &&
         !this.walletName.HECO
@@ -301,7 +301,7 @@ export class SwapService {
     }
     this.neoBlockNumberInterval = interval(15000).subscribe(() => {
       if (!this.walletName.NEO) {
-        // 没有连接时不获取 balances
+        // Do not get balances
         this.neoBlockNumberInterval.unsubscribe();
       } else {
         this.getNeoBalances(this.walletName.NEO as NeoWalletName);

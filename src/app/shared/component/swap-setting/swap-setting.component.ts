@@ -25,7 +25,7 @@ export class SwapSettingComponent implements OnInit, OnDestroy {
   settingUnScribe: Unsubscribable;
   setting$: Observable<any>;
   slipValue: any;
-  isCustomSlip: boolean; // 自定义滑点
+  isCustomSlip: boolean;
   deadline: number;
 
   // setting slip

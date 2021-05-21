@@ -806,7 +806,7 @@ export class ApiService {
     let temp;
     let gap = 1;
     while (gap < len / 3) {
-      // 动态定义间隔序列
+      // Dynamic defined interval sequence
       gap = gap * 3 + 1;
     }
     for (gap; gap > 0; gap = Math.floor(gap / 3)) {

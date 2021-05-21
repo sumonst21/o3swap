@@ -29,7 +29,7 @@ const initialState: SwapStateType = {
   ethAccountAddress: null,
   bscAccountAddress: null,
   hecoAccountAddress: null,
-  balances: {}, // neo 链连接钱包的balances
+  balances: {}, // neo balances
   ethBalances: {},
   bscBalances: {},
   hecoBalances: {},

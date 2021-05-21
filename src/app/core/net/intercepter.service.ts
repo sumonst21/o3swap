@@ -14,15 +14,15 @@ import { CommonHttpResponse } from '@lib';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
-// http 错误码对应错误信息
+// http Error code correspondence error message
 const CODE_MESSAGE = {
   0: 'Unknown error',
 };
 
-// 返回错误码对应错误信息
+// Return error code correspondence error message
 const RESPONSE_ERROR = {};
-// 不弹窗显示的错误码
-const INGORE_ERROR = new Set([]);
+// Ignore Error
+const IGNORE_ERROR = new Set([]);
 
 @Injectable()
 export class HttpInterceptor implements NgHttpInterceptor {
@@ -37,11 +37,11 @@ export class HttpInterceptor implements NgHttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       mergeMap((event: any) => {
-        // 允许统一对请求错误处理
+        // Allow unified pairs request error handling
         if (event instanceof HttpResponseBase) {
           return this.handleError(event);
         }
-        // 若一切都正常，则后续操作
+        // Go on
         return of(event);
       }),
       catchError((error) => {

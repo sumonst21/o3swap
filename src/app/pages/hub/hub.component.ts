@@ -48,11 +48,11 @@ export class HubComponent implements OnInit, OnDestroy {
   toToken: Token;
 
   inputAmount: string;
-  inputAmountFiat: string; // 支付的 token 美元价值
+  inputAmountFiat: string; // Dollar value of token amount
   inputAmountError: string;
 
   receiveAmount: string;
-  receiveAmountFiat: string; // 支付的 token 美元价值
+  receiveAmountFiat: string; // The value of the dollar received
 
   swapUnScribe: Unsubscribable;
   swap$: Observable<any>;
@@ -404,8 +404,9 @@ export class HubComponent implements OnInit, OnDestroy {
     }
     this.fromToken.amount = '0';
     if (this.tokenBalances[this.fromToken.chain][this.fromToken.assetID]) {
-      this.fromToken.amount =
-        this.tokenBalances[this.fromToken.chain][this.fromToken.assetID].amount;
+      this.fromToken.amount = this.tokenBalances[this.fromToken.chain][
+        this.fromToken.assetID
+      ].amount;
     }
     this.changeDetectorRef.detectChanges();
   }
@@ -604,7 +605,6 @@ export class HubComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return false;
     }
-    // 有 poly fee，转非原生资产
     if (
       this.polyFee &&
       (!chainBalances[ETH_SOURCE_ASSET_HASH] ||

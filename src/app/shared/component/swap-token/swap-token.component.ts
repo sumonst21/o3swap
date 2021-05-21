@@ -39,12 +39,12 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
 
   activeToken: Token;
   hideToken: Token;
-  hideNeoToken = false; // from 或 to 不是 NNEO 时不显示 NEO
-  showOnlyNNeo = false; // from 或 to 是 NEO 时只显示 NNEO
+  hideNeoToken = false; // From or to is not NNEO
+  showOnlyNNeo = false; // From or to is NEO
   showOnlyNeoChain = false;
 
   swap$: Observable<any>;
-  tokenBalance = { NEO: {}, ETH: {}, BSC: {}, HECO: {} }; // 账户的 tokens
+  tokenBalance = { NEO: {}, ETH: {}, BSC: {}, HECO: {} };
   swapUnScribe: Unsubscribable;
 
   appUnScribe: Unsubscribable;
@@ -52,8 +52,8 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
   chainTokens = INIT_CHAIN_TOKENS;
 
   chain: CHAINS = 'ETH';
-  allTokens: Token[] = []; // 所有的 tokens, 排除了 fromToken 或 toToken
-  displayTokens: any[] = []; // 最终展示的 tokens, search 结果
+  allTokens: Token[] = []; // All tokens, exclude fromToken or toToken
+  displayTokens: any[] = [];
   isfocusSearchInput = false;
 
   langPageName = 'swap';
@@ -284,8 +284,7 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
         const chainBalance = this.tokenBalance[tokenItem.chain];
         if (
           chainBalance[tokenItem.assetID] &&
-          chainBalance[tokenItem.assetID].symbol === // 资产id相同且symbol相同
-            tokenItem.symbol
+          chainBalance[tokenItem.assetID].symbol === tokenItem.symbol
         ) {
           this.MYCHAIN_TOKENS[key][index].amount =
             chainBalance[tokenItem.assetID].amount;
@@ -298,8 +297,7 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
       const chainBalance = this.tokenBalance[tokenItem.chain];
       if (
         chainBalance[tokenItem.assetID] &&
-        chainBalance[tokenItem.assetID].symbol === // 资产id相同且symbol相同
-          tokenItem.symbol
+        chainBalance[tokenItem.assetID].symbol === tokenItem.symbol
       ) {
         this.allTokens[index].amount = chainBalance[tokenItem.assetID].amount;
       }
@@ -310,8 +308,7 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
       const chainBalance = this.tokenBalance[tokenItem.chain];
       if (
         chainBalance[tokenItem.assetID] &&
-        chainBalance[tokenItem.assetID].symbol === // 资产id相同且symbol相同
-          tokenItem.symbol
+        chainBalance[tokenItem.assetID].symbol === tokenItem.symbol
       ) {
         this.displayTokens[index].amount =
           chainBalance[tokenItem.assetID].amount;

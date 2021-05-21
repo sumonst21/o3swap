@@ -47,7 +47,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   @Input() fromToken: Token;
   @Input() toToken: Token;
   @Input() chooseSwapPath;
-  @Input() inputAmount: string; // 支付的 token 数量
+  @Input() inputAmount: string;
   @Output() toInquiryPage = new EventEmitter<{
     inputAmount: string;
     fromToken: Token;
@@ -60,7 +60,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   ethAccountAddress: string;
   bscAccountAddress: string;
   hecoAccountAddress: string;
-  tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
+  tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} };
   swapUnScribe: Unsubscribable;
 
   // setting modal
@@ -74,7 +74,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
   rates = {};
 
   changeData = false;
-  inputAmountFiat: string; // 支付的 token 美元价值
+  inputAmountFiat: string; // Dollar value of token
   inputAmountError: string;
 
   langPageName = 'swap';
@@ -129,10 +129,9 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
         currentFromToken &&
         this.tokenBalance[this.fromToken.chain][this.fromToken.assetID]
       ) {
-        this.fromToken.amount =
-          this.tokenBalance[this.fromToken.chain][
-            this.fromToken.assetID
-          ].amount;
+        this.fromToken.amount = this.tokenBalance[this.fromToken.chain][
+          this.fromToken.assetID
+        ].amount;
       }
     }
   }
@@ -295,10 +294,12 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       this.fromToken &&
       this.tokenBalance[this.fromToken.chain][this.fromToken.assetID]
     ) {
-      this.fromToken.amount =
-        this.tokenBalance[this.fromToken.chain][this.fromToken.assetID].amount;
-      this.fromToken.amount =
-        this.tokenBalance[this.fromToken.chain][this.fromToken.assetID].amount;
+      this.fromToken.amount = this.tokenBalance[this.fromToken.chain][
+        this.fromToken.assetID
+      ].amount;
+      this.fromToken.amount = this.tokenBalance[this.fromToken.chain][
+        this.fromToken.assetID
+      ].amount;
     }
   }
   checkCanInquiry(): boolean {
@@ -373,7 +374,7 @@ export class SwapHomeComponent implements OnInit, OnDestroy, OnChanges {
       this.inputAmountError = MESSAGE.decimalLimit[this.lang];
       return false;
     }
-    // neo nneo 互换只能整单位
+    // neo <-> nneo: decimals: 0
     if (
       this.fromToken &&
       this.fromToken.chain === 'NEO' &&

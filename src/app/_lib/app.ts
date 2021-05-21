@@ -2,9 +2,9 @@ import { Token } from './token';
 import { WalletName } from './wallet';
 
 export type TxProgress = {
-  step1: { hash: string; status: 0 | 1 | 2 }; // 0 = 未开始, 1 = 进行中, 2 = 已完成
-  step2: { hash: string; status: 0 | 1 | 2 }; // 0 = 未开始, 1 = 进行中, 2 = 已完成
-  step3: { hash: string; status: 0 | 1 | 2 }; // 0 = 未开始, 1 = 进行中, 2 = 已完成
+  step1: { hash: string; status: 0 | 1 | 2 }; // 0 = not start, 1 = pending, 2 = finish
+  step2: { hash: string; status: 0 | 1 | 2 }; // 0 = not start, 1 = pending, 2 = finish
+  step3: { hash: string; status: 0 | 1 | 2 }; // 0 = not start, 1 = pending, 2 = finish
 };
 
 export enum TransactionType {

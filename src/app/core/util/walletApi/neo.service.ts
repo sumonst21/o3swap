@@ -135,7 +135,7 @@ export class NeoApiService {
       operation: 'refund',
       args: [
         {
-          type: 'Address', // 收件人地址
+          type: 'Address', // Receive address
           value: toAddress,
         },
       ],
@@ -143,11 +143,11 @@ export class NeoApiService {
         inputs: utxoRes.utxoList,
         outputs: [
           {
-            address: wallet.getAddressFromScriptHash(NEO_NNEO_CONTRACT_HASH), // 合约地址
+            address: wallet.getAddressFromScriptHash(NEO_NNEO_CONTRACT_HASH), // Contract
             asset: toToken.assetID, // neo asset Id
             value: inputAmount,
           },
-          // 还有可能会有找零。应该是 getUxo得到的 sum - amount
+          // Payback: sum - amount
         ],
       },
       triggerContractVerification: false,
@@ -161,7 +161,7 @@ export class NeoApiService {
     };
     if (utxoRes.sum > inputAmount) {
       params.assetIntentOverrides.outputs.push({
-        address: wallet.getAddressFromScriptHash(NEO_NNEO_CONTRACT_HASH), // 合约地址
+        address: wallet.getAddressFromScriptHash(NEO_NNEO_CONTRACT_HASH), // Contract
         asset: toToken.assetID, // neo asset Id
         value: String(utxoRes.sum - Number(inputAmount)),
       });
@@ -333,7 +333,7 @@ export class NeoApiService {
         value: this.swapService.getHash160FromAddress(toAddress),
       },
       {
-        type: 'Integer', // toChainID (目标链id)
+        type: 'Integer', // toChainID
         value: SWAP_CONTRACT_CHAIN_ID[toToken.chain],
       },
       {

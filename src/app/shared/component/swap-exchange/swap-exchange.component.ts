@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Token, AssetQueryResponse } from '@lib';
 import { Store } from '@ngrx/store';
 import { Unsubscribable, Observable } from 'rxjs';
@@ -17,7 +24,7 @@ export class SwapExchangeComponent implements OnInit, OnDestroy {
   @Input() receiveSwapPathArray: AssetQueryResponse;
   @Output() closeThis = new EventEmitter();
 
-  TOKENS: Token[] = []; // 所有的 tokens
+  TOKENS: Token[] = []; // All tokens
 
   toTokenSymbol: string;
 
