@@ -2,11 +2,7 @@ import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ApiService, CommonService, EthApiService, SwapService } from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import {
-  SwapStateType,
-  SwapTransaction,
-  SwapTransactionType,
-} from 'src/app/_lib/swap';
+import { SwapStateType } from 'src/app/_lib/swap';
 import {
   SWAP_CONTRACT_CHAIN_ID,
   METAMASK_CHAIN,
@@ -18,6 +14,8 @@ import {
   EthWalletName,
   MESSAGE,
   ETH_CROSS_SWAP_CONTRACT_HASH,
+  MyTransaction,
+  TransactionType,
 } from '@lib';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -29,6 +27,7 @@ interface State {
   swap: SwapStateType;
   rates: any;
   language: any;
+  app: any;
 }
 @Component({
   selector: 'app-legacy-liquidity',
@@ -61,7 +60,6 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   private hecoWalletName: EthWalletName;
   private metamaskNetworkId: number;
   private tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
-  private liquidityTransaction: SwapTransaction;
 
   private ratesUnScribe: Unsubscribable;
   private rates$: Observable<any>;
@@ -71,6 +69,10 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   private langUnScribe: Unsubscribable;
   private language$: Observable<any>;
   public lang: string;
+
+  private appUnScribe: Unsubscribable;
+  private app$: Observable<any>;
+  private transactions: MyTransaction[];
 
   constructor(
     private apiService: ApiService,
@@ -89,6 +91,7 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     });
     this.swap$ = store.select('swap');
     this.rates$ = store.select('rates');
+    this.app$ = store.select('app');
     this.addLiquidityTokens.forEach((item) => {
       this.removeLiquidityInputAmount.push('');
       this.payAmount.push('--');
@@ -109,12 +112,14 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
       this.bscWalletName = state.bscWalletName;
       this.hecoWalletName = state.hecoWalletName;
       this.metamaskNetworkId = state.metamaskNetworkId;
-      this.liquidityTransaction = state.liquidityTransaction;
       this.getCurrentChain();
       this.handleAccountBalance(state);
       this.handleCurrentAddress();
       this.getLPBalance();
       this.changeDetectorRef.detectChanges();
+    });
+    this.appUnScribe = this.app$.subscribe((state) => {
+      this.transactions = state.transactions;
     });
   }
 
@@ -127,6 +132,9 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
     }
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();
+    }
+    if (this.appUnScribe) {
+      this.appUnScribe.unsubscribe();
     }
   }
 
@@ -234,19 +242,20 @@ export class LegacyLiquidityComponent implements OnInit, OnDestroy {
   //#region
   private async checkShowApprove(token: Token, amount): Promise<any> {
     const spender = ETH_CROSS_SWAP_CONTRACT_HASH[token.chain];
-    if (
-      this.liquidityTransaction &&
-      this.liquidityTransaction.transactionType ===
-        SwapTransactionType.approve &&
-      this.liquidityTransaction.isPending &&
-      this.liquidityTransaction.contract === spender &&
-      this.liquidityTransaction.fromAddress === this.currentAddress &&
-      this.liquidityTransaction.fromToken.assetID === token.assetID &&
-      this.liquidityTransaction.fromToken.chain === token.chain
-    ) {
-      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
-      return 'error';
-    }
+    this.transactions.forEach((item) => {
+      if (
+        item.transactionType === TransactionType.approve &&
+        item.isPending &&
+        item.contract === spender &&
+        item.fromAddress === this.currentAddress &&
+        item.fromToken.assetID === token.assetID &&
+        item.fromToken.chain === token.chain
+      ) {
+        this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+        return 'error';
+      }
+    });
+
     const allowance = await this.ethApiService.getAllowance(
       token,
       this.currentAddress,

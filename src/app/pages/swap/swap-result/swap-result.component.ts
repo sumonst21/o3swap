@@ -25,10 +25,10 @@ import {
   O3_TOKEN,
   POLY_WRAPPER_CONTRACT_HASH,
   INIT_CHAIN_TOKENS,
-  SwapTransaction,
   ETH_CROSS_SWAP_CONTRACT_HASH,
   AGGREGATOR_CONTRACT,
-  SwapTransactionType,
+  MyTransaction,
+  TransactionType,
 } from '@lib';
 import { ApiService, CommonService, EthApiService, NeoApiService } from '@core';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -50,7 +50,7 @@ interface State {
   setting: any;
   rates: any;
   language: any;
-  tokens: any;
+  app: any;
 }
 
 @Component({
@@ -96,7 +96,6 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   bscWalletName: EthWalletName;
   hecoWalletName: EthWalletName;
   tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
-  transaction: SwapTransaction;
 
   TOKENS: Token[] = []; // 所有的 tokens
   O3_AGGREGATOR_FEE = O3_AGGREGATOR_FEE;
@@ -126,9 +125,10 @@ export class SwapResultComponent implements OnInit, OnDestroy {
   language$: Observable<any>;
   lang: string;
 
-  tokensUnScribe: Unsubscribable;
-  tokens$: Observable<any>;
+  appUnScribe: Unsubscribable;
+  app$: Observable<any>;
   chainTokens = INIT_CHAIN_TOKENS;
+  transactions: MyTransaction[];
 
   private loader: NzModalRef = null;
   constructor(
@@ -148,9 +148,10 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     this.swap$ = store.select('swap');
     this.setting$ = store.select('setting');
     this.rates$ = store.select('rates');
-    this.tokens$ = store.select('tokens');
-    this.tokensUnScribe = this.tokens$.subscribe((state) => {
+    this.app$ = store.select('app');
+    this.appUnScribe = this.app$.subscribe((state) => {
       this.chainTokens = state.chainTokens;
+      this.transactions = state.transactions;
     });
   }
 
@@ -173,7 +174,6 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       this.tokenBalance.ETH = state.ethBalances;
       this.tokenBalance.BSC = state.bscBalances;
       this.tokenBalance.HECO = state.hecoBalances;
-      this.transaction = state.transaction;
       this.getFromAndToAddress();
     });
     this.settingUnScribe = this.setting$.subscribe((state) => {
@@ -202,8 +202,11 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();
     }
-    if (this.tokensUnScribe) {
-      this.tokensUnScribe.unsubscribe();
+    if (this.appUnScribe) {
+      this.appUnScribe.unsubscribe();
+    }
+    if (this.loader) {
+      this.loader.destroy();
     }
   }
 
@@ -340,7 +343,7 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.loader = this.commonService.loading(SwapTransactionType.swap, {
+    this.loader = this.commonService.loading(TransactionType.swap, {
       symbol1: this.fromToken.symbol,
       symbol2: this.toToken.symbol,
       value1: this.inputAmount,
@@ -779,18 +782,20 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     ) {
       spender = POLY_WRAPPER_CONTRACT_HASH[this.fromToken.chain];
     }
-    if (
-      this.transaction &&
-      this.transaction.transactionType === SwapTransactionType.approve &&
-      this.transaction.isPending &&
-      this.transaction.contract === spender &&
-      this.transaction.fromAddress === this.fromAddress &&
-      this.transaction.fromToken.assetID === this.fromToken.assetID &&
-      this.transaction.fromToken.chain === this.fromToken.chain
-    ) {
-      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
-      return 'error';
-    }
+    this.transactions.forEach((item) => {
+      if (
+        item.transactionType === TransactionType.approve &&
+        item.isPending &&
+        item.contract === spender &&
+        item.fromAddress === this.fromAddress &&
+        item.fromToken.assetID === this.fromToken.assetID &&
+        item.fromToken.chain === this.fromToken.chain
+      ) {
+        this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+        return 'error';
+      }
+    });
+
     const balance = await this.ethApiService.getAllowance(
       this.fromToken,
       this.fromAddress,

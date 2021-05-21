@@ -37,7 +37,7 @@ import { HttpClient } from '@angular/common/http';
 
 interface State {
   swap: SwapStateType;
-  tokens: any;
+  app: any;
   language: any;
 }
 
@@ -51,7 +51,7 @@ export class SwapService {
   private walletName = { ETH: '', BSC: '', HECO: '', NEO: '' };
   private accountAddress = { ETH: '', BSC: '', HECO: '', NEO: '' };
 
-  private tokens$: Observable<any>;
+  private app$: Observable<any>;
   private chainTokens = INIT_CHAIN_TOKENS;
 
   private swapJson = {};
@@ -76,7 +76,7 @@ export class SwapService {
     private http: HttpClient
   ) {
     this.swap$ = store.select('swap');
-    this.tokens$ = store.select('tokens');
+    this.app$ = store.select('app');
     this.swap$.subscribe((state) => {
       this.walletName.NEO = state.neoWalletName;
       this.walletName.ETH = state.ethWalletName;
@@ -87,7 +87,7 @@ export class SwapService {
       this.accountAddress.BSC = state.bscAccountAddress;
       this.accountAddress.HECO = state.hecoAccountAddress;
     });
-    this.tokens$.subscribe((state) => {
+    this.app$.subscribe((state) => {
       this.chainTokens = state.chainTokens;
     });
   }

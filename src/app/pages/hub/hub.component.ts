@@ -13,8 +13,8 @@ import {
   INIT_CHAIN_TOKENS,
   MESSAGE,
   ETH_CROSS_SWAP_CONTRACT_HASH,
-  SwapTransaction,
-  SwapTransactionType,
+  MyTransaction,
+  TransactionType,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -30,7 +30,7 @@ import { NzDrawerService } from 'ng-zorro-antd/drawer';
 
 interface State {
   swap: SwapStateType;
-  tokens: any;
+  app: any;
   rates: any;
   language: any;
 }
@@ -63,11 +63,11 @@ export class HubComponent implements OnInit, OnDestroy {
   bscWalletName: EthWalletName;
   hecoWalletName: EthWalletName;
   tokenBalances = { ETH: {}, BSC: {}, HECO: {} };
-  bridgeeTransaction: SwapTransaction;
 
-  tokensUnScribe: Unsubscribable;
-  tokens$: Observable<any>;
+  appUnScribe: Unsubscribable;
+  app$: Observable<any>;
   chainTokens = INIT_CHAIN_TOKENS;
+  transactions: MyTransaction[];
 
   ratesUnScribe: Unsubscribable;
   rates$: Observable<any>;
@@ -106,15 +106,15 @@ export class HubComponent implements OnInit, OnDestroy {
       this.lang = state.language;
     });
     this.swap$ = store.select('swap');
-    this.tokens$ = store.select('tokens');
+    this.app$ = store.select('app');
     this.rates$ = store.select('rates');
   }
   ngOnDestroy(): void {
     if (this.swapUnScribe) {
       this.swapUnScribe.unsubscribe();
     }
-    if (this.tokensUnScribe) {
-      this.tokensUnScribe.unsubscribe();
+    if (this.appUnScribe) {
+      this.appUnScribe.unsubscribe();
     }
     if (this.ratesUnScribe) {
       this.ratesUnScribe.unsubscribe();
@@ -133,12 +133,12 @@ export class HubComponent implements OnInit, OnDestroy {
       this.ethWalletName = state.ethWalletName;
       this.bscWalletName = state.bscWalletName;
       this.hecoWalletName = state.hecoWalletName;
-      this.bridgeeTransaction = state.bridgeeTransaction;
       this.getFromAndToAddress();
       this.handleAccountBalance(state);
     });
-    this.tokensUnScribe = this.tokens$.subscribe((state) => {
+    this.appUnScribe = this.app$.subscribe((state) => {
       this.chainTokens = state.chainTokens;
+      this.transactions = state.transactions;
     });
     this.ratesUnScribe = this.rates$.subscribe((state) => {
       this.rates = state.rates;
@@ -301,7 +301,7 @@ export class HubComponent implements OnInit, OnDestroy {
       .shiftedBy(this.toToken.decimals)
       .dp(0)
       .toFixed();
-    this.loader = this.commonService.loading(SwapTransactionType.swap, {
+    this.loader = this.commonService.loading(TransactionType.swap, {
       symbol1: this.fromToken.symbol,
       symbol2: this.toToken.symbol,
       value1: this.inputAmount,
@@ -404,9 +404,8 @@ export class HubComponent implements OnInit, OnDestroy {
     }
     this.fromToken.amount = '0';
     if (this.tokenBalances[this.fromToken.chain][this.fromToken.assetID]) {
-      this.fromToken.amount = this.tokenBalances[this.fromToken.chain][
-        this.fromToken.assetID
-      ].amount;
+      this.fromToken.amount =
+        this.tokenBalances[this.fromToken.chain][this.fromToken.assetID].amount;
     }
     this.changeDetectorRef.detectChanges();
   }
@@ -466,18 +465,20 @@ export class HubComponent implements OnInit, OnDestroy {
   }
   async checkShowApprove(): Promise<any> {
     const spender = ETH_CROSS_SWAP_CONTRACT_HASH[this.fromToken.chain];
-    if (
-      this.bridgeeTransaction &&
-      this.bridgeeTransaction.transactionType === SwapTransactionType.approve &&
-      this.bridgeeTransaction.isPending &&
-      this.bridgeeTransaction.contract === spender &&
-      this.bridgeeTransaction.fromAddress === this.fromAddress &&
-      this.bridgeeTransaction.fromToken.assetID === this.fromToken.assetID &&
-      this.bridgeeTransaction.fromToken.chain === this.fromToken.chain
-    ) {
-      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
-      return 'error';
-    }
+    this.transactions.forEach((item) => {
+      if (
+        item.transactionType === TransactionType.approve &&
+        item.isPending &&
+        item.contract === spender &&
+        item.fromAddress === this.fromAddress &&
+        item.fromToken.assetID === this.fromToken.assetID &&
+        item.fromToken.chain === this.fromToken.chain
+      ) {
+        this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+        return 'error';
+      }
+    });
+
     const balance = await this.ethApiService.getAllowance(
       this.fromToken,
       this.fromAddress,

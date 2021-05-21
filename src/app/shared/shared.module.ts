@@ -19,6 +19,7 @@ import { ApproveComponent } from './component/approve/approve.component';
 import { SwapExchangeComponent } from './component/swap-exchange/swap-exchange.component';
 import { SwapSettingComponent } from './component/swap-setting/swap-setting.component';
 import { VaultStakeComponent } from './component/vault-stake/vault-stake.component';
+import { TxListComponent } from './component/tx-list/tx-list.component';
 
 import { HubTokenComponent } from './drawers/hub-token/hub-token.component';
 import { SwapTokenDrawerComponent } from './drawers/swap-token/swap-token.component';
@@ -26,6 +27,7 @@ import { ApproveDrawerComponent } from './drawers/approve/approve.component';
 import { SwapExchangeDrawerComponent } from './drawers/swap-exchange/swap-exchange.component';
 import { SwapSettingDrawerComponent } from './drawers/swap-setting/swap-setting.component';
 import { VaultStakeDrawerComponent } from './drawers/vault-stake/vault-stake.component';
+import { TxProgressDrawerComponent } from './drawers/tx-progress/tx-progress.component';
 
 import { SwapSettingModalComponent } from './modal/swap-setting/swap-setting.component';
 import { SwapExchangeModalComponent } from './modal/swap-exchange/swap-exchange.component';
@@ -34,6 +36,7 @@ import { VaultStakeModalComponent } from './modal/vault-stake/vault-stake.compon
 import { ApproveModalComponent } from './modal/approve/approve.component';
 import { RiskWarningComponent } from './modal/risk-warning/risk-warning.component';
 import { AccountComponent } from './modal/account/account.component';
+import { TxProgressModalComponent } from './modal/tx-progress/tx-progress.component';
 
 import { ShortAddressPipe } from './pipes/short-address.pipe';
 import { TransNumberPipe } from './pipes/trans-number.pipe';
@@ -92,6 +95,9 @@ const COMPONENTS = [
   ApproveDrawerComponent,
   ApproveModalComponent,
   AccountComponent,
+  TxListComponent,
+  TxProgressDrawerComponent,
+  TxProgressModalComponent,
 ];
 const PIPES = [ShortAddressPipe, TransNumberPipe, TranslatePipe];
 const DIRECTIVES = [ErrSrcDirective, IframeTrackerDirective];

@@ -8,11 +8,7 @@ import {
 } from '@core';
 import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import {
-  SwapStateType,
-  SwapTransaction,
-  SwapTransactionType,
-} from 'src/app/_lib/swap';
+import { SwapStateType } from 'src/app/_lib/swap';
 import {
   SWAP_CONTRACT_CHAIN_ID,
   BRIDGE_SLIPVALUE,
@@ -25,6 +21,8 @@ import {
   MESSAGE,
   O3_TOKEN,
   ETH_CROSS_SWAP_CONTRACT_HASH,
+  MyTransaction,
+  TransactionType,
 } from '@lib';
 import BigNumber from 'bignumber.js';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -38,6 +36,7 @@ interface State {
   swap: SwapStateType;
   rates: any;
   language: any;
+  app: any;
 }
 @Component({
   selector: 'app-liquidity',
@@ -78,7 +77,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
   private bscWalletName: EthWalletName;
   private hecoWalletName: EthWalletName;
   private tokenBalance = { ETH: {}, NEO: {}, BSC: {}, HECO: {} }; // 账户的 tokens
-  private liquidityTransaction: SwapTransaction;
 
   private ratesUnScribe: Unsubscribable;
   private rates$: Observable<any>;
@@ -89,6 +87,10 @@ export class LiquidityComponent implements OnInit, OnDestroy {
   private langUnScribe: Unsubscribable;
   private language$: Observable<any>;
   public lang: string;
+
+  private appUnScribe: Unsubscribable;
+  private app$: Observable<any>;
+  private transactions: MyTransaction[];
 
   private loader: NzModalRef = null;
 
@@ -111,6 +113,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     });
     this.swap$ = store.select('swap');
     this.rates$ = store.select('rates');
+    this.app$ = store.select('app');
     this.addLiquidityTokens.forEach((item) => {
       this.addLiquidityInputAmount.push('');
       this.removeLiquidityInputAmount.push('');
@@ -136,10 +139,12 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.ethWalletName = state.ethWalletName;
       this.bscWalletName = state.bscWalletName;
       this.hecoWalletName = state.hecoWalletName;
-      this.liquidityTransaction = state.liquidityTransaction;
       this.handleAccountBalance(state);
       this.initLPData();
       this.changeDetectorRef.detectChanges();
+    });
+    this.appUnScribe = this.app$.subscribe((state) => {
+      this.transactions = state.transactions;
     });
   }
 
@@ -152,6 +157,9 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     }
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();
+    }
+    if (this.appUnScribe) {
+      this.appUnScribe.unsubscribe();
     }
   }
 
@@ -217,9 +225,8 @@ export class LiquidityComponent implements OnInit, OnDestroy {
 
   async maxAddLiquidityInput(index: number): Promise<void> {
     if (!new BigNumber(this.addLiquidityTokens[index].amount).isNaN()) {
-      this.addLiquidityInputAmount[index] = this.addLiquidityTokens[
-        index
-      ].amount;
+      this.addLiquidityInputAmount[index] =
+        this.addLiquidityTokens[index].amount;
       this.receiveAmount[index] = await this.apiService.getPoolOutGivenSingleIn(
         this.addLiquidityTokens[index],
         this.addLiquidityInputAmount[index]
@@ -238,12 +245,11 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       !new BigNumber(this.LPToken.amount).isZero()
     ) {
       this.payAmount[index] = this.LPToken.amount;
-      this.removeLiquidityInputAmount[
-        index
-      ] = await this.apiService.getSingleOutGivenPoolIn(
-        this.addLiquidityTokens[index],
-        this.payAmount[index]
-      );
+      this.removeLiquidityInputAmount[index] =
+        await this.apiService.getSingleOutGivenPoolIn(
+          this.addLiquidityTokens[index],
+          this.payAmount[index]
+        );
       this.removePolyFee[index] = await this.apiService.getFromEthPolyFee(
         this.LPToken,
         this.addLiquidityTokens[index]
@@ -307,7 +313,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         this.LPToken
       );
     }
-    this.loader = this.commonService.loading(SwapTransactionType.deposit, {
+    this.loader = this.commonService.loading(TransactionType.deposit, {
       symbol1: token.symbol,
       symbol2: this.LPToken.symbol,
       value1: this.addLiquidityInputAmount[index],
@@ -389,7 +395,7 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         token
       );
     }
-    this.loader = this.commonService.loading(SwapTransactionType.withdraw, {
+    this.loader = this.commonService.loading(TransactionType.withdraw, {
       symbol1: this.LPToken.symbol,
       symbol2: token.symbol,
       value1: this.payAmount[index],
@@ -430,19 +436,20 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     address: string
   ): Promise<any> {
     const spender = ETH_CROSS_SWAP_CONTRACT_HASH[token.chain];
-    if (
-      this.liquidityTransaction &&
-      this.liquidityTransaction.transactionType ===
-        SwapTransactionType.approve &&
-      this.liquidityTransaction.isPending &&
-      this.liquidityTransaction.contract === spender &&
-      this.liquidityTransaction.fromAddress === address &&
-      this.liquidityTransaction.fromToken.assetID === token.assetID &&
-      this.liquidityTransaction.fromToken.chain === token.chain
-    ) {
-      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
-      return 'error';
-    }
+    this.transactions.forEach((item) => {
+      if (
+        item.transactionType === TransactionType.approve &&
+        item.isPending &&
+        item.contract === spender &&
+        item.fromAddress === address &&
+        item.fromToken.assetID === token.assetID &&
+        item.fromToken.chain === token.chain
+      ) {
+        this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+        return 'error';
+      }
+    });
+
     const allowance = await this.ethApiService.getAllowance(
       token,
       address,
@@ -606,9 +613,8 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     this.tokenBalance.HECO = state.hecoBalances;
     this.addLiquidityTokens.forEach((item, index) => {
       if (this.tokenBalance[item.chain][item.assetID]) {
-        this.addLiquidityTokens[index].amount = this.tokenBalance[item.chain][
-          item.assetID
-        ].amount;
+        this.addLiquidityTokens[index].amount =
+          this.tokenBalance[item.chain][item.assetID].amount;
       } else {
         if (
           (item.chain === 'ETH' && this.ethAccountAddress) ||

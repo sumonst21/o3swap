@@ -10,14 +10,15 @@ import {
   Token,
   AssetQueryResponseItem,
   SwapStateType,
-  UPDATE_PENDING_TX,
-  SwapTransaction,
   NEO_NNEO_CONTRACT_HASH,
   Network,
   NETWORK,
   SWAP_CONTRACT_CHAIN_ID,
   MESSAGE,
-  SwapTransactionType,
+  MyTransaction,
+  TransactionType,
+  ADD_TX,
+  UPDATE_TX,
 } from '@lib';
 import { interval, Observable, Unsubscribable } from 'rxjs';
 import { wallet } from '@cityofzion/neon-js';
@@ -33,12 +34,9 @@ interface State {
 
 @Injectable()
 export class NeoApiService {
-  private listenTxinterval: Unsubscribable;
-
   private swap$: Observable<any>;
   private neoWalletName: NeoWalletName;
   private neoAccountAddress: string;
-  private transaction: SwapTransaction;
   private neolineNetwork: Network;
 
   private language$: Observable<any>;
@@ -62,26 +60,8 @@ export class NeoApiService {
     this.swap$.subscribe((state) => {
       this.neoWalletName = state.neoWalletName;
       this.neoAccountAddress = state.neoAccountAddress;
-      this.transaction = Object.assign({}, state.transaction);
       this.neolineNetwork = state.neolineNetwork;
     });
-  }
-
-  initTx(): void {
-    const localTxString = localStorage.getItem('transaction');
-    if (localTxString === null || localTxString === undefined) {
-      return;
-    }
-    const localTx: SwapTransaction = JSON.parse(localTxString);
-    if (localTx.fromToken.chain !== 'NEO') {
-      return;
-    }
-    this.transaction = localTx;
-    this.store.dispatch({ type: UPDATE_PENDING_TX, data: localTx });
-    if (localTx.isPending === false) {
-      return;
-    }
-    this.listenTxReceipt();
   }
 
   //#region NEO nNEO swap
@@ -414,10 +394,9 @@ export class NeoApiService {
     if (!txHash) {
       return;
     }
-    const pendingTx: SwapTransaction = {
+    const pendingTx: MyTransaction = {
       txid: this.commonService.remove0xHash(txHash),
       isPending: true,
-      min: false,
       fromToken,
       toToken,
       amount: inputAmount,
@@ -425,7 +404,7 @@ export class NeoApiService {
         .shiftedBy(-toToken.decimals)
         .toFixed(),
       walletName,
-      transactionType: SwapTransactionType.swap,
+      transactionType: TransactionType.swap,
     };
     if (addLister === false) {
       pendingTx.progress = {
@@ -434,51 +413,38 @@ export class NeoApiService {
         step3: { hash: '', status: 0 },
       };
     }
-    this.transaction = pendingTx;
-    this.store.dispatch({ type: UPDATE_PENDING_TX, data: pendingTx });
+    this.commonService.showTxDetail(pendingTx);
+    this.store.dispatch({ type: ADD_TX, data: pendingTx });
     if (addLister) {
-      this.listenTxReceipt();
+      this.listenTxReceipt(pendingTx);
     }
   }
-  private listenTxReceipt(): void {
-    const getTx = () => {
-      if (JSON.stringify(this.transaction) === '{}') {
-        if (this.listenTxinterval) {
-          this.listenTxinterval.unsubscribe();
-        }
-        return;
-      }
+  listenTxReceipt(pendingTx: MyTransaction): void {
+    const listenTxinterval = interval(5000).subscribe(() => {
       this.rpcApiService
-        .getNeoTxByHash(this.transaction.txid, this.transaction.walletName)
+        .getNeoTxByHash(pendingTx.txid, pendingTx.walletName)
         .then((txid) => {
           if (
             txid &&
             this.commonService.add0xHash(txid) ===
-              this.commonService.add0xHash(this.transaction.txid)
+              this.commonService.add0xHash(pendingTx.txid)
           ) {
-            if (this.listenTxinterval) {
-              this.listenTxinterval.unsubscribe();
+            if (listenTxinterval) {
+              listenTxinterval.unsubscribe();
             }
-            this.transaction.isPending = false;
+            pendingTx.isPending = false;
             this.store.dispatch({
-              type: UPDATE_PENDING_TX,
-              data: this.transaction,
+              type: UPDATE_TX,
+              data: pendingTx,
             });
             this.swapService.getNeoBalances(
-              this.transaction.walletName as NeoWalletName
+              pendingTx.walletName as NeoWalletName
             );
           }
         })
         .catch((error) => {
           console.log(error);
         });
-    };
-    getTx();
-    if (this.listenTxinterval) {
-      this.listenTxinterval.unsubscribe();
-    }
-    this.listenTxinterval = interval(5000).subscribe(() => {
-      getTx();
     });
   }
   private getNeoDapiService(walletName: NeoWalletName): any {

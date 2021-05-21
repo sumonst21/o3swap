@@ -21,26 +21,23 @@ import {
   LP_STAKING_TOKENS,
   LP_TOKENS,
   MESSAGE,
+  MyTransaction,
   O3STAKING_CONTRACT,
   O3TOKEN_CONTRACT,
   O3_TOKEN,
   Token,
   TOKEN_STAKING_TOKENS,
+  TransactionType,
   UNLOCK_LP_TOKENS,
   USD_TOKENS,
 } from '@lib';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
-import {
-  VaultTransaction,
-  VaultTransactionType,
-  VaultWallet,
-} from 'src/app/_lib/vault';
+import { VaultWallet } from 'src/app/_lib/vault';
 interface State {
   language: any;
-}
-interface State {
   vault: any;
   rates: any;
+  app: any;
 }
 @Component({
   selector: 'app-vault',
@@ -57,12 +54,15 @@ export class VaultComponent implements OnInit, OnDestroy {
   private vault$: Observable<any>;
   private vaultUnScribe: Unsubscribable;
   private vaultWallet: VaultWallet;
-  private vaultTransaction: VaultTransaction;
   isCanClick = true;
 
   ratesUnScribe: Unsubscribable;
   rates$: Observable<any>;
   rates = {};
+
+  private appUnScribe: Unsubscribable;
+  private app$: Observable<any>;
+  private transactions: MyTransaction[];
 
   addressAirdropData = null;
 
@@ -96,6 +96,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     });
     this.vault$ = store.select('vault');
     this.rates$ = store.select('rates');
+    this.app$ = store.select('app');
   }
 
   ngOnInit(): void {
@@ -106,9 +107,11 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.initO3Data();
     this.vaultUnScribe = this.vault$.subscribe((state) => {
       this.vaultWallet = state.vaultWallet;
-      this.vaultTransaction = state.vaultTransaction;
       this.initO3Data();
       this.initAridrop();
+    });
+    this.appUnScribe = this.app$.subscribe((state) => {
+      this.transactions = state.transactions;
     });
     this.ratesUnScribe = this.rates$.subscribe((state) => {
       this.rates = state.rates;
@@ -129,6 +132,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     if (this.getDataInterval) {
       this.getDataInterval.unsubscribe();
+    }
+    if (this.appUnScribe) {
+      this.appUnScribe.unsubscribe();
     }
     this.loader?.close();
   }
@@ -174,12 +180,8 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [
-          item.balance,
-          item.totalStaking,
-          item.staked,
-          item.sharePerBlock,
-        ] = res;
+        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
+          res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -194,12 +196,8 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [
-          item.balance,
-          item.totalStaking,
-          item.staked,
-          item.sharePerBlock,
-        ] = res;
+        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
+          res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -320,7 +318,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           return;
         }
         this.loader = this.commonService.loading(
-          isStake ? VaultTransactionType.stake : VaultTransactionType.unstake,
+          isStake ? TransactionType.stake : TransactionType.unstake,
           {
             symbol1: token.symbol,
             value1: res,
@@ -408,7 +406,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           return;
         }
         this.loader = this.commonService.loading(
-          isStake ? VaultTransactionType.stake : VaultTransactionType.unstake,
+          isStake ? TransactionType.stake : TransactionType.unstake,
           {
             symbol1: token.symbol,
             value1: res,
@@ -457,7 +455,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       return;
     }
     const contractHash = O3TOKEN_CONTRACT;
-    this.loader = this.commonService.loading(VaultTransactionType.claim, {
+    this.loader = this.commonService.loading(TransactionType.claim, {
       symbol1: 'O3',
       value1: token.claimable,
     });
@@ -491,7 +489,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       return;
     }
     const contractHash = O3STAKING_CONTRACT[token.assetID];
-    this.loader = this.commonService.loading(VaultTransactionType.claim, {
+    this.loader = this.commonService.loading(TransactionType.claim, {
       symbol1: token.symbol,
       value1: token.profit,
     });
@@ -524,7 +522,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     } else {
       return;
     }
-    this.loader = this.commonService.loading(VaultTransactionType.claim, {
+    this.loader = this.commonService.loading(TransactionType.claim, {
       symbol1: 'O3',
       value1: this.airdropO3[airdropIndex],
     });
@@ -609,18 +607,19 @@ export class VaultComponent implements OnInit, OnDestroy {
     inputAmount: string,
     spender: string
   ): Promise<any> {
-    if (
-      this.vaultTransaction &&
-      this.vaultTransaction.transactionType === VaultTransactionType.approve &&
-      this.vaultTransaction.isPending &&
-      this.vaultTransaction.contract === spender &&
-      this.vaultTransaction.fromAddress === address &&
-      this.vaultTransaction.fromToken.assetID === token.assetID &&
-      this.vaultTransaction.fromToken.chain === token.chain
-    ) {
-      this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
-      return 'error';
-    }
+    this.transactions.forEach((item) => {
+      if (
+        item.transactionType === TransactionType.approve &&
+        item.isPending &&
+        item.contract === spender &&
+        item.fromAddress === address &&
+        item.fromToken.assetID === token.assetID &&
+        item.fromToken.chain === token.chain
+      ) {
+        this.nzMessage.error(MESSAGE.waitApprove[this.lang]);
+        return 'error';
+      }
+    });
     const balance = await this.ethApiService.getAllowance(
       token,
       address,

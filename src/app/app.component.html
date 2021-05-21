@@ -77,6 +77,7 @@
           <span class="line">|</span>
           <span class="canClick" [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">中文</span>
         </div>
+        <app-tx-list *ngIf="isHome===false"></app-tx-list>
       </div>
     </div>
   </header>
@@ -90,7 +91,7 @@
   <router-outlet></router-outlet>
 </div>
 
-<div class="cover" *ngIf="showMobileMenu" (click)="showMobileMenu=false">
+<section class="cover" *ngIf="showMobileMenu" (click)="showMobileMenu=false">
   <ul class="mobile-menu scroll" *ngIf="showMobileMenu" (click)="stopPropagation($event)">
     <li [ngClass]="{active: isHome}" (click)="toUrl('/')">
       {{ 'Home' | translate: lang:langPageName }}
@@ -122,4 +123,4 @@
       <span [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">中文</span>
     </li>
   </ul>
-</div>
+</section>

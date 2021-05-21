@@ -21,7 +21,7 @@ import { Observable, Unsubscribable } from 'rxjs';
 import { Store } from '@ngrx/store';
 interface State {
   swap: SwapStateType;
-  tokens: any;
+  app: any;
   language: any;
 }
 @Component({
@@ -47,8 +47,8 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
   tokenBalance = { NEO: {}, ETH: {}, BSC: {}, HECO: {} }; // 账户的 tokens
   swapUnScribe: Unsubscribable;
 
-  tokensUnScribe: Unsubscribable;
-  tokens$: Observable<any>;
+  appUnScribe: Unsubscribable;
+  app$: Observable<any>;
   chainTokens = INIT_CHAIN_TOKENS;
 
   chain: CHAINS = 'ETH';
@@ -70,8 +70,8 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
       this.lang = state.language;
     });
     this.swap$ = store.select('swap');
-    this.tokens$ = store.select('tokens');
-    this.tokensUnScribe = this.tokens$.subscribe((state) => {
+    this.app$ = store.select('app');
+    this.appUnScribe = this.app$.subscribe((state) => {
       this.chainTokens = state.chainTokens;
     });
   }
@@ -79,8 +79,8 @@ export class SwapTokenComponent implements OnInit, OnDestroy {
     if (this.swapUnScribe) {
       this.swapUnScribe.unsubscribe();
     }
-    if (this.tokensUnScribe) {
-      this.tokensUnScribe.unsubscribe();
+    if (this.appUnScribe) {
+      this.appUnScribe.unsubscribe();
     }
     if (this.langUnScribe) {
       this.langUnScribe.unsubscribe();

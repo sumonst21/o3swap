@@ -83,6 +83,14 @@ const app = {
     en: 'Coming soon...',
     zh: '即将开放...',
   },
+  RecentTransactions: {
+    en: 'Recent 5 Transactions',
+    zh: '最近 5 条交易',
+  },
+  clearAll: {
+    en: 'clear all',
+    zh: '清空',
+  },
 };
 
 export default app;

@@ -6,11 +6,10 @@ import {
   Output,
   Input,
 } from '@angular/core';
-import { MESSAGE, SwapTransactionType } from '@lib';
+import { MESSAGE, TransactionType } from '@lib';
 import { Store } from '@ngrx/store';
 import { AnimationOptions } from 'ngx-lottie';
 import { Observable } from 'rxjs/internal/Observable';
-import { VaultTransactionType } from 'src/app/_lib/vault';
 
 interface State {
   rates: any;
@@ -50,38 +49,35 @@ export class LoadingDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     switch (this.transactionType) {
-      case SwapTransactionType.approve:
+      case TransactionType.approve:
         this.message = MESSAGE.Approve[this.lang];
         break;
-      case SwapTransactionType.deposit:
+      case TransactionType.deposit:
         this.message = `${MESSAGE.Deposit[this.lang]} ${this.params.value1} ${
           this.params.symbol1
         } for ${this.params.value2} ${this.params.symbol2}`;
         break;
-      case SwapTransactionType.swap:
+      case TransactionType.swap:
         this.message = `${MESSAGE.Swap[this.lang]} ${this.params.value1} ${
           this.params.symbol1
         } for ${this.params.value2} ${this.params.symbol2}`;
         break;
-      case SwapTransactionType.withdraw:
+      case TransactionType.withdraw:
         this.message = `${MESSAGE.Withdraw[this.lang]} ${this.params.value1} ${
           this.params.symbol1
         } for ${this.params.value2} ${this.params.symbol2}`;
         break;
-      case VaultTransactionType.approve:
-        this.message = MESSAGE.Approve[this.lang];
-        break;
-      case VaultTransactionType.claim:
+      case TransactionType.claim:
         this.message = `${MESSAGE.Claim[this.lang]} ${this.params.value1} ${
           this.params.symbol1
         }`;
         break;
-      case VaultTransactionType.stake:
+      case TransactionType.stake:
         this.message = `${MESSAGE.Stake[this.lang]} ${this.params.value1} ${
           this.params.symbol1
         }`;
         break;
-      case VaultTransactionType.unstake:
+      case TransactionType.unstake:
         this.message = `${MESSAGE.Unstake[this.lang]} ${this.params.value1} ${
           this.params.symbol1
         }`;

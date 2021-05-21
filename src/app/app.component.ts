@@ -4,16 +4,16 @@ import {
   NeolineWalletApiService,
   MetaMaskWalletApiService,
   VaultdMetaMaskWalletApiService,
-  VaultEthWalletApiService,
   ApiService,
-  EthApiService,
   NeoApiService,
+  EthApiService,
 } from '@core';
+import { LOCAL_TRANSACTIONS_KEY, MyTransaction } from '@lib';
 import { Store } from '@ngrx/store';
 import { RiskWarningComponent } from '@shared';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { interval, Observable, Unsubscribable } from 'rxjs';
-import { UPDATE_LANGUAGE } from './_lib/actions';
+import { INIT_TXS, UPDATE_LANGUAGE } from '@lib';
 
 interface State {
   language: any;
@@ -43,7 +43,6 @@ export class AppComponent implements OnInit {
     private metaMaskWalletApiService: MetaMaskWalletApiService,
     private neolineWalletApiService: NeolineWalletApiService,
     private vaultdMetaMaskWalletApiService: VaultdMetaMaskWalletApiService,
-    private vaultEthWalletApiService: VaultEthWalletApiService,
     private modal: NzModalService,
     private apiService: ApiService,
     private ethApiService: EthApiService,
@@ -72,6 +71,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.initLanguage();
+    this.initLocalTxs();
     this.apiService.getRates();
     const sessionShowRisk = sessionStorage.getItem('showRisk');
     if (sessionShowRisk !== undefined) {
@@ -81,9 +81,6 @@ export class AppComponent implements OnInit {
       this.neolineWalletApiService.initConnect();
       this.metaMaskWalletApiService.initConnect();
       this.vaultdMetaMaskWalletApiService.initConnect();
-      this.ethApiService.initTxs();
-      this.neoApiService.initTx();
-      this.vaultEthWalletApiService.initTx();
     }
   }
 
@@ -93,6 +90,29 @@ export class AppComponent implements OnInit {
       this.lang = localLang;
       this.store.dispatch({ type: UPDATE_LANGUAGE, data: localLang });
     }
+  }
+
+  initLocalTxs(): void {
+    localStorage.removeItem('transaction');
+    localStorage.removeItem('bridgeeTransaction');
+    localStorage.removeItem('liquidityTransaction');
+    localStorage.removeItem('vaultTransaction');
+    let localTxs: any = localStorage.getItem(LOCAL_TRANSACTIONS_KEY);
+    if (!localTxs) {
+      return;
+    }
+    localTxs = JSON.parse(localTxs);
+    this.store.dispatch({ type: INIT_TXS, data: localTxs });
+    localTxs.forEach((item: MyTransaction) => {
+      if (item.isPending === false) {
+        return;
+      }
+      if (item.fromToken.chain === 'NEO') {
+        this.neoApiService.listenTxReceipt(item);
+      } else {
+        this.ethApiService.listenTxReceipt(item);
+      }
+    });
   }
 
   updateRates(): void {

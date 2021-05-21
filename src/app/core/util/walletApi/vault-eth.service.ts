@@ -3,20 +3,19 @@ import { ethers } from 'ethers';
 import {
   O3_TOKEN,
   Token,
-  UPDATE_VAULT_STAKE_PENDING_TX,
   O3STAKING_CONTRACT,
   O3TOKEN_CONTRACT,
   ETH_AIRDROP_CLAIM_CONTRACT,
+  TransactionType,
+  MyTransaction,
+  ADD_TX,
+  UPDATE_TX,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import { interval, Observable, of, Unsubscribable } from 'rxjs';
 import { CommonService } from '../common.service';
 import Web3 from 'web3';
-import {
-  VaultTransaction,
-  VaultTransactionType,
-  VaultWallet,
-} from 'src/app/_lib/vault';
+import { VaultWallet } from 'src/app/_lib/vault';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import BigNumber from 'bignumber.js';
@@ -28,14 +27,12 @@ interface State {
 }
 @Injectable()
 export class VaultEthWalletApiService {
-  private requestTxStatusInterval: Unsubscribable;
   private web3: Web3 = new Web3();
   private contractJson = {};
   private airdropListJson = [];
 
   private vault$: Observable<any>;
   private vaultWallet: VaultWallet;
-  private vaultTransaction: VaultTransaction;
 
   constructor(
     private http: HttpClient,
@@ -47,28 +44,8 @@ export class VaultEthWalletApiService {
     this.vault$ = store.select('vault');
     this.vault$.subscribe((state) => {
       this.vaultWallet = state.vaultWallet;
-      this.vaultTransaction = state.vaultTransaction;
     });
   }
-
-  //#region connect
-  initTx(): void {
-    const localTxString = localStorage.getItem('vaultTransaction');
-    if (localTxString === null || localTxString === undefined) {
-      return;
-    }
-    const localTx: VaultTransaction = JSON.parse(localTxString);
-    if (localTx.fromToken.chain === 'NEO') {
-      return;
-    }
-    this.vaultTransaction = localTx;
-    this.store.dispatch({ type: UPDATE_VAULT_STAKE_PENDING_TX, data: localTx });
-    if (localTx.isPending === false) {
-      return;
-    }
-    this.listenTxReceipt(localTx.txid, UPDATE_VAULT_STAKE_PENDING_TX);
-  }
-  //#endregion
 
   checkNetwork(fromToken: Token): boolean {
     return this.vaultdMetaMaskWalletApiService.checkNetwork(fromToken);
@@ -154,7 +131,7 @@ export class VaultEthWalletApiService {
       .sendTransaction(requestData, token.chain)
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(token, inputAmount, hash, VaultTransactionType.stake);
+        this.handleTx(token, inputAmount, hash, TransactionType.stake);
         return hash;
       });
   }
@@ -192,7 +169,7 @@ export class VaultEthWalletApiService {
       .sendTransaction(requestData, token.chain)
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(token, inputAmount, hash, VaultTransactionType.unstake);
+        this.handleTx(token, inputAmount, hash, TransactionType.unstake);
         return hash;
       });
   }
@@ -230,7 +207,7 @@ export class VaultEthWalletApiService {
       .sendTransaction(requestData, token.chain)
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(O3_TOKEN, profit, hash, VaultTransactionType.claim);
+        this.handleTx(O3_TOKEN, profit, hash, TransactionType.claim);
         return hash;
       });
   }
@@ -361,7 +338,7 @@ export class VaultEthWalletApiService {
       .sendTransaction(requestData, token.chain)
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(token, inputAmount, hash, VaultTransactionType.stake);
+        this.handleTx(token, inputAmount, hash, TransactionType.stake);
         return hash;
       });
   }
@@ -396,7 +373,7 @@ export class VaultEthWalletApiService {
       .sendTransaction(requestData, token.chain)
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(token, inputAmount, hash, VaultTransactionType.unstake);
+        this.handleTx(token, inputAmount, hash, TransactionType.unstake);
         return hash;
       });
   }
@@ -426,7 +403,7 @@ export class VaultEthWalletApiService {
       .sendTransaction(requestData, token.chain)
       .then((hash) => {
         this.commonService.log(hash);
-        this.handleTx(O3_TOKEN, unlocked, hash, VaultTransactionType.claim);
+        this.handleTx(O3_TOKEN, unlocked, hash, TransactionType.claim);
         return hash;
       });
   }
@@ -634,7 +611,7 @@ export class VaultEthWalletApiService {
           O3_TOKEN,
           new BigNumber(addressInfo.amount).shiftedBy(-18).toFixed(),
           hash,
-          VaultTransactionType.claim
+          TransactionType.claim
         );
         return hash;
       });
@@ -646,52 +623,45 @@ export class VaultEthWalletApiService {
     fromToken: Token,
     inputAmount: string,
     txHash: string,
-    transactionType: number,
+    transactionType: TransactionType,
     contract?: string,
     fromAddress?: string
   ): void {
     if (!txHash) {
       return;
     }
-    const pendingTx: VaultTransaction = {
+    const pendingTx: MyTransaction = {
       txid: this.commonService.remove0xHash(txHash),
       isPending: true,
       isFailed: false,
       fromToken,
       amount: inputAmount,
       transactionType,
-      min: false,
       contract,
       fromAddress,
     };
-    this.vaultTransaction = pendingTx;
+    this.commonService.showTxDetail(pendingTx);
     this.store.dispatch({
-      type: UPDATE_VAULT_STAKE_PENDING_TX,
+      type: ADD_TX,
       data: pendingTx,
     });
-    this.listenTxReceipt(txHash, UPDATE_VAULT_STAKE_PENDING_TX);
+    this.listenTxReceipt(pendingTx);
   }
-  private listenTxReceipt(txHash: string, dispatchType: string): void {
-    let myInterval = this.requestTxStatusInterval;
-    if (myInterval) {
-      myInterval.unsubscribe();
-    }
-    myInterval = interval(5000).subscribe(() => {
-      const currentTx: VaultTransaction = this.vaultTransaction;
+  private listenTxReceipt(pendingTx: MyTransaction): void {
+    const myInterval = interval(5000).subscribe(() => {
       this.rpcApiService
-        .getEthTxReceipt(txHash, currentTx.fromToken.chain)
+        .getEthTxReceipt(pendingTx.txid, pendingTx.fromToken.chain)
         .subscribe(
           (receipt) => {
             if (receipt) {
               myInterval.unsubscribe();
               if (new BigNumber(receipt.status, 16).isZero()) {
-                currentTx.isPending = false;
-                currentTx.isFailed = true;
-                this.store.dispatch({ type: dispatchType, data: currentTx });
+                pendingTx.isPending = false;
+                pendingTx.isFailed = true;
               } else {
-                currentTx.isPending = false;
-                this.store.dispatch({ type: dispatchType, data: currentTx });
+                pendingTx.isPending = false;
               }
+              this.store.dispatch({ type: UPDATE_TX, data: pendingTx });
             }
           },
           (error) => {

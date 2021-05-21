@@ -7,6 +7,7 @@ export { LoadingDialogModalComponent } from './modal/loading-dialog/loading-dial
 export { ApproveModalComponent } from './modal/approve/approve.component';
 export { RiskWarningComponent } from './modal/risk-warning/risk-warning.component';
 export { AccountComponent } from './modal/account/account.component';
+export { TxProgressModalComponent } from './modal/tx-progress/tx-progress.component';
 
 export { HubTokenComponent } from './drawers/hub-token/hub-token.component';
 export { SwapTokenDrawerComponent } from './drawers/swap-token/swap-token.component';
@@ -14,3 +15,4 @@ export { ApproveDrawerComponent } from './drawers/approve/approve.component';
 export { SwapExchangeDrawerComponent } from './drawers/swap-exchange/swap-exchange.component';
 export { SwapSettingDrawerComponent } from './drawers/swap-setting/swap-setting.component';
 export { VaultStakeDrawerComponent } from './drawers/vault-stake/vault-stake.component';
+export { TxProgressDrawerComponent } from './drawers/tx-progress/tx-progress.component';

@@ -6,7 +6,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { Unsubscribable, Observable } from 'rxjs';
 
 interface State {
-  tokens: any;
+  app: any;
   swap: any;
   language: any;
 }
@@ -26,8 +26,8 @@ export class SwapComponent implements OnInit, OnDestroy {
 
   initResultData;
 
-  tokensUnScribe: Unsubscribable;
-  tokens$: Observable<any>;
+  appUnScribe: Unsubscribable;
+  app$: Observable<any>;
   chainTokens = INIT_CHAIN_TOKENS;
 
   swapUnScribe: Unsubscribable;
@@ -48,12 +48,12 @@ export class SwapComponent implements OnInit, OnDestroy {
     this.langUnScribe = this.language$.subscribe((state) => {
       this.lang = state.language;
     });
-    this.tokens$ = store.select('tokens');
+    this.app$ = store.select('app');
     this.swap$ = store.select('swap');
   }
 
   async ngOnInit(): Promise<void> {
-    this.tokensUnScribe = this.tokens$.subscribe((state) => {
+    this.appUnScribe = this.app$.subscribe((state) => {
       this.chainTokens = state.chainTokens;
       if (this.chainTokens.ETH.length > 0) {
         this.handleFromToken();
@@ -87,8 +87,8 @@ export class SwapComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.tokensUnScribe) {
-      this.tokensUnScribe.unsubscribe();
+    if (this.appUnScribe) {
+      this.appUnScribe.unsubscribe();
     }
     if (this.swapUnScribe) {
       this.swapUnScribe.unsubscribe();

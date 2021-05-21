@@ -2,23 +2,22 @@ import { Injectable } from '@angular/core';
 import {
   ETH_CROSS_SWAP_CONTRACT_HASH,
   SwapStateType,
-  SwapTransaction,
+  MyTransaction,
   SWAP_CONTRACT_CHAIN_ID,
   Token,
-  UPDATE_PENDING_TX,
+  UPDATE_TX,
+  TransactionType,
   ETH_SOURCE_ASSET_HASH,
   AssetQueryResponseItem,
   O3_AGGREGATOR_SLIPVALUE,
   TxAtPage,
-  UPDATE_BRIDGE_PENDING_TX,
-  UPDATE_LIQUIDITY_PENDING_TX,
   BRIDGE_SLIPVALUE,
   WETH_ASSET_HASH,
   AGGREGATOR_CONTRACT,
   POLY_WRAPPER_CONTRACT_HASH,
   O3_TOKEN,
   INIT_CHAIN_TOKENS,
-  SwapTransactionType,
+  ADD_TX,
 } from '@lib';
 import { Store } from '@ngrx/store';
 import BigNumber from 'bignumber.js';
@@ -30,28 +29,22 @@ import { RpcApiService } from '../../api/rpc.service';
 import { MetaMaskWalletApiService } from './metamask';
 import { O3EthWalletApiService } from './o3-eth';
 import { VaultEthWalletApiService } from './vault-eth.service';
-import { VaultTransactionType } from 'src/app/_lib/vault';
+import { ApiService } from '../../api/api.service';
 
 interface State {
   swap: SwapStateType;
-  tokens: any;
+  app: any;
 }
 @Injectable()
 export class EthApiService {
-  private requestTxStatusInterval: Unsubscribable;
-  private requestBridgeTxStatusInterval: Unsubscribable;
-  private requestLiquidityTxStatusInterval: Unsubscribable;
   private web3 = new Web3();
 
   private swap$: Observable<any>;
   private walletName = { ETH: '', BSC: '', HECO: '' };
-  private transaction: SwapTransaction;
-  private bridgeeTransaction: SwapTransaction;
-  private liquidityTransaction: SwapTransaction;
 
-  tokensUnScribe: Unsubscribable;
-  tokens$: Observable<any>;
-  chainTokens = INIT_CHAIN_TOKENS;
+  private appUnScribe: Unsubscribable;
+  private app$: Observable<any>;
+  private chainTokens = INIT_CHAIN_TOKENS;
 
   constructor(
     private store: Store<State>,
@@ -60,34 +53,19 @@ export class EthApiService {
     private rpcApiService: RpcApiService,
     private o3EthWalletApiService: O3EthWalletApiService,
     private metaMaskWalletApiService: MetaMaskWalletApiService,
-    private vaultEthWalletApiService: VaultEthWalletApiService
+    private vaultEthWalletApiService: VaultEthWalletApiService,
+    private apiService: ApiService,
   ) {
     this.swap$ = store.select('swap');
     this.swap$.subscribe((state) => {
       this.walletName.ETH = state.ethWalletName;
       this.walletName.BSC = state.bscWalletName;
       this.walletName.HECO = state.hecoWalletName;
-      this.transaction = Object.assign({}, state.transaction);
-      this.bridgeeTransaction = Object.assign({}, state.bridgeeTransaction);
-      this.liquidityTransaction = Object.assign({}, state.liquidityTransaction);
     });
-    this.tokens$ = store.select('tokens');
-    this.tokensUnScribe = this.tokens$.subscribe((state) => {
+    this.app$ = store.select('app');
+    this.appUnScribe = this.app$.subscribe((state) => {
       this.chainTokens = state.chainTokens;
     });
-  }
-
-  initTxs(): void {
-    const localTxString = localStorage.getItem('transaction');
-    const localBridgeTxString = localStorage.getItem('bridgeeTransaction');
-    const localLiquidityTxString = localStorage.getItem('liquidityTransaction');
-    this.handleLocalTx(localTxString, UPDATE_PENDING_TX, 'swap');
-    this.handleLocalTx(localBridgeTxString, UPDATE_BRIDGE_PENDING_TX, 'bridge');
-    this.handleLocalTx(
-      localLiquidityTxString,
-      UPDATE_LIQUIDITY_PENDING_TX,
-      'liquidity'
-    );
   }
 
   //#region network
@@ -135,7 +113,7 @@ export class EthApiService {
           new BigNumber(inputAmount).shiftedBy(toToken.decimals).toFixed(),
           hash,
           'swap',
-          SwapTransactionType.swap,
+          TransactionType.swap,
           false
         );
         return hash;
@@ -178,7 +156,7 @@ export class EthApiService {
           new BigNumber(inputAmount).shiftedBy(toToken.decimals).toFixed(),
           hash,
           'swap',
-          SwapTransactionType.swap,
+          TransactionType.swap,
           false
         );
         return hash;
@@ -265,7 +243,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           txAtPage,
-          SwapTransactionType.swap
+          TransactionType.swap
         );
         return hash;
       });
@@ -342,7 +320,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           txAtPage,
-          SwapTransactionType.swap
+          TransactionType.swap
         );
         return hash;
       });
@@ -425,7 +403,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'swap',
-          SwapTransactionType.swap,
+          TransactionType.swap,
           false
         );
         return hash;
@@ -507,7 +485,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'swap',
-          SwapTransactionType.swap,
+          TransactionType.swap,
           false
         );
         return hash;
@@ -589,7 +567,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'swap',
-          SwapTransactionType.swap,
+          TransactionType.swap,
           false
         );
         return hash;
@@ -692,7 +670,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'swap',
-          SwapTransactionType.swap
+          TransactionType.swap
         );
         return hash;
       });
@@ -794,7 +772,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'swap',
-          SwapTransactionType.swap
+          TransactionType.swap
         );
         return hash;
       });
@@ -877,7 +855,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'liquidity',
-          SwapTransactionType.deposit
+          TransactionType.deposit
         );
         return hash;
       });
@@ -959,7 +937,7 @@ export class EthApiService {
           receiveAmount,
           hash,
           'liquidity',
-          SwapTransactionType.withdraw
+          TransactionType.withdraw
         );
         return hash;
       });
@@ -1055,7 +1033,7 @@ export class EthApiService {
             approveToken,
             '0',
             hash,
-            VaultTransactionType.approve,
+            TransactionType.approve,
             contract,
             fromAddress
           );
@@ -1067,7 +1045,7 @@ export class EthApiService {
             '0',
             hash,
             txAtPage,
-            SwapTransactionType.approve,
+            TransactionType.approve,
             false,
             contract,
             fromAddress
@@ -1079,40 +1057,6 @@ export class EthApiService {
   //#endregion
 
   //#region private function
-  private handleLocalTx(
-    localTxString: string,
-    dispatchType: string,
-    txAtPage: TxAtPage
-  ): void {
-    if (localTxString === null || localTxString === undefined) {
-      return;
-    }
-    const localTx: SwapTransaction = JSON.parse(localTxString);
-    if (localTx.fromToken.chain === 'NEO') {
-      return;
-    }
-    switch (txAtPage) {
-      case 'swap':
-        this.transaction = localTx;
-        break;
-      case 'bridge':
-        this.bridgeeTransaction = localTx;
-        break;
-      case 'liquidity':
-        this.liquidityTransaction = localTx;
-        break;
-    }
-    this.store.dispatch({ type: dispatchType, data: localTx });
-    if (localTx.isPending === false) {
-      return;
-    }
-    this.listenTxReceipt(
-      localTx.txid,
-      dispatchType,
-      localTx.progress ? true : false,
-      txAtPage
-    );
-  }
   private handleTx(
     fromToken: Token,
     toToken: Token,
@@ -1120,7 +1064,7 @@ export class EthApiService {
     receiveAmount: string,
     txHash: string,
     txAtPage: TxAtPage,
-    transactionType: SwapTransactionType,
+    transactionType: TransactionType,
     hasCrossChain = true,
     contract?: string,
     fromAddress?: string
@@ -1128,11 +1072,10 @@ export class EthApiService {
     if (!txHash) {
       return;
     }
-    const pendingTx: SwapTransaction = {
+    const pendingTx: MyTransaction = {
       txid: this.commonService.remove0xHash(txHash),
       isPending: true,
       isFailed: false,
-      min: false,
       fromToken,
       toToken,
       amount: inputAmount,
@@ -1150,77 +1093,29 @@ export class EthApiService {
         step3: { hash: '', status: 0 },
       };
     }
-    let dispatchType: string;
-    switch (txAtPage) {
-      case 'swap':
-        dispatchType = UPDATE_PENDING_TX;
-        this.transaction = pendingTx;
-        break;
-      case 'bridge':
-        dispatchType = UPDATE_BRIDGE_PENDING_TX;
-        this.bridgeeTransaction = pendingTx;
-        break;
-      case 'liquidity':
-        dispatchType = UPDATE_LIQUIDITY_PENDING_TX;
-        this.liquidityTransaction = pendingTx;
-        break;
-    }
-    this.store.dispatch({ type: dispatchType, data: pendingTx });
-    this.listenTxReceipt(txHash, dispatchType, hasCrossChain, txAtPage);
+    this.commonService.showTxDetail(pendingTx);
+    this.store.dispatch({ type: ADD_TX, data: pendingTx });
+    this.listenTxReceipt(pendingTx);
   }
-  private listenTxReceipt(
-    txHash: string,
-    dispatchType: string,
-    hasCrossChain = true,
-    txAtPage: TxAtPage
-  ): void {
-    let myInterval: Unsubscribable;
-    switch (txAtPage) {
-      case 'swap':
-        myInterval = this.requestTxStatusInterval;
-        break;
-      case 'bridge':
-        myInterval = this.requestBridgeTxStatusInterval;
-        break;
-      case 'liquidity':
-        myInterval = this.requestLiquidityTxStatusInterval;
-        break;
-    }
-    if (myInterval) {
-      myInterval.unsubscribe();
-    }
-    myInterval = interval(5000).subscribe(() => {
-      let currentTx: SwapTransaction;
-      switch (txAtPage) {
-        case 'swap':
-          currentTx = this.transaction;
-          break;
-        case 'bridge':
-          currentTx = this.bridgeeTransaction;
-          break;
-        case 'liquidity':
-          currentTx = this.liquidityTransaction;
-          break;
-      }
-      if (JSON.stringify(currentTx) === '{}') {
-        myInterval.unsubscribe();
-        return;
-      }
+  listenTxReceipt(pendingTx: MyTransaction): void {
+    const myInterval = interval(5000).subscribe(() => {
       this.rpcApiService
-        .getEthTxReceipt(txHash, currentTx.fromToken.chain)
+        .getEthTxReceipt(pendingTx.txid, pendingTx.fromToken.chain)
         .subscribe(
           (receipt) => {
             if (receipt) {
               myInterval.unsubscribe();
               if (new BigNumber(receipt.status, 16).isZero()) {
-                currentTx.isPending = false;
-                currentTx.isFailed = true;
-                this.store.dispatch({ type: dispatchType, data: currentTx });
+                pendingTx.isPending = false;
+                pendingTx.isFailed = true;
+                this.store.dispatch({ type: UPDATE_TX, data: pendingTx });
               } else {
-                if (hasCrossChain === false) {
-                  currentTx.isPending = false;
-                  this.swapService.getEthBalance(currentTx.fromToken.chain);
-                  this.store.dispatch({ type: dispatchType, data: currentTx });
+                if (!pendingTx.progress) {
+                  pendingTx.isPending = false;
+                  this.swapService.getEthBalance(pendingTx.fromToken.chain);
+                  this.store.dispatch({ type: UPDATE_TX, data: pendingTx });
+                } else {
+                  this.apiService.setRequestCrossInterval(pendingTx);
                 }
               }
             }

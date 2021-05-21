@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { interval, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
   AssetQueryResponse,
@@ -30,6 +30,8 @@ import {
   CHAINS,
   UPDATE_RATES,
   O3_TOKEN,
+  MyTransaction,
+  UPDATE_TX,
 } from '@lib';
 import BigNumber from 'bignumber.js';
 import { CommonService } from '../util/common.service';
@@ -291,6 +293,39 @@ export class ApiService {
         })
       )
       .toPromise();
+  }
+
+  setRequestCrossInterval(pendingTx: MyTransaction): void {
+    const requestCrossInterval = interval(5000).subscribe(() => {
+      this.getCrossChainSwapDetail(pendingTx.txid).subscribe(
+        (res: TxProgress) => {
+          this.commonService.log(res);
+          let flag = false;
+          if (
+            pendingTx.progress.step1.status !== res.step1.status ||
+            pendingTx.progress.step2.status !== res.step2.status ||
+            pendingTx.progress.step3.status !== res.step3.status
+          ) {
+            flag = true;
+          }
+          pendingTx.progress = res;
+          if (
+            res.step1.status === 2 &&
+            res.step2.status === 2 &&
+            res.step3.status === 2
+          ) {
+            flag = true;
+            pendingTx.isPending = false;
+            requestCrossInterval.unsubscribe();
+            this.swapService.getEthBalance(pendingTx.fromToken.chain);
+            this.swapService.getEthBalance(pendingTx.toToken.chain);
+          }
+          if (flag) {
+            this.store.dispatch({ type: UPDATE_TX, data: pendingTx });
+          }
+        }
+      );
+    });
   }
 
   getCrossChainSwapDetail(hash: string): Observable<TxProgress> {

@@ -1,10 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
-import { ETH_RPC_HOST, MESSAGE, METAMASK_CHAIN_ID, Token } from '@lib';
+import {
+  ETH_RPC_HOST,
+  MESSAGE,
+  METAMASK_CHAIN_ID,
+  MyTransaction,
+  Token,
+} from '@lib';
 import { Store } from '@ngrx/store';
+import { TxProgressModalComponent } from '../../shared/modal/tx-progress/tx-progress.component';
+import { TxProgressDrawerComponent } from '../../shared/drawers/tx-progress/tx-progress.component';
 import { LoadingDialogModalComponent } from '@shared/modal/loading-dialog/loading-dialog.component';
 import BigNumber from 'bignumber.js';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { Observable } from 'rxjs';
@@ -23,12 +32,40 @@ export class CommonService {
     public store: Store<State>,
     private nzMessage: NzMessageService,
     private http: HttpClient,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private drawerService: NzDrawerService
   ) {
     this.language$ = store.select('language');
     this.language$.subscribe((state) => {
       this.lang = state.language;
     });
+  }
+
+  showTxDetail(txItem: MyTransaction): void {
+    if (!this.isMobileWidth()) {
+      this.modal.create({
+        nzContent: TxProgressModalComponent,
+        nzFooter: null,
+        nzTitle: null,
+        nzClosable: false,
+        nzMaskClosable: true,
+        nzClassName: 'custom-modal tx-modal',
+        nzComponentParams: {
+          transaction: txItem,
+        },
+      });
+    } else {
+      this.drawerService.create({
+        nzContent: TxProgressDrawerComponent,
+        nzTitle: null,
+        nzClosable: false,
+        nzPlacement: 'bottom',
+        nzWrapClassName: 'custom-drawer tx-progress',
+        nzContentParams: {
+          transaction: txItem,
+        },
+      });
+    }
   }
 
   loading(transactionType?, params?): NzModalRef {
