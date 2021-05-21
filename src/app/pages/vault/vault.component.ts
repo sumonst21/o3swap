@@ -526,7 +526,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     this.loader = this.commonService.loading(VaultTransactionType.claim, {
       symbol1: 'O3',
-      value1: this.airdropO3,
+      value1: this.airdropO3[airdropIndex],
     });
     this.vaultEthWalletApiService
       .claimAirdrop(airdropIndex)
