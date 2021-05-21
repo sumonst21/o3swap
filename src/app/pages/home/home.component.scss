@@ -541,6 +541,9 @@ section.partners {
         &.low-h {
           max-height: 80%;
         }
+        &.low-w {
+          max-width: 70%;
+        }
       }
     }
   }
@@ -549,13 +552,21 @@ section.partners {
 footer {
   background: #202020;
   padding: 70px 0;
+  .wrapper {
+    width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    .donate {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+  }
   .subscript {
-    text-align: center;
     .title {
       font-size: 20px;
     }
     .email {
-      margin: 0 auto;
       width: 520px;
       height: 60px;
       background: #ffffff0d;
@@ -602,10 +613,41 @@ footer {
       font-family: "fontBold";
     }
   }
+  .donate {
+    .title {
+      font-size: 20px;
+    }
+    .donate-item {
+      display: inline-flex;
+      flex-direction: column;
+      font-family: "fontRegular";
+      &:first-of-type {
+        margin-right: 70px;
+      }
+      img {
+        width: 120px;
+        height: 120px;
+        margin-top: 28px;
+      }
+      .donate-token {
+        margin-top: 18px;
+      }
+      .donate-address {
+        width: 121px;
+        margin-top: 12px;
+        font-size: 12px;
+        color: #8aa1a1;
+        word-wrap: break-word;
+        word-break: break-all;
+        line-height: 16px;
+        &.eth {
+          width: 150px;
+        }
+      }
+    }
+  }
   .contacts,
   .bottom {
-    width: 1400px;
-    margin: 0 auto;
     font-family: "fontRegular";
     .line {
       margin: 0 12px;
@@ -614,7 +656,6 @@ footer {
   .contacts {
     margin-top: 90px;
     display: flex;
-    justify-content: center;
     img {
       width: 40px;
       height: 40px;
@@ -637,7 +678,6 @@ footer {
   .bottom {
     display: flex;
     align-items: center;
-    justify-content: center;
     margin-top: 34px;
     img {
       height: 30px;

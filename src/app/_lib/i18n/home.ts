@@ -147,6 +147,10 @@ const home = {
     en: 'Liquidity Amount',
     zh: '流动性金额',
   },
+  HowToDonate: {
+    en: 'How to Donate',
+    zh: '如何捐赠',
+  },
 };
 
 export default home;

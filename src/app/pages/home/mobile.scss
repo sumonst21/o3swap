@@ -423,9 +423,44 @@
   }
   footer {
     padding: 39px 0;
+    .wrapper {
+      width: 100%;
+      margin: 0 auto;
+      .donate {
+        margin-top: 34px;
+        position: static;
+        text-align: center;
+        .title {
+          font-size: 16px;
+        }
+        .donate-item {
+          width: 45%;
+          align-items: center;
+          &:first-of-type {
+            margin-right: 0;
+          }
+          img {
+            width: 100px;
+            height: 100px;
+          }
+          .donate-token {
+            margin-top: 13px;
+          }
+          .donate-address {
+            margin-top: 9px;
+            line-height: 13px;
+            &.eth {
+              max-width: 155px;
+            }
+          }
+        }
+      }
+    }
     .subscript {
+      text-align: center;
       font-size: 16px;
       .email {
+        margin: 0 auto;
         width: 80%;
         height: 45px;
         border-radius: 6px;
@@ -456,6 +491,7 @@
     }
     .contacts,
     .bottom {
+      justify-content: center;
       width: 100%;
     }
     .contacts {
@@ -479,6 +515,7 @@
     .bottom {
       margin-top: 22px;
       flex-direction: column;
+      justify-content: center;
       img {
         height: 22px;
       }

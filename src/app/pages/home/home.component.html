@@ -209,7 +209,7 @@
     <img src="/assets/images/home/partners/title-investors.png" class="title" alt="">
     <div class="partners-group">
       <a target="_blank" href="http://www.softbank.sg/">
-        <img class="low-h" src="/assets/images/home/partners/softbank.jpg" alt="">
+        <img class="low-w" src="/assets/images/home/partners/softbank.jpg" alt="">
       </a>
       <a target="_blank" href="https://ngc.fund/home">
         <img src="/assets/images/home/partners/ngc.png" alt="">
@@ -245,43 +245,59 @@
   </div>
 </section>
 <footer>
-  <div class="subscript">
-    <p class="title">{{ 'ReceiveOurNewsletter' | translate: lang:langPageName }}</p>
-    <div class="email" *ngIf="canSubscribe" [ngClass]="{focus: isFocus}">
-      <input type="email" (focus)="isFocus=true" (blur)="isFocus=false" [(ngModel)]="email"
-        [placeholder]="'emailAddressPlaceholder' | translate: lang:langPageName">
-      <button nz-button [nzLoading]="isLoadingEmail" (click)="subscriptNews()"
-        class="submit">{{ 'Subscribe' | translate: lang:langPageName }}</button>
+  <div class="wrapper">
+    <div class="subscript">
+      <p class="title">{{ 'ReceiveOurNewsletter' | translate: lang:langPageName }}</p>
+      <div class="email" *ngIf="canSubscribe" [ngClass]="{focus: isFocus}">
+        <input type="email" (focus)="isFocus=true" (blur)="isFocus=false" [(ngModel)]="email"
+          [placeholder]="'emailAddressPlaceholder' | translate: lang:langPageName">
+        <button nz-button [nzLoading]="isLoadingEmail" (click)="subscriptNews()"
+          class="submit">{{ 'Subscribe' | translate: lang:langPageName }}</button>
+      </div>
+      <button *ngIf="!canSubscribe"
+        class="success">{{ 'SuccessfullySubscribed' | translate: lang:langPageName }}</button>
     </div>
-    <button *ngIf="!canSubscribe" class="success">{{ 'SuccessfullySubscribed' | translate: lang:langPageName }}</button>
-  </div>
-  <div class="contacts">
-    <a target="_blank" href="https://github.com/O3Labs">
-      <img src="/assets/images/home/contact/github.png" alt="">
-    </a>
-    <a target="_blank" href="https://twitter.com/O3_Labs">
-      <img src="/assets/images/home/contact/twitter.png" alt="">
-    </a>
-    <a target="_blank" href="https://t.me/O3LabsOfficial">
-      <img src="/assets/images/home/contact/telegram.png" alt="">
-    </a>
-    <a target="_blank" href="https://medium.com/o3-labs-o3-wallet">
-      <img src="/assets/images/home/contact/medium.png" alt="">
-    </a>
-    <a target="_blank" href="mailto:contact@o3swap.com">
-      <img src="/assets/images/home/contact/email.png" alt="">
-    </a>
-  </div>
-  <div class="bottom">
-    <img src="/assets/images/home/footer-logo.png" alt="">
-    <p class="copyright">© {{ copyRightYear }} O3 Labs Inc.</p>
-    <p class="language">
-      <span class="canClick" [ngClass]="{active: lang==='en'}" (click)="changeLang('en')">EN</span>
-      <span class="line">|</span>
-      <span class="canClick" [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">中文</span>
-    </p>
-    <a href="https://docs.o3swap.com/" target="_blank">
-      <p class="doc">{{ 'Doc' | translate: lang:langPageName }}</p>
-    </a>
+    <div class="donate">
+      <p class="title">{{ 'HowToDonate' | translate:lang:langPageName}}?</p>
+      <div class="donate-item">
+        <img src="/assets/images/home/donate-neo.png" alt="">
+        <p class="donate-token">NEO</p>
+        <p class="donate-address">AJDfJRX3eLsHSGoAVxts8iBPwfeJWG5Tk1</p>
+      </div>
+      <div class="donate-item">
+        <img src="/assets/images/home/donate-eth.png" alt="">
+        <p class="donate-token">ETH & BSC & HECO</p>
+        <p class="donate-address eth">0xE618809Cc2A60B22fED4A0aD512f357e4a1BF65b</p>
+      </div>
+    </div>
+    <div class="contacts">
+      <a target="_blank" href="https://github.com/O3Labs">
+        <img src="/assets/images/home/contact/github.png" alt="">
+      </a>
+      <a target="_blank" href="https://twitter.com/O3_Labs">
+        <img src="/assets/images/home/contact/twitter.png" alt="">
+      </a>
+      <a target="_blank" href="https://t.me/O3LabsOfficial">
+        <img src="/assets/images/home/contact/telegram.png" alt="">
+      </a>
+      <a target="_blank" href="https://medium.com/o3-labs-o3-wallet">
+        <img src="/assets/images/home/contact/medium.png" alt="">
+      </a>
+      <a target="_blank" href="mailto:contact@o3swap.com">
+        <img src="/assets/images/home/contact/email.png" alt="">
+      </a>
+    </div>
+    <div class="bottom">
+      <img src="/assets/images/home/footer-logo.png" alt="">
+      <p class="copyright">© {{ copyRightYear }} O3 Labs Inc.</p>
+      <p class="language">
+        <span class="canClick" [ngClass]="{active: lang==='en'}" (click)="changeLang('en')">EN</span>
+        <span class="line">|</span>
+        <span class="canClick" [ngClass]="{active: lang==='zh'}" (click)="changeLang('zh')">中文</span>
+      </p>
+      <a href="https://docs.o3swap.com/" target="_blank">
+        <p class="doc">{{ 'Doc' | translate: lang:langPageName }}</p>
+      </a>
+    </div>
   </div>
 </footer>
