@@ -323,13 +323,21 @@ export class SwapResultComponent implements OnInit, OnDestroy {
     if (this.checkBalance() === false) {
       return;
     }
+    this.loader = this.commonService.loading(TransactionType.swap, {
+      symbol1: this.fromToken.symbol,
+      symbol2: this.toToken.symbol,
+      value1: this.inputAmount,
+      value2: this.chooseSwapPath?.receiveAmount,
+    });
     const showApprove = await this.checkShowApprove();
     if (showApprove === true) {
       this.inquiryInterval.unsubscribe();
       this.showApproveModal();
+      this.loader?.close();
       return;
     }
     if (showApprove === 'error') {
+      this.loader?.close();
       return;
     }
     if (this.inquiryInterval) {
@@ -344,12 +352,6 @@ export class SwapResultComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.loader = this.commonService.loading(TransactionType.swap, {
-      symbol1: this.fromToken.symbol,
-      symbol2: this.toToken.symbol,
-      value1: this.inputAmount,
-      value2: this.chooseSwapPath?.receiveAmount,
-    });
     // neo same chain
     if (this.fromToken.chain === 'NEO' && this.toToken.chain === 'NEO') {
       if (

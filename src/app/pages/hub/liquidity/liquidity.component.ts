@@ -267,6 +267,15 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     if (this.ethApiService.checkNetwork(token) === false) {
       return;
     }
+    if (this.isSwapCanClick) {
+      this.isSwapCanClick = false;
+      setTimeout(() => {
+        this.isSwapCanClick = true;
+      }, 4000);
+    } else {
+      this.loader?.close();
+      return;
+    }
     if (
       !this.receiveAmount[index] ||
       (this.receiveAmount[index] &&
@@ -285,6 +294,12 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.InsufficientBalance[this.lang]);
       return;
     }
+    this.loader = this.commonService.loading(TransactionType.deposit, {
+      symbol1: token.symbol,
+      symbol2: this.LPToken.symbol,
+      value1: this.addLiquidityInputAmount[index],
+      value2: this.receiveAmount[index],
+    });
     const showApprove = await this.checkShowApprove(
       token,
       tokenAmount,
@@ -292,17 +307,11 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     );
     if (showApprove === true) {
       this.showApproveModal(token);
+      this.loader?.close();
       return;
     }
     if (showApprove === 'error') {
-      return;
-    }
-    if (this.isSwapCanClick) {
-      this.isSwapCanClick = false;
-      setTimeout(() => {
-        this.isSwapCanClick = true;
-      }, 4000);
-    } else {
+      this.loader?.close();
       return;
     }
     const amountOut = new BigNumber(this.receiveAmount[index])
@@ -315,12 +324,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         this.LPToken
       );
     }
-    this.loader = this.commonService.loading(TransactionType.deposit, {
-      symbol1: token.symbol,
-      symbol2: this.LPToken.symbol,
-      value1: this.addLiquidityInputAmount[index],
-      value2: this.receiveAmount[index],
-    });
     this.ethApiService
       .addLiquidity(
         token,
@@ -348,6 +351,14 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     if (this.ethApiService.checkNetwork(this.LPToken) === false) {
       return;
     }
+    if (this.isSwapCanClick) {
+      this.isSwapCanClick = false;
+      setTimeout(() => {
+        this.isSwapCanClick = true;
+      }, 4000);
+    } else {
+      return;
+    }
     const lpBalance = new BigNumber(this.LPToken.amount);
     const lpPayAmount = new BigNumber(this.payAmount[index]);
     if (lpPayAmount.isNaN() || lpPayAmount.comparedTo(0) <= 0) {
@@ -367,6 +378,12 @@ export class LiquidityComponent implements OnInit, OnDestroy {
       this.nzMessage.error(MESSAGE.receive0[this.lang]([token.symbol]));
       return;
     }
+    this.loader = this.commonService.loading(TransactionType.withdraw, {
+      symbol1: this.LPToken.symbol,
+      symbol2: token.symbol,
+      value1: this.payAmount[index],
+      value2: this.removeLiquidityInputAmount[index],
+    });
     const showApprove = await this.checkShowApprove(
       this.LPToken,
       lpPayAmount,
@@ -374,17 +391,11 @@ export class LiquidityComponent implements OnInit, OnDestroy {
     );
     if (showApprove === true) {
       this.showApproveModal(this.LPToken);
+      this.loader?.close();
       return;
     }
     if (showApprove === 'error') {
-      return;
-    }
-    if (this.isSwapCanClick) {
-      this.isSwapCanClick = false;
-      setTimeout(() => {
-        this.isSwapCanClick = true;
-      }, 4000);
-    } else {
+      this.loader?.close();
       return;
     }
     const amountOut = new BigNumber(this.removeLiquidityInputAmount[index])
@@ -397,12 +408,6 @@ export class LiquidityComponent implements OnInit, OnDestroy {
         token
       );
     }
-    this.loader = this.commonService.loading(TransactionType.withdraw, {
-      symbol1: this.LPToken.symbol,
-      symbol2: token.symbol,
-      value1: this.payAmount[index],
-      value2: this.removeLiquidityInputAmount[index],
-    });
     this.ethApiService
       .removeLiquidity(
         this.LPToken,

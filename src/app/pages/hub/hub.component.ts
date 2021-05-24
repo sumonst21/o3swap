@@ -289,24 +289,26 @@ export class HubComponent implements OnInit, OnDestroy {
     if (this.checkBalance() === false) {
       return;
     }
-    const showApprove = await this.checkShowApprove();
-    if (showApprove === true) {
-      this.showApproveModal();
-      return;
-    }
-    if (showApprove === 'error') {
-      return;
-    }
-    const bigNumberReceive = new BigNumber(this.receiveAmount)
-      .shiftedBy(this.toToken.decimals)
-      .dp(0)
-      .toFixed();
     this.loader = this.commonService.loading(TransactionType.swap, {
       symbol1: this.fromToken.symbol,
       symbol2: this.toToken.symbol,
       value1: this.inputAmount,
       value2: this.receiveAmount,
     });
+    const showApprove = await this.checkShowApprove();
+    if (showApprove === true) {
+      this.showApproveModal();
+      this.loader?.close();
+      return;
+    }
+    if (showApprove === 'error') {
+      this.loader?.close();
+      return;
+    }
+    const bigNumberReceive = new BigNumber(this.receiveAmount)
+      .shiftedBy(this.toToken.decimals)
+      .dp(0)
+      .toFixed();
     this.ethApiService
       .swapCrossChain(
         this.fromToken,

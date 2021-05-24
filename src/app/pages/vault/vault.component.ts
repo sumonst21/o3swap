@@ -180,8 +180,12 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
-          res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -196,8 +200,12 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.vaultEthWalletApiService.getO3StakingStaked(item) || '--',
         this.vaultEthWalletApiService.getO3StakingSharePerBlock(item) || '0',
       ]).then((res) => {
-        [item.balance, item.totalStaking, item.staked, item.sharePerBlock] =
-          res;
+        [
+          item.balance,
+          item.totalStaking,
+          item.staked,
+          item.sharePerBlock,
+        ] = res;
         item.apy = this.getStakingAYP(item);
       });
     });
@@ -304,6 +312,13 @@ export class VaultComponent implements OnInit, OnDestroy {
         if (!this.checkBalance(balance, res)) {
           return;
         }
+        this.loader = this.commonService.loading(
+          isStake ? TransactionType.stake : TransactionType.unstake,
+          {
+            symbol1: token.symbol,
+            value1: res,
+          }
+        );
         const showApprove = await this.checkShowApprove(
           token,
           this.vaultWallet.address,
@@ -312,18 +327,13 @@ export class VaultComponent implements OnInit, OnDestroy {
         );
         if (showApprove === true) {
           this.showApproveModal(token, O3TOKEN_CONTRACT);
+          this.loader?.close();
           return;
         }
         if (showApprove === 'error') {
+          this.loader?.close();
           return;
         }
-        this.loader = this.commonService.loading(
-          isStake ? TransactionType.stake : TransactionType.unstake,
-          {
-            symbol1: token.symbol,
-            value1: res,
-          }
-        );
         if (isStake) {
           this.vaultEthWalletApiService
             .stakeO3(token, res)
@@ -392,6 +402,13 @@ export class VaultComponent implements OnInit, OnDestroy {
         if (!this.checkBalance(balance, res)) {
           return;
         }
+        this.loader = this.commonService.loading(
+          isStake ? TransactionType.stake : TransactionType.unstake,
+          {
+            symbol1: token.symbol,
+            value1: res,
+          }
+        );
         const showApprove = await this.checkShowApprove(
           token,
           this.vaultWallet.address,
@@ -400,18 +417,13 @@ export class VaultComponent implements OnInit, OnDestroy {
         );
         if (showApprove === true) {
           this.showApproveModal(token, contractHash);
+          this.loader?.close();
           return;
         }
         if (showApprove === 'error') {
+          this.loader?.close();
           return;
         }
-        this.loader = this.commonService.loading(
-          isStake ? TransactionType.stake : TransactionType.unstake,
-          {
-            symbol1: token.symbol,
-            value1: res,
-          }
-        );
         if (isStake) {
           this.vaultEthWalletApiService
             .o3StakingStake(token, res)
