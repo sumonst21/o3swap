@@ -67,9 +67,7 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
-    this.handleTxProgress();
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     if (this.langUnScribe) {
@@ -77,7 +75,7 @@ export class TxProgressComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleTxProgress(): void {
+  handleTxProgress(): number {
     if (this.transaction.isPending === false) {
       this.swapProgress = 100;
     } else {
@@ -95,6 +93,7 @@ export class TxProgressComponent implements OnInit, OnDestroy {
         this.swapProgress = 20;
       }
     }
+    return this.swapProgress;
   }
 
   copy(hash: string): void {

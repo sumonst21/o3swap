@@ -39,9 +39,11 @@
       <app-long-balance [balance]="transaction?.amount"></app-long-balance>
       &nbsp;{{ transaction?.fromToken?.symbol }}
     </div>
-    <nz-progress [nzPercent]="swapProgress" [nzShowInfo]="false" nzStrokeWidth="6"
-      [nzStrokeColor]="transaction?.isFailed ? '#CD4242' : '#46B069'">
-    </nz-progress>
+    <div class="progress-cotent">
+      <nz-progress [nzPercent]="handleTxProgress()" [nzShowInfo]="false" nzStrokeWidth="6"
+        [nzStrokeColor]="transaction?.isFailed ? '#CD4242' : '#46B069'">
+      </nz-progress>
+    </div>
     <div class="show-detail">
       <img [ngClass]="{show: showTxDetail}" (click)="showTxDetail=!showTxDetail"
         src="/assets/images/swap-result/more.png" alt="">
