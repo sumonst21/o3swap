@@ -91,6 +91,10 @@ const app = {
     en: 'clear all',
     zh: '清空',
   },
+  NoMoreData: {
+    en: 'No more data',
+    zh: '没有更多数据',
+  },
 };
 
 export default app;

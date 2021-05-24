@@ -2,7 +2,7 @@
   <div class="tx-container" (click)="stopPropagation($event)">
     <p class="title">{{ 'RecentTransactions' | translate: lang:langPageName }}<span *ngIf="transactions.length>0"
         class="clear" (click)="clearAll()">{{ 'clearAll' | translate: lang:langPageName }}</span></p>
-    <p class="no-data" *ngIf="transactions.length<=0">No more data</p>
+    <p class="no-data" *ngIf="transactions.length<=0">{{ 'NoMoreData' | translate:lang:langPageName }}</p>
     <ul class="tx-list scroll">
       <li *ngFor="let tx of transactions" (click)="showTxDetail(tx)">
         <p class="hash">
@@ -53,7 +53,7 @@
     <div class="tx-container" (click)="stopPropagation($event)">
       <p class="title">{{ 'RecentTransactions' | translate: lang:langPageName }}<span class="clear"
           (click)="close()">{{ 'Cancel' | translate: lang:langPageName }}</span></p>
-      <p class="no-data" *ngIf="transactions.length<=0">No more data</p>
+      <p class="no-data" *ngIf="transactions.length<=0">{{ 'NoMoreData' | translate:lang:langPageName }}</p>
       <ul class="tx-list scroll">
         <li *ngFor="let tx of transactions" (click)="showTxDetail(tx)">
           <p class="hash">
