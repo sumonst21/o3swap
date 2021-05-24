@@ -139,7 +139,7 @@ export const LP_STAKING_TOKENS: Token[] = [
       NETWORK === 'MainNet'
         ? '0x61415f9060b1a81bbda3b79baa11acd27cddd83d'
         : '0xd5d63dce45e0275ca76a8b2e9bd8c11679a57d0d',
-    symbol: 'LP',
+    symbol: 'USDT_LP',
     decimals: 18,
     amount: '0',
     chain: 'ETH',
