@@ -51,7 +51,7 @@ export const AGGREGATOR_CONTRACT = {
   BSC: {
     Pancakeswap:
       NETWORK === 'MainNet'
-        ? '0xeCBF96Dd4fBfD666A849252EC022Bf311A4cA002'
+        ? '0xdd827EB8Fd0C95a1372CcA8f2ded3406eE034f08'
         : '0xA78a195E6DCDa3eC2074CF8d0b8392602783107B',
   },
   ETH: {
