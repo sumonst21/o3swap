@@ -44,6 +44,7 @@ export class HubPoolComponent implements OnInit, OnDestroy {
   private vaultWallet: VaultWallet;
 
   private LPToken: any = LP_TOKENS.filter((item) => item.chain === 'ETH')[0];
+  public totalVolume = '--';
   public LPAPY = '--';
 
   public allUsdtBalance: string;
@@ -98,6 +99,7 @@ export class HubPoolComponent implements OnInit, OnDestroy {
   getDailyVolume(): void {
     this.apiService.getTotalData().subscribe((res: CommonHttpResponse) => {
       if (res.status === 'success') {
+        this.totalVolume = res.data.swap_vol_total;
         this.dailyVolume = res.data.swap_vol_24h;
       }
     });

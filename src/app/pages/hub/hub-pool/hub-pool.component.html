@@ -11,7 +11,9 @@
           <div class="name">{{ 'TVL' | translate: lang:langPageName }}</div>
         </div>
         <div class="item">
-          <div class="value">$--</div>
+          <div class="value">$ <app-long-balance [balance]="totalVolume" [defaultValue]="'--'" [decimals]="2"
+              [countInMillions]="true"></app-long-balance>
+          </div>
           <div class="name">{{ 'VOL' | translate: lang:langPageName }}</div>
         </div>
         <div class="item">
